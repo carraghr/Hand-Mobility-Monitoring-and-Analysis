@@ -40,3 +40,38 @@ All the papers I found however were done the year the leap came out or a year la
 For the project I'm going to have a set of exercises that the user will complete using a leap motion connected to their computer. To do this I plan to create games that will get the user to move their hands in the motion needed for the exercise. To do this animation is needed and keeping track of elements and changing them based on the users hand movements each of the options SVG, Canvas and WebGL give this feature with SVG enabling event handlers easier then canvas. However SVG seems to have some performance issues with rendering a large number of objects. Since the leap takes up a lot of resources when processing users input and its input frequency is connected to the performance of the computer SVG doesn't seem to be a good choice.
 
 Between Canvas 2D and WebGL, WebGL offers more performance due to its more programmable aspects such as it shader language GLSL and that it uses a computers graphics hardware to handle graphics instead of the cpu, if a gpu is present.For this reason I have selected webgl for the graphics/animation of the exercises for the project.
+
+##Hand Exercises 
+
+For the project I have researched various hand exercises and have came up with different game ideas for them.
+
+###Separation of fingers and closing of separation
+
+####Measurement
+ Angle between each finger, recording the average,min and max values for the angles between each finger.
+ 
+####Game element
+There will be a gate that the users angles will open and close. It starts of with it been closed and when the user separated their fingers they will open the gate.
+ 
+There will be falling items from the top of the screen these will be for the user to indicate when the gates must be open and for how long.
+
+###Thumb flexion/extension
+
+####Measurement
+The distance between the top of the thumb and the base of a finger. Again for each finger and getting the average, smallest and largest distances.
+ 
+####Game element
+There will be a four key/stone input having your thumb over the base of one finger will cause the key to light up.
+ 
+There will be colored circles dropped under from the top of the screen. These will down onto one of the four keys and the user will move their thumb to that key. At this point the recording for the user's thumbs location will be taken as the distance from the thumb's tip to the base of the fingers base for that key.
+  
+Only one key at a time for a finger and they will be be repeated from the same finger in a row. ie no index, index but index, middle, index is ok.
+
+
+###Wrist extension and flexion
+
+####Measurement
+If I get the location of the arm and the palm of the hand of the same arm I can work out the angle of the wrist is making when it is bent up and down, left and right.
+ 
+####Game element
+The idea for this game is based on Pong. When the user move their wrist left or right, up or down a pong will move the same direction to block incoming objects. 
