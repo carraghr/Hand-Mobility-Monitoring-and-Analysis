@@ -1,0 +1,37 @@
+use project;
+
+create table CareProvider(
+  NameFirst varchar(15) not null,
+  NameLast varchar(20) not null,
+  StaffID varchar(10) not null,
+  Level varchar(3) not null,
+  UserName varchar(20) not null,
+  Pass VARCHAR(13) null,
+  Salt BLOB(10) NULL,
+
+  primary key(StaffID)
+);
+
+create table Supervisor(
+  SID varchar(10) not null,
+  SupID varchar(10) not null,
+
+  primary key(SID),
+  constraint `CareProviderIDfk_1`
+  foreign key (SID)
+  references CareProvider(StaffID)
+    on delete cascade on update cascade
+);
+
+create table Patient(
+  NameFirst varchar(15) not null,
+  NameLast varchar(20) not null,
+  PatientID varchar(10) not null,
+  CPID varchar(10) not null,
+  DOB date,
+  UserName varchar(20) not null,
+  Pass VARCHAR(13) null,
+  Salt BLOB(10) NULL,
+
+  primary key(PatientID)
+);
