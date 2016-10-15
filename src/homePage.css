@@ -22,12 +22,12 @@ html, body {
 
 .container .footer{
     width:10%;
-    height: 10%;
+    height: 5%;
     margin:0 0 0 10%;
     padding:0;
 }
 .container .content {
-    width:80%;
+    width:85%;
     height: 79%;
     margin-left: 10%;
     border: solid 1px black;
