@@ -75,3 +75,15 @@ If I get the location of the arm and the palm of the hand of the same arm I can 
  
 ####Game element
 The idea for this game is based on Pong. When the user move their wrist left or right, up or down a pong will move the same direction to block incoming objects. 
+
+##login System
+
+For the project a login system is required for both care providers and patients so that they can interact with their information only.
+
+Like most login systems it takes a user name and password. The password is hashed with a salt that is stored in a database along with username and the hash itself. Each salt is randomly generated when a user is placed on the database. The php method openssl_random_pseudo_bytes is used to create the salt and crypt for the one way hashing of the password and salt together and then stored on the database for the user to login.
+ 
+At the moment the database scheme looks like.
+
+![alt text]( ./images/database scheme v1.png "Logo Title Text 1")
+
+To pervert SQL injections in the login system I use the php method  mysqli_real_escape_string to make sure there are not ' or other charachers that could alter the mysql query been executed to the database.
