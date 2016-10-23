@@ -87,3 +87,93 @@ At the moment the database scheme looks like.
 ![alt text]( ./images/database scheme v1.png "Logo Title Text 1")
 
 To pervert SQL injections in the login system I use the php method  mysqli_real_escape_string to make sure there are not ' or other charachers that could alter the mysql query been executed to the database.
+
+##SHAPES AND PERSPECTIVE
+###Shapes
+For each of the exercises games to be implemented for the project graphics are necessary. As stated before I will be using WebGL for graphics and as a part of this I need to implement all basic shapes myself  so to start with this I decided that I would implement a right angle triangle, square, rectangle  and a circle.
+
+For each of the shapes I followed a revealing module pattern and had each shape follow the same pattern in how they are constructed. Each shape has a centre point and from there each one goes out to there main side points.
+
+For a right angle triangle the main point are
+
+```javascript
+vertices = [center[0] - radius, center[1] - radius,
+                center[0] + (1 + Math.sqrt(2)) * radius, center[1] - radius,
+                center[0] - radius, center[1] + (1 + Math.sqrt(2)) * radius];
+````
+ For a square and rectangle the same logic is applied.
+```javascript
+vertices = [center[0] - radius, center[1] + radius,
+    center[0] - radius, center[1] - radius,
+    center[0] + radius, center[1] - radius,
+    center[0] + radius, center[1] + radius];
+vertices = [center[0] - width, center[1] + height,
+    center[0] - width, center[1] - height,
+    center[0] + width, center[1] - height,
+    center[0] + width, center[1] + height];
+````
+For creating a circle you have to make it out of triangles starting at the centre and going around. The picture here gives a good idea of what should be done.
+
+
+![alt text]( ./images/multiple_triangle_circle.png "circle made up of triangles")
+
+To get this the code below is used,
+```javascript
+vertices = [center[0], center[1]];
+
+for(var i = 2; i < 32; i++){
+   vertices[i]= center[0] + cos(θ) * radius;
+   vertices[++i] = center[1] + sin(θ) * radius;
+}
+```
+Creating a circle this way would mean need to send to the GPU the buffer with a size: number of vertices * number attributes per vertex * bytes per attribute = 34 * 2 * 4 = 272 bytes per circle. With circles been moved around and rendered out per second this could be cut down.
+
+Through the use of GLSL fragment shader its possible to only need to send out 60 bytes per circle by using the idea of a circle inside a triangle and only colouring in the area of the circle.
+
+To do this I created a right angle triangle using the same method above to create one large enough to fit a circle into  it and passed the circle coords as well.
+
+The vertex shader that deals with coords of each of the shapes is the same for the other shapes so far however other variables are passed to the vertex shader to the fragment shader.
+
+The main part of the fragment shader that deals with colouring the circle is this.
+```javascript
+void main(){
+  vec4 color0 = vec4(0.24, 0.522, 0.863, 1);
+
+  float x = gl_FragCoord.x;
+  float y = gl_FragCoord.y;
+
+  float dx = center[0] - x;
+  float dy = center[1] - y;
+  float distance = sqrt(dx*dx + dy*dy);
+  float diff = distance - radius +0.5 ;
+  if(diff < 0.0 ||  diff >= 0.0 && diff <= 1.0)
+    gl_FragColor = vec4(1.0, 0.5, 0.0, 1.0);
+  else
+    gl_FragColor = color0;
+}
+```
+While testing out the idea I found a few issues the main one been that if you render out any other shape before a circle and parts are interlinked the background colour (color0 above) will be rendered above the first shape. So to deal with this  circles need to be drawn out first and if this is to be used it should only be used for simple graphics. The first method of creating a circle had a problem with losing smoothness around its edge when it became larger however the circle in triangle method does not and uses less bytes for its creation.
+
+Shaders
+The vertex shader has to deal with perspective. To deal with this I use the following
+```javascript
+// convert positions from pixels to 0.0 to 1.0
+vec2 zeroToOne = vertPosition / u_resolution;
+
+// convert from 0->1 to 0->2
+vec2 zeroToTwo = zeroToOne * 2.0;
+
+// convert from 0->2 to -1->+1 (clipspace)
+vec2 clipSpace = zeroToTwo - 1.0;
+
+gl_Position = vec4(clipSpace , 0, 1);
+```
+
+Before using this I passed gl_Position the coords for a shape which worked but did not take into account the screens resolution so a square would be stretched across the screen if it went from -0.5 to 0.5. To deal with this I take the width and height of the canvas as convert coords in pixel space to clipspace.
+
+This process can be put into one line.
+```javascript
+gl_Position = vec4(((vertPosition/u_resolution) * 2.0  - 1.0) , 0, 1);
+```
+
+For the shaders to be useable by the shapes I need to compile them with a gl context of a canvas to do this I used a Anonymous Object Literal return pattern to create a what is basic a class with static methods to create a program containing a link to both a vertext and fragment shader to be used by each of the shapes. Apart from the circle shape each shape uses the same polygon shaders.
