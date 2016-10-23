@@ -154,7 +154,7 @@ void main(){
 ```
 While testing out the idea I found a few issues the main one been that if you render out any other shape before a circle and parts are interlinked the background colour (color0 above) will be rendered above the first shape. So to deal with this  circles need to be drawn out first and if this is to be used it should only be used for simple graphics. The first method of creating a circle had a problem with losing smoothness around its edge when it became larger however the circle in triangle method does not and uses less bytes for its creation.
 
-Shaders
+###Shaders
 The vertex shader has to deal with perspective. To deal with this I use the following
 ```javascript
 // convert positions from pixels to 0.0 to 1.0
