@@ -1,3 +1,138 @@
+Drop = function(){
+    var drop = new Circle();
+    drop.setSize(100);
+    drop.setCenter(0,1);
+
+    return{
+
+        setCenter : function (x,y) {
+            drop.setCenter(x,y);
+        },
+
+        setSize : function (r) {
+            drop.setSize(r);
+        },
+
+        getCenter :function () {
+            return drop.getCenter();
+        },
+
+        getSize : function () {
+            return drop.getSize();
+        },
+
+        tick : function(theta) {
+            drop.moveDown(.5);
+        },
+
+        draw : function(gl,ratio) {
+            drop.draw(gl,ratio)
+        }
+    }
+};
+
+Bucket = function(){
+
+    var leftSide = new Rectangle();
+    var rightSide = new Rectangle();
+    var contents = new Rectangle();
+    var bottom = new Rectangle();
+    var rightLid = new Rectangle();
+    var leftLid = new Rectangle();
+
+    var defaultPosition = [0, 0, 0];
+
+    var width = 0.15;
+    var height = 0.25;
+    var center = [0, 0];
+    var depth = 1;
+
+    return{
+
+        dropLidCollision : function(circle) {
+            return leftLid.circleCollision(circle)||rightLid.circleCollision(circle);
+        },
+
+        dropLeftLidCollision : function (circle) {
+
+            return leftLid.circleCollision(circle);
+        },
+
+        dropRightLidCollision : function (circle) {
+
+            return rightLid.circleCollision(circle);
+        },
+
+        getLids : function (){
+            return [leftLid,rightLid];
+        },
+
+        setDefaultPosition : function (x, y, z){
+
+
+            defaultPosition = [x, y, z];
+
+            center[0] = x;
+            center[1] = y;
+
+            depth = z;
+
+            /**/
+            contents.setDefaultPosition(center[0], center[1] - (height * 2 )*0.07, depth);
+            contents.setSize((width * 2) * 0.90, (height * 2 ) * 0.83);
+
+            leftSide.setDefaultPosition(center[0] + (width * 0.95), center[1],depth);
+            leftSide.setSize((width * 2) * 0.05, (height * 2 ) * 0.9);
+
+            rightSide.setDefaultPosition(center[0] - (width * 0.95), center[1],depth);
+            rightSide.setSize((width * 2) * 0.05, (height * 2 ) * 0.9);
+
+            bottom.setDefaultPosition(center[0], center[1] - ((height) * 0.95),depth );
+            bottom.setSize( (width * 2), (height * 2 ) * 0.05);
+
+            leftLid.setDefaultPosition(center[0] - width/2, center[1] + ((height) * 0.95) ,depth);
+            leftLid.setSize(width, (height * 2 ) * 0.05);
+
+            rightLid.setDefaultPosition( center[0] + (width/2) , center[1] + ((height) * 0.95),depth);
+            rightLid.setSize(width , (height * 2 ) * 0.05);
+
+        },
+
+        setCenter : function(x, y){
+            center[0] = x;
+            center[1] = y;
+        },
+
+        setSize : function(w, h){
+            width = w/2;
+            height = h/2;
+        },
+
+        separateLids : function (distance) {
+            var distanceEqualApart = distance/2;
+
+            var defaultPosition = rightLid.getDefaultPosition();
+            var setPosition = rightLid.getCenter();
+            rightLid.setCenter(defaultPosition[0] + distanceEqualApart, setPosition[1]);
+
+            var defaultPosition = leftLid.getDefaultPosition();
+            var setPosition = leftLid.getCenter();
+            leftLid.setCenter(defaultPosition[0] - distanceEqualApart, setPosition[1]);
+        },
+
+        draw : function(gl){
+            leftSide.draw(gl);
+            rightSide.draw(gl);
+            contents.draw(gl);
+
+            rightLid.draw(gl);
+            leftLid.draw(gl);
+            bottom.draw(gl);
+        }
+
+    };
+};
+
 Circle = function(){
 
     var program = Main.glCircleProgram;
