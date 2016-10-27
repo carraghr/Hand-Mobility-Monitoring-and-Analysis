@@ -52,7 +52,7 @@ var targetMeet = function(angles, targets){
             targetMet++;
         }
     }
-    return (targetMet/targets)*100;
+    return (targetMet/targets);
 };
 
 var selectedHand = 'right';
@@ -65,12 +65,10 @@ Leap.loop({background:false, frameEventName:"animationFrame"},function (frame){
         }else if(frame.hands.length == 1 && frame.hands[0].type != selectedHand){
             Game.pause();
         }else{
-            for (var handIndex = 0, numberOfHands = frame.hands.length; handIndex < numberOfHands; handIndex++) {
-
+            for (let handIndex = 0, numberOfHands = frame.hands.length; handIndex < numberOfHands; handIndex++){
                 var hand = frame.hands[handIndex];
 
                 if(hand.type==selectedHand){
-
                     let angles = measurement(hand,["index"]);
                     console.log(angles);
 
@@ -86,17 +84,17 @@ Leap.loop({background:false, frameEventName:"animationFrame"},function (frame){
         }
     }
     if(Game.isPaused()){
-        for (var handIndex = 0, numberOfHands = frame.hands.length; handIndex < numberOfHands; handIndex++) {
+        for (let handIndex = 0, numberOfHands = frame.hands.length; handIndex < numberOfHands; handIndex++) {
 
             var hand = frame.hands[handIndex];
 
             if(hand.type==selectedHand){
 
                 Game.resume();
-                let angle = measurement(hand);
-                //console.log(angle);
+                let angles = measurement(hand,["index"]);
+                console.log(angles);
 
-                Game.separateLid(angle *100 * 1.5); 	// 1 angle =  17.777778 mils
+                Game.separateLid(targetMeet(angles,targets));
 
                 var t1 = Date.now();
                 var theta = 1 * 0.001;

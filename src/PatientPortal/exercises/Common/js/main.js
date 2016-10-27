@@ -2,22 +2,14 @@ var time;
 Main = {
 
     render : function(){
-        /*var t1 = Date.now();
-        var theta = (t1 - time) * 0.001;
+        var t1 = Date.now();
+        var theta = (t1 - time);
         time = t1;
         Game.tick(theta);
-        Game.drawScene();
-        */
-        //window.requestAnimationFrame(Main.render);
-        var gl = Main.gl;
-        gl.clearColor(0.24, 0.522, 0.863, 1);
-        gl.clear(gl.COLOR_BUFFER_BIT |gl.DEPTH_BUFFER_BIT);
-        var  t = new Circle();
-        t.setSize(200);
-        t.setCenter(400,400);
-        t.setColor([1.0, 0.5, 0.0],[0.24, 0.522, 0.863]);
-        t.draw(gl)
-
+        if(!Game.distanceCheck()) {
+            Game.drawScene();
+            window.requestAnimationFrame(Main.render);
+        }
     },
 
     init : function(){
@@ -53,8 +45,8 @@ Main = {
             circleColorLoc : this.gl.getUniformLocation(this.glCircleProgram, "circle"),
             backgroundColorLoc : this.gl.getUniformLocation(this.glCircleProgram, "background")});
 
-        //Game.init();
-        //time = Date.now();
+        Game.init();
+        time = Date.now();
         window.requestAnimationFrame(Main.render);
     }
 };

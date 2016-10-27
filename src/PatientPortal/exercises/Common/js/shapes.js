@@ -9,6 +9,10 @@ Drop = function(){
             drop.setCenter(x,y);
         },
 
+        setColor : function (dropColor, background) {
+            drop.setColor(dropColor,background);
+        },
+
         setSize : function (r) {
             drop.setSize(r);
         },
@@ -22,7 +26,7 @@ Drop = function(){
         },
 
         tick : function(theta) {
-            drop.moveDown(.5);
+            drop.moveDown(theta * 0.05);
         },
 
         draw : function(gl,ratio) {
@@ -48,6 +52,13 @@ Bucket = function(){
     var depth = 1;
 
     return{
+
+       distanceFromDrop : function(drop){
+            let bottomPoint = [center[0], center[1] + (height)];
+            let dropCenter = drop.getCenter();
+            let topPoint = [dropCenter[0], dropCenter[1] - (drop.getSize())];
+            return Math.sqrt(Math.pow( Math.abs(bottomPoint[0] - topPoint[0]) , 2) + Math.pow(Math.abs(bottomPoint[1]-topPoint[1]), 2));
+       },
 
         dropLidCollision : function(circle) {
             return leftLid.circleCollision(circle)||rightLid.circleCollision(circle);
@@ -75,9 +86,6 @@ Bucket = function(){
             center[0] = x;
             center[1] = y;
 
-            depth = z;
-
-            /**/
             contents.setDefaultPosition(center[0], center[1] - (height * 2 )*0.07, depth);
             contents.setSize((width * 2) * 0.90, (height * 2 ) * 0.83);
 
@@ -108,15 +116,17 @@ Bucket = function(){
             height = h/2;
         },
 
-        separateLids : function (distance) {
-            var distanceEqualApart = distance/2;
+        separateLids : function (distance){
+
+            //distance is 0 to 100 percent /100
+            var distanceEqualApart = distance * ( (width * 2) * 0.90 )/2;
 
             var defaultPosition = rightLid.getDefaultPosition();
             var setPosition = rightLid.getCenter();
             rightLid.setCenter(defaultPosition[0] + distanceEqualApart, setPosition[1]);
 
-            var defaultPosition = leftLid.getDefaultPosition();
-            var setPosition = leftLid.getCenter();
+            defaultPosition = leftLid.getDefaultPosition();
+            setPosition = leftLid.getCenter();
             leftLid.setCenter(defaultPosition[0] - distanceEqualApart, setPosition[1]);
         },
 
@@ -187,7 +197,7 @@ Circle = function(){
         },
 
         getSize : function(){
-            return radius
+            return radius * 2;
         },
 
         moveRight : function(space){
@@ -271,7 +281,7 @@ Rectangle = function(){
         circleCollision : function (circle) {
 
             var circleCenter = circle.getCenter();
-            var circleRadius = circle.getSize();
+            var circleRadius = circle.getSize()/2;
 
             // check circle position inside the rectangle quadrant
             //The vertical and horizontal distances between the circles center and the rectangles center

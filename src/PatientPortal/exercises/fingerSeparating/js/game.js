@@ -4,14 +4,12 @@ Game = {
         var text = document.getElementById('gameStatus');
         text.innerHTML = "paused";
         this.status = 'paused';
-
     },
 
     resume : function(){
         var text = document.getElementById('gameStatus');
         text.innerHTML = "playing";
         this.status = 'playing';
-
     },
 
     isPaused :function(){
@@ -27,11 +25,12 @@ Game = {
 
         this.droplets = [];
         this.leader = 0;
-        for(var index = 0; index < 5; index++){
-            if(index == 0) {
+        for(let index = 0; index < 5; index++){
+            if(index == 0){
                 this.droplets[index] = new Drop();
                 this.droplets[index].setCenter(this.gl.drawingBufferWidth / 2, this.gl.drawingBufferHeight * 0.90);
                 this.droplets[index].setSize(this.gl.drawingBufferHeight * 0.15);
+                this.droplets[index].setColor([1.0, 0.5, 0.0],[0.24, 0.522, 0.863]);
 
             }else{
                 this.droplets[index] = new Drop();
@@ -39,42 +38,42 @@ Game = {
 
                 this.droplets[index].setCenter(center[0], center[1] + (this.gl.drawingBufferHeight * 0.15));
                 this.droplets[index].setSize(this.gl.drawingBufferHeight * 0.15);
+                this.droplets[index].setColor([1.0, 0.5, 0.0],[0.24, 0.522, 0.863]);
             }
         }
         this.status = 'playing';
     },
 
     separateLid : function(distance){
-        this.bucket.separateLids(distance);
+        return this.bucket.separateLids(distance);
     },
 
     tick : function(theta){
+
         for(var index = this.leader; index < 5; index++){
             this.droplets[index].tick(theta);
         }
-        console.log(this.leader);
         if(this.bucket.dropLidCollision(this.droplets[this.leader])){
             this.leader = (this.leader + 1) % 5;
             console.log(this.leader);
             if(this.leader == 0){
-                for(var index = 0; index < 5; index++){
+                for(let index = 0; index < 5; index++){
                     if(index == 0) {
-                        this.droplets[index] = new Drop();
                         this.droplets[index].setCenter(this.gl.drawingBufferWidth / 2, this.gl.drawingBufferHeight * 0.90);
                         this.droplets[index].setSize(this.gl.drawingBufferHeight * 0.15);
-
                     }else{
-                        this.droplets[index] = new Drop();
-                        var center = this.droplets[index -1].getCenter();
-
+                        let center = this.droplets[index -1].getCenter();
                         this.droplets[index].setCenter(center[0], center[1] + (this.gl.drawingBufferHeight * 0.15));
                         this.droplets[index].setSize(this.gl.drawingBufferHeight * 0.15);
                     }
                 }
             }
         }
+    },
 
-
+    distanceCheck : function(){
+        console.log(this.gl.drawingBufferHeight * 0.1);
+        return this.bucket.distanceFromDrop(this.droplets[this.leader]) <= this.gl.drawingBufferHeight * 0.1;
     },
 
     drawScene : function(){
@@ -85,4 +84,6 @@ Game = {
         }
         this.bucket.draw(this.gl);
     }
+
+
 };
