@@ -2,31 +2,31 @@ window.TO_DEG = 180 / Math.PI;
 
 var time = Date.now();
 
-var targets = [];
-
+var targets = [5];
+var repsToDo = 2;
+var fingeresSelected = ["index"];
+var selectedHand = 'right';
+var record = [];
+var recording = false;
+var seq;
 var measurement = function(hand,fingers){
 
-    var angles = [];
+    let angles = [];
 
-    for(let fingerGap = 0; fingerGap < fingers; fingerGap++){
+    for(let fingerGap = 0; fingerGap < fingers.length; fingerGap++){
         let firstFinger, secondFinger;
-        switch (fingers[fingerGap]){
-            case "thumb":
-                firstFinger = hand.thumb.proximal.direction();
-                secondFinger = hand.indexFinger.proximal.direction();
-                break;
-            case "index":
-                firstFinger = hand.indexFinger.proximal.direction();
-                secondFinger = hand.middleFinger.proximal.direction();
-                break;
-            case "middle":
-                firstFinger =  hand.middleFinger.proximal.direction();
-                secondFinger = hand.ringFinger.proximal.direction();
-                break;
-            case "ring":
-                firstFinger = hand.ringFinger.proximal.direction();
-                secondFinger = hand.pinky.proximal.direction();
-                break;
+        if (fingers[fingerGap] === "thumb") {
+            firstFinger = hand.thumb.proximal.direction();
+            secondFinger = hand.indexFinger.proximal.direction();
+        } else if (fingers[fingerGap] === "index") {
+            firstFinger = hand.indexFinger.proximal.direction();
+            secondFinger = hand.middleFinger.proximal.direction();
+        } else if (fingers[fingerGap] === "middle") {
+            firstFinger = hand.middleFinger.proximal.direction();
+            secondFinger = hand.ringFinger.proximal.direction();
+        } else if (fingers[fingerGap] === "ring") {
+            firstFinger = hand.ringFinger.proximal.direction();
+            secondFinger = hand.pinky.proximal.direction();
         }
 
         var dotProduct = vec3.dot(firstFinger, secondFinger);
@@ -38,8 +38,7 @@ var measurement = function(hand,fingers){
         if (dir < 0) {
             angle *= -1;
         }
-
-        angles.push((angle * TO_DEG).toPrecision(4) * 100);
+        angles[fingerGap]=(angle * TO_DEG).toPrecision(2);
     }
 
     return angles;
@@ -52,56 +51,82 @@ var targetMeet = function(angles, targets){
             targetMet++;
         }
     }
-    return (targetMet/targets);
+    return (targetMet/targets.length);// * 100;
 };
-
-var selectedHand = 'right';
 
 Leap.loop({background:false, frameEventName:"animationFrame"},function (frame){
 
-    if(!Game.isPaused()){
-        if(frame.hands.length == 0){
-            Game.pause();
-        }else if(frame.hands.length == 1 && frame.hands[0].type != selectedHand){
-            Game.pause();
-        }else{
-            for (let handIndex = 0, numberOfHands = frame.hands.length; handIndex < numberOfHands; handIndex++){
-                var hand = frame.hands[handIndex];
+    if(Game.isPlayable()){
+        if (!Game.isPaused() && !Game.isCompleted()) {
+            if (frame.hands.length == 0) {
+                Game.pause();
+            } else if (frame.hands.length == 1 && frame.hands[0].type != selectedHand) {
+                Game.pause();
+            } else {
+                for (let handIndex = 0, numberOfHands = frame.hands.length; handIndex < numberOfHands; handIndex++) {
 
-                if(hand.type==selectedHand){
-                    let angles = measurement(hand,["index"]);
-                    console.log(angles);
+                    let hand = frame.hands[handIndex];
 
-                    Game.separateLid(targetMeet(angles,targets));
+                    if (hand.type == selectedHand) {
 
-                    var t1 = Date.now();
-                    var theta = (t1 - time) * 0.001;
-                    time = t1;
-                    Game.tick(theta);
-                    Game.drawScene();
+                        let angles = measurement(hand, fingeresSelected);
+
+                        Game.separateLid(targetMeet(angles, targets));
+
+                        let t1 = Date.now();
+                        let theta = (t1 - time) / 0.001;
+                        time = t1;
+                        seq  = Game.tick(1);
+                        Game.drawScene();
+
+                        if (Game.distanceCheck()) {
+                            record.push(angles);
+                            recording = true;
+                        } else if (recording) {
+                            Game.processTracking(repsToDo, seq, record);
+                            record = [];
+                            recording = false;
+                        }
+                    }
                 }
             }
-        }
-    }
-    if(Game.isPaused()){
-        for (let handIndex = 0, numberOfHands = frame.hands.length; handIndex < numberOfHands; handIndex++) {
+        }else if(Game.isPaused()){
+            for (let handIndex = 0, numberOfHands = frame.hands.length; handIndex < numberOfHands; handIndex++) {
 
-            var hand = frame.hands[handIndex];
+                let hand = frame.hands[handIndex];
 
-            if(hand.type==selectedHand){
+                if (hand.type == selectedHand) {
 
-                Game.resume();
-                let angles = measurement(hand,["index"]);
-                console.log(angles);
+                    Game.resume();
 
-                Game.separateLid(targetMeet(angles,targets));
+                    let angles = measurement(hand, fingeresSelected);
 
-                var t1 = Date.now();
-                var theta = 1 * 0.001;
-                time = t1;
-                Game.tick(theta);
-                Game.drawScene();
+                    Game.separateLid(targetMeet(angles, targets));
+
+                    let t1 = Date.now();
+                    let theta = 0.001;
+                    time = t1;
+                    seq  = Game.tick(1);
+                    Game.drawScene();
+
+                    if (Game.distanceCheck()) {
+                        record.push(angles);
+                        recording = true;
+                    } else if (recording) {
+                        Game.processTracking(repsToDo, seq, record);
+                        record = [];
+                        recording = false;
+                    }
+                }
             }
+        }else if(Game.isCompleted()){
+            if (recording) {
+                Game.processTracking(repsToDo, seq, record);
+                record = [];
+                recording = false;
+                Game.tick(1);
+            }
+
         }
     }
 });
