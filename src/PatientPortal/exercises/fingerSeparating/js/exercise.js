@@ -2,16 +2,27 @@ window.TO_DEG = 180 / Math.PI;
 
 var time = Date.now();
 
-var targets = [5];
-var repsToDo = 2;
+var targets = {index : 5};
+var repsToDo = 1;
 var fingeresSelected = ["index"];
 var selectedHand = 'right';
-var record = [];
+var record = {};
 var recording = false;
 var seq;
+
+var resetRecord = function(){
+    for(let index = 0; index < fingeresSelected.length; index++){
+        record[fingeresSelected[index]] = [];
+    }
+};
+
+(function () {
+    resetRecord();
+})();
+
 var measurement = function(hand,fingers){
 
-    let angles = [];
+    let angles = {};
 
     for(let fingerGap = 0; fingerGap < fingers.length; fingerGap++){
         let firstFinger, secondFinger;
@@ -38,20 +49,22 @@ var measurement = function(hand,fingers){
         if (dir < 0) {
             angle *= -1;
         }
-        angles[fingerGap]=(angle * TO_DEG).toPrecision(2);
+        angles[fingers[fingerGap]]=(angle * TO_DEG).toPrecision(2);
     }
-
     return angles;
 };
 
 var targetMeet = function(angles, targets){
     let targetMet = 0;
-    for (let i =0; i<angles.length; i++){
-        if(angles[i] >= targets[i]){
+
+    let fingers = Object.keys(angles);
+
+    for (let finger of fingers){
+        if(angles[finger] >= targets[finger]){
             targetMet++;
         }
     }
-    return (targetMet/targets.length);// * 100;
+    return (targetMet/fingers.length);// * 100;
 };
 
 Leap.loop({background:false, frameEventName:"animationFrame"},function (frame){
@@ -79,12 +92,14 @@ Leap.loop({background:false, frameEventName:"animationFrame"},function (frame){
                         seq  = Game.tick(1);
                         Game.drawScene();
 
+
                         if (Game.distanceCheck()) {
-                            record.push(angles);
-                            recording = true;
+                            for(let index = 0; index < fingeresSelected.length; index++) {
+                                record[fingeresSelected[index]].push(angles[fingeresSelected[index]]);
+                            }recording = true;
                         } else if (recording) {
                             Game.processTracking(repsToDo, seq, record);
-                            record = [];
+                            resetRecord();
                             recording = false;
                         }
                     }
@@ -110,11 +125,12 @@ Leap.loop({background:false, frameEventName:"animationFrame"},function (frame){
                     Game.drawScene();
 
                     if (Game.distanceCheck()) {
-                        record.push(angles);
-                        recording = true;
+                        for(let index = 0; index < fingeresSelected.length; index++) {
+                            record[fingeresSelected[index]].push(angles[fingeresSelected[index]]);
+                        }recording = true;
                     } else if (recording) {
                         Game.processTracking(repsToDo, seq, record);
-                        record = [];
+                        resetRecord();
                         recording = false;
                     }
                 }

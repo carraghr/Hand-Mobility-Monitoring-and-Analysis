@@ -36,12 +36,13 @@ Game = {
 
         var temp = { record : { rep : repCount, sequence: sequencePosition, angles : recordings }, start : start, end : end };
         this.webworker.postMessage(temp);
+
+
     },
 
     init : function(){
-        
         this.repsDone = 1;
-        this.sequence = 5;
+        this.sequence = 2;
         this.score = 0;
 
         this.webworker = new Worker('../../fingerSeparating/js/dataProcessing.js');
@@ -57,7 +58,7 @@ Game = {
                 str = json + ','
             }
 
-            document.getElementById( 'json' ).insertAdjacentHTML( 'beforeend', str );
+            document.getElementById('json').insertAdjacentHTML( 'beforeend', str );
 
             if (e.data.end ===true){
                 let jsonString = document.getElementById('json').innerHTML;
@@ -83,7 +84,7 @@ Game = {
         this.bucket = new Bucket();
         this.bucket.setSize(this.gl.drawingBufferWidth * 0.1, this.gl.drawingBufferHeight * 0.15);
         //this.bucket.setDefaultPosition(this.gl.drawingBufferWidth/2, this.gl.drawingBufferHeight * 0.075);
-        this.bucket.create(this.gl.drawingBufferWidth/2, this.gl.drawingBufferHeight * 0.075 ,4)
+        this.bucket.create(this.gl.drawingBufferWidth/2, this.gl.drawingBufferHeight * 0.075 ,4);
 
         this.droplets = [];
         this.leader = 0;
@@ -117,7 +118,7 @@ Game = {
         let miss = this.bucket.dropLidCollision(this.droplets[this.leader]);
         let goal = this.bucket.dropContentCollision(this.droplets[this.leader]);
         if(miss || goal){
-            this.leader = (this.leader + 1) % 5;
+            this.leader = (this.leader + 1) % this.sequence;
             if(this.leader == 0){
                 this.repsDone++;
                 if(this.repsDone <= repsToDo){

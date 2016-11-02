@@ -41,11 +41,21 @@ var medianOfAngles = function(angles) {
 
 self.addEventListener('message', function (e) {
 
-    let data = e.data.record.angles;
-    var mean = meanOfAngles(data);
-    var min = minOfAngles(data);
-    var max = maxOfAngles(data);
-    var median = medianOfAngles(data);
+    let returnObject = {start : e.data.start, end : e.data.end };
+    let record = [];
 
-    self.postMessage({record : { rep : ""+e.data.record.rep, sequence : ""+e.data.record.sequence, minimum : ""+min, avg:""+ mean, maximum : ""+max, median : ""+median} , start : e.data.start, end : e.data.end });
+    let data = e.data.record.angles; // objects of fingers filled with array of angles.
+    let keys = Object.keys(data);
+
+    for(let index = 0; index < keys.length; index++){
+        let angles = data[keys[index]];
+        let mean = meanOfAngles(angles);
+        let min = minOfAngles(angles);
+        let max = maxOfAngles(angles);
+        let median = medianOfAngles(angles);
+        let tempObject = {rep : ""+e.data.record.rep, sequence : ""+e.data.record.sequence, finger: ""+keys[index], minimum : ""+min, avg:""+mean, maximum : ""+max, median : ""+median};
+        record.push(tempObject);
+    }
+    returnObject.record = record;
+    self.postMessage(returnObject);
 });
