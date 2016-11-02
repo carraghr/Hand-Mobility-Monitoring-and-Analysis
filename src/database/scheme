@@ -9,14 +9,15 @@ create table CareProvider(
   Pass VARCHAR(13) null,
   Salt BLOB(10) NULL,
 
-  primary key(StaffID)
+  primary key(StaffID),
+  UNIQUE (UserName)
 );
 
 create table Supervisor(
   SID varchar(10) not null,
   SupID varchar(10) not null,
 
-  primary key(SID),
+  primary key(SID,SupID),
   constraint `CareProviderIDfk_1`
   foreign key (SID)
   references CareProvider(StaffID)
@@ -33,5 +34,27 @@ create table Patient(
   Pass VARCHAR(13) null,
   Salt BLOB(10) NULL,
 
-  primary key(PatientID)
+  primary key(PatientID),
+  constraint `PatientCareProviderFK_1`
+  foreign key (CPID)
+  references CareProvider(StaffID),
+  UNIQUE (UserName)
 );
+
+create table FingerSeparationExercise(
+  PID varchar(10) not null,
+  DOB date not null,
+  Repetition int not null,
+  Sequence int not null,
+  FingerGap VARCHAR(6) not NULL ,
+  Minimum DECIMAL(2,2) not NULL,
+  Mean DECIMAL(2,2) not NULL,
+  Median DECIMAL(2,2) not NULL,
+  Maximum DECIMAL(2,2) not NULL,
+
+  primary key(PID, DOB),
+
+  constraint `PatientIDfk_1`
+  foreign key (PID)
+  references Patient(PatientID)
+  );
