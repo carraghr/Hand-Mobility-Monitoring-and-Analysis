@@ -1,16 +1,4 @@
-var time;
 Main = {
-
-    render : function(){
-        var t1 = Date.now();
-        var theta = (t1 - time);
-        time = t1;
-        Game.tick(theta);
-        if(!Game.distanceCheck()) {
-            Game.drawScene();
-            window.requestAnimationFrame(Main.render);
-        }
-    },
 
     init : function(){
 
@@ -33,8 +21,8 @@ Main = {
         this.glPolygonProgram = ProgramUtils.initProgram(this.gl, Shaders.polygonVertexShaderCode.join('\n'), Shaders.polygonFragmentShaderCode.join('\n'));
 
         _.extend(this.glPolygonProgram,{positionLoc : this.gl.getAttribLocation(this.glPolygonProgram, "vertPosition"),
-                                        colorLoc : this.gl.getAttribLocation(this.glPolygonProgram, "color"),
-                                        u_resolution : this.gl.getUniformLocation(this.glPolygonProgram, "u_resolution")});
+            colorLoc : this.gl.getAttribLocation(this.glPolygonProgram, "color"),
+            u_resolution : this.gl.getUniformLocation(this.glPolygonProgram, "u_resolution")});
 
         this.glCircleProgram = ProgramUtils.initProgram(this.gl, Shaders.circleVertexShaderCode.join('\n'), Shaders.circleFragmentShaderCode.join('\n'));
 
@@ -46,7 +34,6 @@ Main = {
             backgroundColorLoc : this.gl.getUniformLocation(this.glCircleProgram, "background")});
 
         Game.init();
-        time = Date.now();
-        window.requestAnimationFrame(Main.render);
+        Game.drawScene();
     }
 };
