@@ -26,42 +26,46 @@ Drop = function(){
         },
 
         tick : function(theta) {
-            drop.moveDown(theta * 0.05);
+            drop.moveDown(theta * 1);
         },
 
         draw : function(gl,ratio) {
-            drop.draw(gl,ratio)
+            drop.draw(gl,ratio);
         }
-    }
+    };
 };
 
 Bucket = function(){
 
     var leftSide = new Rectangle();
     var rightSide = new Rectangle();
-    var contents = new Rectangle();
+    var content = new Rectangle();
+    var contents = [];
     var bottom = new Rectangle();
     var rightLid = new Rectangle();
     var leftLid = new Rectangle();
 
-    var defaultPosition = [0, 0, 0];
+    var defaultPosition = {x: 0, y:0};
 
     var width = 0.15;
     var height = 0.25;
-    var center = [0, 0];
-    var depth = 1;
+    var center = {x:0,y:0};
 
     return{
 
-       distanceFromDrop : function(drop){
-            let bottomPoint = [center[0], center[1] + (height)];
+        distanceFromDrop : function(drop){
+            let bottomPoint = [center.x, center.y + (height)];
             let dropCenter = drop.getCenter();
-            let topPoint = [dropCenter[0], dropCenter[1] - (drop.getSize())];
+            let topPoint = [dropCenter.x, dropCenter.y - (drop.getSize())];
             return Math.sqrt(Math.pow( Math.abs(bottomPoint[0] - topPoint[0]) , 2) + Math.pow(Math.abs(bottomPoint[1]-topPoint[1]), 2));
-       },
+        },
+
+        dropContentCollision : function(circle) {
+            return leftLid.circleCollision(circle)||rightLid.circleCollision(circle);
+        },
 
         dropLidCollision : function(circle) {
-            return leftLid.circleCollision(circle)||rightLid.circleCollision(circle);
+            return content.circleCollision(circle);
         },
 
         dropLeftLidCollision : function (circle) {
@@ -78,37 +82,46 @@ Bucket = function(){
             return [leftLid,rightLid];
         },
 
-        setDefaultPosition : function (x, y, z){
+        setDefaultPosition : function (x, y){
 
+            defaultPosition.x = x;
+            defaultPosition.y = y;
 
-            defaultPosition = [x, y, z];
+            center.x = x;
+            center.y = y;
 
-            center[0] = x;
-            center[1] = y;
-
-            contents.setDefaultPosition(center[0], center[1] - (height * 2 )*0.07, depth);
-            contents.setSize((width * 2) * 0.90, (height * 2 ) * 0.83);
-
-            leftSide.setDefaultPosition(center[0] + (width * 0.95), center[1],depth);
+            leftSide.setDefaultPosition(center.x + (width * 0.95), center.y);
             leftSide.setSize((width * 2) * 0.05, (height * 2 ) * 0.9);
 
-            rightSide.setDefaultPosition(center[0] - (width * 0.95), center[1],depth);
+            rightSide.setDefaultPosition(center.x - (width * 0.95), center.y);
             rightSide.setSize((width * 2) * 0.05, (height * 2 ) * 0.9);
 
-            bottom.setDefaultPosition(center[0], center[1] - ((height) * 0.95),depth );
+            bottom.setDefaultPosition(center.x, center.y - ((height) * 0.95));
             bottom.setSize( (width * 2), (height * 2 ) * 0.05);
 
-            leftLid.setDefaultPosition(center[0] - width/2, center[1] + ((height) * 0.95) ,depth);
+            leftLid.setDefaultPosition(center.x - width/2, center.y + ((height) * 0.95));
             leftLid.setSize(width, (height * 2 ) * 0.05);
 
-            rightLid.setDefaultPosition( center[0] + (width/2) , center[1] + ((height) * 0.95),depth);
+            rightLid.setDefaultPosition( center.x + (width/2) , center.y + ((height) * 0.95));
             rightLid.setSize(width , (height * 2 ) * 0.05);
+
+            content.setDefaultPosition( center.x, center.y - ((height * 2 )*0.07));
+            content.setSize((width * 2) * 0.90 , (height * 2 ) * 0.83);
 
         },
 
+        setContentLevels : function(numberOfLevels){
+
+        },
+
+        create : function(x, y, levels){
+            this.setDefaultPosition(x,y);
+            this.setContentLevels(levels);
+        },
+
         setCenter : function(x, y){
-            center[0] = x;
-            center[1] = y;
+            center.x = x;
+            center.y = y;
         },
 
         setSize : function(w, h){
@@ -119,22 +132,19 @@ Bucket = function(){
         separateLids : function (distance){
 
             //distance is 0 to 100 percent /100
-            var distanceEqualApart = distance * ( (width * 2) * 0.90 )/2;
+            let distanceEqualApart = distance * ( (width * 2) * 0.90 )/2;
 
-            var defaultPosition = rightLid.getDefaultPosition();
-            var setPosition = rightLid.getCenter();
-            rightLid.setCenter(defaultPosition[0] + distanceEqualApart, setPosition[1]);
+            let defaultLidPosition = rightLid.getDefaultPosition();
+            rightLid.setCenter(defaultLidPosition.x + distanceEqualApart, defaultLidPosition.y);
 
-            defaultPosition = leftLid.getDefaultPosition();
-            setPosition = leftLid.getCenter();
-            leftLid.setCenter(defaultPosition[0] - distanceEqualApart, setPosition[1]);
+            defaultLidPosition = leftLid.getDefaultPosition();
+            leftLid.setCenter(defaultLidPosition.x - distanceEqualApart, defaultLidPosition.y);
         },
 
         draw : function(gl){
             leftSide.draw(gl);
             rightSide.draw(gl);
-            contents.draw(gl);
-
+            content.draw(gl);
             rightLid.draw(gl);
             leftLid.draw(gl);
             bottom.draw(gl);
@@ -147,7 +157,7 @@ Circle = function(){
 
     var program = Main.glCircleProgram;
 
-    var center = [0,0];
+    var center = {x:0,y:0};
     var radius = 1;
     var colorOfCircle = [];
     var backgroundColor = [];
@@ -166,22 +176,22 @@ Circle = function(){
             defaultPosition[0] = x;
             defaultPosition[1] = y;
 
-            center[0] = x;
-            center[1] = y;
+            center.x = x;
+            center.y = y;
 
             hasChangedLocation = true;
         },
 
         restoreDefaultPosition : function (){
-            center[0] = defaultPosition[0];
-            center[1] = defaultPosition[1];
+            center.x = defaultPosition[0];
+            center.y = defaultPosition[1];
             hasChangedLocation = true;
         },
 
         setCenter : function (x, y) {
 
-            center[0] = x;
-            center[1] = y;
+            center.x = x;
+            center.y = y;
 
             hasChangedLocation = true;
         },
@@ -189,7 +199,6 @@ Circle = function(){
         getCenter : function(){
             return center;
         },
-
 
         setSize : function(size){
             radius = size/2;
@@ -201,19 +210,19 @@ Circle = function(){
         },
 
         moveRight : function(space){
-            center[0] += space;
+            center.x += space;
         },
 
         moveLeft : function(space){
-            center[0] -= space;
+            center.x -= space;
         },
 
         moveUp : function(space){
-            center[1] += space;
+            center.y += space;
         },
 
         moveDown : function(space){
-            center[1] -= space;
+            center.y -= space;
         },
 
         draw : function(gl){
@@ -222,12 +231,12 @@ Circle = function(){
             gl.uniform2f(program.u_resolution, gl.drawingBufferWidth, gl.drawingBufferHeight);
 
 
-            var data = [center[0] - radius, center[1] - radius,
-                        center[0], center[1], radius,
-                        center[0] + (1 + Math.sqrt(2)) * radius, center[1] - radius,
-                        center[0], center[1], radius,
-                        center[0] - radius, center[1] + (1 + Math.sqrt(2)) * radius,
-                        center[0], center[1], radius];
+            var data = [center.x - radius, center.y - radius,
+                center.x, center.y, radius,
+                center.x + (1 + Math.sqrt(2)) * radius, center.y - radius,
+                center.x, center.y, radius,
+                center.x - radius, center.y + (1 + Math.sqrt(2)) * radius,
+                center.x, center.y, radius];
 
             var vertexDataTyped = new Float32Array(data);
 
@@ -261,33 +270,33 @@ Rectangle = function(){
 
     var height = 0.5;
     var width = 1;
-    var center = [0,0];
+    var center = {x:0,y:0};
 
-    var vertices = [center[0] - width, center[1] + height,
-                    center[0] - width, center[1] - height,
-                    center[0] + width, center[1] - height,
-                    center[0] + width, center[1] + height];
+    var vertices = [center.x - width, center.y + height,
+        center.x - width, center.y - height,
+        center.x + width, center.y - height,
+        center.x + width, center.y + height];
 
     var colors  = [0.3,  0.0,  0.0,
         0,  1.0,  0.0,
         0,  0.0,  1.0,
         1,  0.0,  0.0];
 
-    var defaultPosition = [0, 0, 0];
+    var defaultPosition = { x: 0, y:0};
     var hasChangedLocation = false, hasChangedSize = false;
 
     return{
 
         circleCollision : function (circle) {
 
-            var circleCenter = circle.getCenter();
-            var circleRadius = circle.getSize()/2;
+            let circleCenter = circle.getCenter();
+            let circleRadius = circle.getSize()/2;
 
             // check circle position inside the rectangle quadrant
             //The vertical and horizontal distances between the circles center and the rectangles center
-            var distanceBetween = {
-                vertical: Math.abs(circleCenter[0] - center[0]),
-                horizontal: Math.abs(circleCenter[1] - center[1])
+            let distanceBetween = {
+                vertical: Math.abs(circleCenter.x - center.x),
+                horizontal: Math.abs(circleCenter.y - center.y)
             };
 
             if((distanceBetween.vertical > (width + circleRadius)) || distanceBetween.horizontal > (height + circleRadius)){
@@ -295,15 +304,15 @@ Rectangle = function(){
             }else if ((distanceBetween.vertical <= (width)) || (distanceBetween.horizontal <= height)){
                 return true;
             }else{
-                var oppositeSide = distanceBetween.vertical - width;
-                var AdjacentSide = distanceBetween.horizontal - height;
+                let oppositeSide = distanceBetween.vertical - width;
+                let AdjacentSide = distanceBetween.horizontal - height;
                 return oppositeSide * oppositeSide + AdjacentSide * AdjacentSide <= circleRadius * circleRadius;
             }
         },
 
         setCenter : function(x, y){
-            center[0] = x;
-            center[1] = y;
+            center.x = x;
+            center.y = y;
         },
 
         getCenter : function(){
@@ -312,18 +321,18 @@ Rectangle = function(){
 
         setDefaultPosition : function (x, y) {
 
-            defaultPosition[0] = x;
-            defaultPosition[1] = y;
+            defaultPosition.x = x;
+            defaultPosition.y = y;
 
-            center[0] = x;
-            center[1] = y;
+            center.x = x;
+            center.y = y;
 
             hasChangedLocation = true;
         },
 
         restoreDefaultPosition : function (){
-            center[0] = defaultPosition[0];
-            center[1] = defaultPosition[1];
+            center.x = defaultPosition.x;
+            center.y = defaultPosition.y;
             hasChangedLocation = true;
         },
 
@@ -351,6 +360,10 @@ Rectangle = function(){
             hasChangedSize = true;
         },
 
+        getHeight: function(){
+            return height* 2;
+        },
+
         setColor : function(color){
             colors = _.flatten([color,color,color,color]);
         },
@@ -375,10 +388,10 @@ Rectangle = function(){
             var indices = [ 3, 2, 1, 3, 1, 0 ];
 
             if(hasChangedLocation || hasChangedSize){
-                vertices = [center[0] - width, center[1] + height,
-                            center[0] - width, center[1] - height,
-                            center[0] + width, center[1] - height,
-                            center[0] + width, center[1] + height];
+                vertices = [center.x - width, center.y + height,
+                    center.x - width, center.y - height,
+                    center.x + width, center.y - height,
+                    center.x + width, center.y + height];
             }
 
             gl.bindBuffer(gl.ARRAY_BUFFER, vertBuffer);
@@ -409,11 +422,11 @@ Square = function(){
 
     var program = Main.glPolygonProgram;
     var radius = 1;
-    var center = [0,0];
-    var vertices = [center[0] - radius, center[1] + radius,
-                    center[0] - radius, center[1] - radius,
-                    center[0] + radius, center[1] - radius,
-                    center[0] + radius, center[1] + radius];
+    var center = {x:0,y:0};
+    var vertices = [center.x - radius, center.y + radius,
+        center.x - radius, center.y - radius,
+        center.x + radius, center.y - radius,
+        center.x + radius, center.y + radius];
     var colors  = [0.3,  0.0,  0.0,
         0,  1.0,  0.0,
         0,  0.0,  1.0,
@@ -429,8 +442,8 @@ Square = function(){
         },
 
         setCenter : function(x, y){
-            center[0] = x;
-            center[1] = y;
+            center.x = x;
+            center.y = y;
         },
 
         setDefaultPosition : function (x, y) {
@@ -438,15 +451,15 @@ Square = function(){
             defaultPosition[0] = x;
             defaultPosition[1] = y;
 
-            center[0] = x;
-            center[1] = y;
+            center.x = x;
+            center.y = y;
 
             hasChangedLocation = true;
         },
 
         restoreDefaultPosition : function (){
-            center[0] = defaultPosition[0];
-            center[1] = defaultPosition[1];
+            center.x = defaultPosition[0];
+            center.y = defaultPosition[1];
 
             hasChangedLocation = true;
         },
@@ -485,10 +498,10 @@ Square = function(){
                 1, 0 ];
 
             if(hasChangedLocation || hasChangedSize){
-                vertices = [center[0] - radius, center[1] + radius,
-                            center[0] - radius, center[1] - radius,
-                            center[0] + radius, center[1] - radius,
-                            center[0] + radius, center[1] + radius];
+                vertices = [center.x - radius, center.y + radius,
+                    center.x - radius, center.y - radius,
+                    center.x + radius, center.y - radius,
+                    center.x + radius, center.y + radius];
             }
 
             gl.bindBuffer(gl.ARRAY_BUFFER, vertBuffer);
@@ -519,17 +532,17 @@ Triangle = function(){
 
     var program = Main.glPolygonProgram;
     var radius= 50;
-    var center = [400,400];
+    var center = {x : 400, y :400};
 
-    var vertices = [center[0] - radius, center[1] - radius,
-                    center[0] - radius, center[1] + (1 + Math.sqrt(2)) * radius,
-                    center[0] + (1 + Math.sqrt(2)) * radius, center[1] - radius];
+    var vertices = [center.x - radius, center.y - radius,
+        center.x - radius, center.y + (1 + Math.sqrt(2)) * radius,
+        center.x + (1 + Math.sqrt(2)) * radius, center.y - radius];
 
     var colors  = [ 1,  0.0,  0.0,
         0,  1.0,  0.0,
         0,  0.0,  1.0];
 
-    var defaultPosition = [0, 0];
+    var defaultPosition = {x:0, y: 0};
     var hasChangedLocation = false, hasChangedSize = false;
 
     return{
@@ -539,24 +552,24 @@ Triangle = function(){
         },
 
         setCenter : function(x, y){
-            center[0] = x;
-            center[1] = y;
+            center.x = x;
+            center.y = y;
         },
 
         setDefaultPosition : function (x, y) {
 
-            defaultPosition[0] = x;
-            defaultPosition[1] = y;
+            defaultPosition.x = x;
+            defaultPosition.y = y;
 
-            center[0] = x;
-            center[1] = y;
+            center.x = x;
+            center.y = y;
 
             hasChangedLocation = true;
         },
 
         restoreDefaultPosition : function (){
-            center[0] = defaultPosition[0];
-            center[1] = defaultPosition[1];
+            center.x = defaultPosition[0];
+            center.y = defaultPosition[1];
             hasChangedLocation = true;
         },
 
@@ -594,9 +607,9 @@ Triangle = function(){
             var colorBuffer = gl.createBuffer();
 
             if(hasChangedLocation || hasChangedSize){
-                vertices = [center[0] - radius, center[1] - radius,
-                            center[0] + (1 + Math.sqrt(2)) * radius, center[1] - radius,
-                            center[0] - radius, center[1] + (1 + Math.sqrt(2)) * radius];
+                vertices = [center.x - radius, center.y - radius,
+                    center.x + (1 + Math.sqrt(2)) * radius, center.y - radius,
+                    center.x - radius, center.y + (1 + Math.sqrt(2)) * radius];
             }
 
             gl.bindBuffer(gl.ARRAY_BUFFER, vertBuffer);
