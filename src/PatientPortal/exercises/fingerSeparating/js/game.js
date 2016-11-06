@@ -53,28 +53,37 @@ Game = {
             if(e.data.start === true){
                 str = '{ "exerciseRecord" : [' + json+ ',';
             }else if(e.data.end === true){
-                str = json + ']}'
+                let cookie = document.cookie.split('=');
+                str = json + '], "' + cookie[0] + '" : "' + cookie[1] +'" }';
             }else{
-                str = json + ','
+                str = json + ',';
             }
 
             document.getElementById('json').insertAdjacentHTML( 'beforeend', str );
 
             if (e.data.end ===true){
+
                 let jsonString = document.getElementById('json').innerHTML;
-                console.log(jsonString);
-                jsonString.replace(/\\n/g, "\\n")
-                    .replace(/\\'/g, "\\'")
-                    .replace(/\\"/g, '\\"')
-                    .replace(/\\&/g, "\\&")
-                    .replace(/\\r/g, "\\r")
-                    .replace(/\\t/g, "\\t")
-                    .replace(/\\b/g, "\\b")
-                    .replace(/\\f/g, "\\f");
-                let obj = JSON.parse(jsonString);
-                console.log(obj);
-
-
+                let request = new XMLHttpRequest();
+                let url = window.location.href;
+                let index = url.lastIndexOf('/');
+                url = url.substring(0,index) + '/submitData.php';
+                request.open("POST", url, true);
+                request.setRequestHeader("Content-type","application/json");
+                request.send(jsonString);
+                request.onreadystatechange = function(){
+                    if (request.readyState == 4 && request.status == 200){
+                        console.log(request.responseText);
+                        if(request.responseText == 1){
+                            console.log("dasfdsfadfdf");
+                            let redirect = window.location.href;
+                            let index2 = redirect.lastIndexOf('/exercises/fingerSeparating');
+                            redirect = redirect.substring(0,index2);
+                            console.log(redirect);
+                            window.location.href = redirect;
+                        }
+                    }
+                };
             }
         });
 
