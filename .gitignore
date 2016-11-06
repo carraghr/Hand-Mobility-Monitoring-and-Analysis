@@ -1,4 +1,2 @@
 *.xml
 *.iml
-src/PatientPortal/exercises/thrid party libs/underscore-min.js
-src/PatientPortal/exercises/thrid party libs/gl-matrix-min.js
