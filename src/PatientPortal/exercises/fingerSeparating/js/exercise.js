@@ -45,7 +45,8 @@ var measurement = function(hand,fingers){
 
         var crossInFingers = vec3.create();
         vec3.cross(crossInFingers,firstFinger,secondFinger);
-        var dir = Leap.vec3.dot(hand.palmNormal, crossInFingers);
+        var dir =vec3.create();
+        vec3.dot(dir,hand.palmNormal, crossInFingers);
         if (dir < 0) {
             angle *= -1;
         }
@@ -89,7 +90,7 @@ Leap.loop({background:false, frameEventName:"animationFrame"},function (frame){
                         let t1 = Date.now();
                         let theta = (t1 - time) / 0.001;
                         time = t1;
-                        seq  = Game.tick(1);
+                        seq  = Game.tick(theta);
                         Game.drawScene();
 
 
@@ -121,7 +122,7 @@ Leap.loop({background:false, frameEventName:"animationFrame"},function (frame){
                     let t1 = Date.now();
                     let theta = 0.001;
                     time = t1;
-                    seq  = Game.tick(1);
+                    seq  = Game.tick(theta);
                     Game.drawScene();
 
                     if (Game.distanceCheck()) {
