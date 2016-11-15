@@ -42,10 +42,12 @@ Game = {
 
     init : function(){
         this.repsDone = 1;
-        this.sequence = 2;
+        this.sequence = seqsToDo;
+        console.log(this.sequence);
+        console.log(seqsToDo);
         this.score = 0;
 
-        this.webworker = new Worker('../../fingerSeparating/js/dataProcessing.js');
+        this.webworker = new Worker('../../Finger Separating/js/dataProcessing.js');
         this.webworker.addEventListener('message',  function (e) {
 
             let str = "";
@@ -53,8 +55,20 @@ Game = {
             if(e.data.start === true){
                 str = '{ "exerciseRecord" : [' + json+ ',';
             }else if(e.data.end === true){
-                let cookie = document.cookie.split('=');
-                str = json + '], "' + cookie[0] + '" : "' + cookie[1] +'" }';
+                let cookie = document.cookie.split(';');
+                console.log(cookie);
+                str = json + ']';
+                for(let i = 0; i < cookie.length; i++){
+                    if(cookie[i].includes("PHPSESSID")){
+                        let value = cookie[i].substring(cookie[i].indexOf("=")).trim();
+                        str = str + ',"PHPSESSID" : "' + value +'"';
+                    }else if(cookie[i].includes("SelectedHand")){
+                        let value = cookie[i].substring(cookie[i].indexOf("=")).trim();
+                        str = str + ',"SelectedHand" : "' + value +'"';
+                    }
+                }
+                str = str + ' }';
+
             }else{
                 str = json + ',';
             }
@@ -75,18 +89,15 @@ Game = {
                     if (request.readyState == 4 && request.status == 200){
                         console.log(request.responseText);
                         if(request.responseText == 1){
-                            console.log("dasfdsfadfdf");
                             let redirect = window.location.href;
-                            let index2 = redirect.lastIndexOf('/exercises/fingerSeparating');
+                            let index2 = redirect.lastIndexOf('/exercises/Finger Separating');
                             redirect = redirect.substring(0,index2);
-                            console.log(redirect);
                             window.location.href = redirect;
                         }
                     }
                 };
             }
         });
-
 
         this.gl = Main.gl;
         this.speed = 1;
@@ -122,7 +133,12 @@ Game = {
     tick : function(theta){
         let lastPosition = this.leader;
         for(let index = this.leader; index < this.sequence; index++){
-            this.droplets[index].tick(theta);
+            if(theta > 1){
+                this.droplets[index].tick(1);
+            }else{
+                this.droplets[index].tick(theta);
+            }
+
         }
         let miss = this.bucket.dropLidCollision(this.droplets[this.leader]);
         let goal = this.bucket.dropContentCollision(this.droplets[this.leader]);

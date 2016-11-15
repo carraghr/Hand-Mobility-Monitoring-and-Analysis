@@ -1,7 +1,7 @@
 <?php
     # Script containing functionality of login process for a care provider.
 
-    function redirectUser($page = '../index.php'){
+    function redirectUser($page = '../../index.php'){
 
         $url = 'http://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF']);
 
@@ -50,17 +50,20 @@
 
         $hash = crypt($pass, $salt);
 
-        $query = "Select PatientID 
+        $patientQuery = "Select PatientID, NameFirst,NameLast 
                       from Patient 
                       where UserName = '$user' and Pass = '$hash'";
 
-        $queryResult = @mysqli_query($databaseConnection, $query) OR trigger_error($databaseConnection->error."[ $query]");
+        $patientQueryResult = @mysqli_query($databaseConnection, $patientQuery) OR trigger_error($databaseConnection->error."[ $patientQuery]");
 
-        if ($queryResult){
-            if(mysqli_num_rows($queryResult) == 1){
+
+
+
+        if ($patientQueryResult){
+            if(mysqli_num_rows($patientQueryResult) == 1 ){
 
                 //get record
-                $row = mysqli_fetch_array($queryResult,MYSQLI_ASSOC);
+                $row = mysqli_fetch_array($patientQueryResult,MYSQLI_ASSOC);
 
                 //return true and result
                 return array(true,$row);

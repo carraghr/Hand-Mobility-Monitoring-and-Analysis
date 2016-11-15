@@ -12,4 +12,3 @@
     }
 
     redirectUser();
-?>

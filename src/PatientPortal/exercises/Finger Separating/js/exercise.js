@@ -1,14 +1,10 @@
 window.TO_DEG = 180 / Math.PI;
 
 var time = Date.now();
-
-var targets = {index : 5};
-var repsToDo = 1;
-var fingeresSelected = ["index"];
-var selectedHand = 'right';
 var record = {};
 var recording = false;
 var seq;
+var fingeresSelected = Object.keys(targets);
 
 var resetRecord = function(){
     for(let index = 0; index < fingeresSelected.length; index++){

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en"  ng-app="portal" ng-cloak>
+<head>
+    <meta charset="UTF-8">
+    <title><?php echo $PageTitle;?></title>
+    <link rel="stylesheet" type="text/css" href="./assests/css/homePage.css">
+</head>
+<body ng-controller="exercises">
+<div class = "container">
+    <div class="header">
+        <img id="logo" src="./assests/imgs/logo.png">
+        <div id = "userInfo">
+            <p id = "WelcomeMessage">Welcome <?php echo $patientName?></p>
+            <p id = "Consultant">Consultant: <?php echo $consultantName?></p>
+        </div>
+        <div id="Logout">
+            <a href="./assests/php/logout.php"> log Out </a>
+        </div>
+    </div>
