@@ -177,3 +177,125 @@ gl_Position = vec4(((vertPosition/u_resolution) * 2.0  - 1.0) , 0, 1);
 ```
 
 For the shaders to be useable by the shapes I need to compile them with a gl context of a canvas to do this I used a Anonymous Object Literal return pattern to create a what is basic a class with static methods to create a program containing a link to both a vertext and fragment shader to be used by each of the shapes. Apart from the circle shape each shape uses the same polygon shaders.
+
+
+##FINGER SEPARATION EXERCISE
+To start on the exercises development I decided to go with the finger separation exercise as it seems to be the simplest out of the ones I decided on so far.
+
+###Shapes
+To start with the development I had to create two new shapes, bucket and drop.  These two shapes are more complex shapes then the ones mentioned in the blog post before this as they are created using the shapes mentioned in the post.
+
+The bucket shape like all shapes so far is created using the Module pattern. Bucket contains six rectangles that make up its structure. Two for the sides, one for the contents of the bucket, one for the bottom and two for lids. To create a bucket I used a set size for the height and width of each component of the bucket.
+
+The code above shows how  the area of a bucket is split between each component.
+```javascript
+leftSide.setDefaultPosition(center.x + (width * 0.95), center.y);
+leftSide.setSize((width * 2) * 0.05, (height * 2 ) * 0.9);
+
+rightSide.setDefaultPosition(center.x - (width * 0.95), center.y);
+rightSide.setSize((width * 2) * 0.05, (height * 2 ) * 0.9);
+
+bottom.setDefaultPosition(center.x, center.y - ((height) * 0.95));
+bottom.setSize( (width * 2), (height * 2 ) * 0.05);
+
+leftLid.setDefaultPosition(center.x - width/2, center.y + ((height) * 0.95));
+leftLid.setSize(width, (height * 2 ) * 0.05);
+
+rightLid.setDefaultPosition( center.x + (width/2) , center.y + ((height) * 0.95));
+rightLid.setSize(width , (height * 2 ) * 0.05);
+
+content.setDefaultPosition( center.x, center.y - ((height * 2 )*0.07));
+content.setSize((width * 2) * 0.90 , (height * 2 ) * 0.83);
+```
+The  game element of this exercise involves the dropping of a circle into the bucket with finger separating the lids of the bucket to allow for the entry of the drop. To do this I used the following code.
+
+```javascript
+let distanceEqualApart = distance * ( (width * 2) * 0.90 )/2;
+
+let defaultLidPosition = rightLid.getDefaultPosition();
+rightLid.setCenter(defaultLidPosition.x + distanceEqualApart, defaultLidPosition.y);
+
+defaultLidPosition = leftLid.getDefaultPosition();
+leftLid.setCenter(defaultLidPosition.x - distanceEqualApart, defaultLidPosition.y);
+```
+Where distance is a value between 0 and 1 resenting the percentage of targets meet by the user.
+
+To see if the drop has hit the buckets inside or lids I had to test for a collision between a circle and rectangle.
+```javascript
+dropContentCollision : function(circle) {
+    return leftLid.circleCollision(circle)||rightLid.circleCollision(circle);
+},
+
+dropLidCollision : function(circle) {
+    return content.circleCollision(circle);
+},
+```
+Both of these methods make use of the collision method added to the rectangle shape.
+```javascript
+circleCollision : function (circle) {
+    let circleCenter = circle.getCenter();
+    let circleRadius = circle.getSize()/2;
+
+    // check circle position inside the rectangle quadrant
+    //The vertical and horizontal distances between the circles center and the rectangles center
+    let distanceBetween = {
+        vertical: Math.abs(circleCenter.x - center.x),
+        horizontal: Math.abs(circleCenter.y - center.y)
+    };
+
+    if((distanceBetween.vertical > (width + circleRadius)) || distanceBetween.horizontal > (height + circleRadius)){
+        return false;
+    }else if ((distanceBetween.vertical <= (width)) || (distanceBetween.horizontal <= height)){
+        return true;
+    }else{
+        let oppositeSide = distanceBetween.vertical - width;
+        let AdjacentSide = distanceBetween.horizontal - height;
+        return oppositeSide * oppositeSide + AdjacentSide * AdjacentSide <= circleRadius * circleRadius;
+    }
+}
+```
+The code works by getting the distance between a circle and rectangle  vertically and horizontally and does two checks. The first sees if the width of the rectangle and circle is less then the vertically distance between the two shapes as well as sees if the height less then the horizontal distance. The second test is the same but to see if the distances are equal meaning they are touching or if there is an over lap on the either vertical or horizontal lines. The last check is to see if there is a collision in the corners of the rectangle.
+
+The drop shape is just a circle with a tick function been the main change in circle. The tick method is one that calls circles move down method with the distance to be moved by.
+
+###Flow of Control
+The exercise follows the following flow of control.
+
+The exercise web page loads all resources.  On page load of the body calls the function init of Main. This method sets up the WebGL program, set canvas size and compiles and creates the shader programs needed for shapes to be rendered out and inits the game by calling the init function in Game and renders out the first scene.
+
+Control is then passed from Game to the leaps loop for the leap controller.  This is done through the use of a game status that is checked to see if it is playable and if the game is either paused or completed. The leap loop goes through each time it has completed itself and the leap is connected and the page is been used (main focus/ program been used on screen).
+
+The loop goes through game status checks and then sees what hands are visible and depending on the result pauses the game or gets the angles been made by the separation of fingers from each other and updates the game scene to reflect the results and also ticks the game into it next frame. The loop passes the recorded results to a web working for processing. This loop continues till the game is complete which is when all reps are done by the user.
+
+Maths and Data Processing
+Both maths of calculating angles of movement of the hand and the processing of the data collected are large parts of the complexity of the project given that I don’t have much practical experience in applying linear algebra theory from paper to working live game.
+
+The first calcaumaltion I had to deal with was getting the angle between fingers, This was done first by looking into finding the angle between two vectors in 3D space. I found that the dot product can be used for this. Originally the following was used.
+```javascript
+var dotProduct = vec3.dot(firstFinger, secondFinger);
+var angle = Math.acos(dotProduct / (vec3.length(firstFinger) * vec3.length(secondFinger)));
+```
+However when testing this out I found that crossing the fingers would result in positive values. This was not the required result I was looking for as the game could be tricked into thinking that fingers are separated when they are instead crossed. To over come this I use the cross product of the first and second finger.  The with the result use the dot product between this result and the hands palm.
+```javascript
+var crossInFingers = vec3.create();
+vec3.cross(crossInFingers,firstFinger,secondFinger);
+var dir =vec3.create();
+vec3.dot(dir,hand.palmNormal, crossInFingers);
+if (dir < 0) {
+    angle *= -1;
+}
+```
+I then check if the drop is with in recoding range from the bucked and it is record the angle in a object to be processed later. One the drop has landed in or out of the bucket the recorded angles are passed to Game to be processed by a web worker. It passes the web worker a record of what rep and sequence it is in and the angles along with flags for ending and start of data processing.
+
+```javascript
+let start = (repCount === 1 &&  sequencePosition === 1);
+let end = (repCount === repsToDo &&  sequencePosition === this.sequence);
+
+var temp = { record : { rep : repCount, sequence: sequencePosition, angles : recordings }, start : start, end : end };
+this.webworker.postMessage(temp);
+```
+The web worker then processes this information and get the mean, median, maximum and minimum values found for each finger and post it back to Game to be placed in an invisible DOM element for storage. When the last post is recived the dom is converted to JSON to be passed to the server to be inputted to the database for the care provider to see and create report with.
+
+The databasae scheme has been changed to include this exercise and results from it.
+
+![alt text]( ./images/database-scheme-v2.png "Database Scheme")
