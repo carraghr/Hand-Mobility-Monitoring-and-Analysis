@@ -1,7 +1,7 @@
 <?php
     # Script containing functionallity of login process for a care provider.
 
-    function redirectUser($page = 'LoginComplete.php'){
+    function redirectUser($page = '../../index.php'){
 
         $url = 'http://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF']);
 

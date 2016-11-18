@@ -13,4 +13,3 @@
     include('./assests/html/header.html');
     include('./assests/html/content.html');
     include('./assests/html/footer.html');
-?>

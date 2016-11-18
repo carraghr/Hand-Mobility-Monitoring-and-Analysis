@@ -1,7 +1,5 @@
 <?php
 
-    $PageTitle = 'Login to System';
-
     /*Check for form submission*/
     if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 
