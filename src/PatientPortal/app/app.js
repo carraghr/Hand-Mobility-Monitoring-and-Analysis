@@ -27,21 +27,46 @@ portal.controller('exercises',function exercises($scope,$http,$location,$cookies
 
 	$http(request).then(function (response){
 		$scope.status = response.status;
-		console.log(response.data);
 		$scope.data = response.data;
-
-	},function(response){
-		console.log(response.status);
-	});
+	},function(response){});
 
 	$scope.selectedExercise = function(hand,name){
 		$cookies.put('SelectedHand',hand);
 		$cookies.put('SelectedExercise',name);
 		window.location.href = ('exercises/'+name+'/php/loadExercise.php');
-
 	}
 });
 
-portal.controller('comments',function ($scope,$http,$location){
-	$scope.message = "Hello World";
+portal.controller('comments',function ($scope,$http,$location,$cookies,$httpParamSerializerJQLike,$route){
+
+	var location = $location.absUrl().substring(0,$location.absUrl().lastIndexOf("PatientPortal/")+14);
+
+	var request = {
+		method: 'POST',
+		url: location + '/assests/php/feedbackLookUp.php',
+		headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+		data: $httpParamSerializerJQLike({ 'PHPSESSID' : $cookies.get('PHPSESSID')})
+	};
+
+	$http(request).then(function (response){
+		$scope.status = response.status;
+		$scope.data = response.data;
+	}),function(response){};
+
+	$scope.postComment = function(){
+		console.log("sadasd");
+		let location = $location.absUrl().substring(0,$location.absUrl().lastIndexOf("PatientPortal/")+14);
+		let postData = {
+				method: 'POST',
+				url: location + '/assests/php/submitComment.php',
+				headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+				data: $httpParamSerializerJQLike({'PHPSESSID': $cookies.get('PHPSESSID'), 'Comment' : $scope.comment})
+			};
+
+		$http(postData).then( function(response){
+			$scope.comment = "";
+			console.log(response);
+			$route.reload();
+		}, function(response){console.log(response);console.log("asd");});
+	}
 });
