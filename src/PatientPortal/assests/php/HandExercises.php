@@ -22,10 +22,6 @@
             $i->left = $this->left;
             $i->both = $this->both;
 
-            //array('right'=>$this->right, )
-
             return json_encode($i);
         }
-
-
     }
