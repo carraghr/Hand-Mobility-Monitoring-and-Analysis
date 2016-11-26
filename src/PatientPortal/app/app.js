@@ -1,4 +1,4 @@
-var portal = angular.module('portal',['ngCookies','ngRoute']);
+var portal = angular.module('portal',['ngCookies','ngRoute','ngAria']);
 portal.config(function ($routeProvider){
 	$routeProvider
 		.when('/',{
@@ -14,6 +14,7 @@ portal.config(function ($routeProvider){
 			controller : 'comments'
 		})
 });
+
 portal.controller('exercises',function exercises($scope,$http,$location,$cookies,$httpParamSerializerJQLike){
 
 	var location = $location.absUrl().substring(0,$location.absUrl().lastIndexOf("PatientPortal/")+14);
@@ -35,6 +36,11 @@ portal.controller('exercises',function exercises($scope,$http,$location,$cookies
 		$cookies.put('SelectedExercise',name);
 		window.location.href = ('exercises/'+name+'/php/loadExercise.php');
 	}
+
+	$scope.isActive = function (viewLocation) {
+		console.log($location.path());
+		return viewLocation === $location.path() || ($location.path() === "/" && viewLocation==="/exercise");
+	};
 });
 
 portal.controller('comments',function ($scope,$http,$location,$cookies,$httpParamSerializerJQLike,$route){
@@ -54,19 +60,28 @@ portal.controller('comments',function ($scope,$http,$location,$cookies,$httpPara
 	}),function(response){};
 
 	$scope.postComment = function(){
-		console.log("sadasd");
-		let location = $location.absUrl().substring(0,$location.absUrl().lastIndexOf("PatientPortal/")+14);
-		let postData = {
+		if($scope.comment){
+			console.log($scope.comment);
+			let location = $location.absUrl().substring(0, $location.absUrl().lastIndexOf("PatientPortal/") + 14);
+			let postData = {
 				method: 'POST',
 				url: location + '/assests/php/submitComment.php',
 				headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-				data: $httpParamSerializerJQLike({'PHPSESSID': $cookies.get('PHPSESSID'), 'Comment' : $scope.comment})
+				data: $httpParamSerializerJQLike({'PHPSESSID': $cookies.get('PHPSESSID'), 'Comment': $scope.comment})
 			};
 
-		$http(postData).then( function(response){
-			$scope.comment = "";
-			console.log(response);
-			$route.reload();
-		}, function(response){console.log(response);console.log("asd");});
-	}
+			$http(postData).then(function (response){
+				$scope.comment = "";
+				$route.reload();
+			}, function (response){
+				console.log(response);
+			});
+		}else{
+
+		}
+	};
+
+	$scope.isActive = function (viewLocation) {
+		return (viewLocation === $location.path());
+	};
 });
