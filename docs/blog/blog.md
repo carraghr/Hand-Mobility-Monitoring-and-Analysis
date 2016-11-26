@@ -299,3 +299,42 @@ The web worker then processes this information and get the mean, median, maximum
 The databasae scheme has been changed to include this exercise and results from it.
 
 ![alt text]( ./images/database-scheme-v2.png "Database Scheme")
+
+
+##PATIENT UI
+
+The user interface for the patient has to be build to be usable by people with difficulty working with their hands. As a result the patient portal becomes one of the most important areas of the project for its design in its user interface.
+
+For the patient portal I first used draw.io to create a layout prototype to see what was the best way to layout the main functions given to the user through the portal.
+
+![alt text]( ./images/patient UI.png "Database Scheme")
+
+In the above design I have a simple header for the page with a logo, welcome message and logout option for the portal, as well as some basic secondary information to the user such as the consultant they are under and the time of their login to the portal page.
+
+The main content of the page contains the option between Exercises, where the user is given a list of options as to what exercise they wish to take part in, and Feedback were users can leave feedback as to how they are feeling and getting on with the exercises.
+
+To implement this design I looked into using Angular however with the projects current setup both development environment with PHPstorm  and the type of Server I’m going to be using setting up Angular to work was not possible without spending a lot of time on it without getting any development done first. For this reason I went with AngularJS instead.
+
+To create the basic implementation of the above in angularjs I created portal module with two controllers exercise and comments. Both these controllers are connected to a template html file through the use of routeProvider that is used to update the view when a user selects either the exercise tab or feedback. Using ng-view I can switch bettween the two with out having to reload the whole site again. The two  controller connect to the php back end to get data from the mysql database through the use of a http call. Passing a PHPSESSID to only get relevant information from the server about them.
+
+Through the use of this I have created a UI based on the prototype that allows for only the selected exercises by a care provider to be shown to the patient.  The same is true with comments/feedback.
+
+File structures have been changed to accommodate angularjs and its common practices and to structure files to that a pattern for file names could be used to populate exercise view easily . As well as this I had to make changed to the database scheme to accommodate exercise data submission with which hand was used.
+
+##CARE PROVIDER UI
+
+With a simple patient UI layout done  I started focusing on the care provider portal interface. I have so far created two samples of what it could look like based on my design for the patient portal interface.
+
+Below is an example of the portal page with a patient been viewed by a care provider. In this sample they are looking at a patients exercise set that they must complete as part of there recovery.  They can see the exercise name, image of the game stage to id what exercise it is, and their chosen target locations and values along with the sequences and repetition they have also chosen, for the difficulty of the exercise.
+
+![alt text]( ./images/care provider UI exercise.png "Care Provider exercise options UI")
+
+The above gives two other options add exercise and change exercise. These options are for the editing of a patients exercise goals, for example targets to meet or times to repeat an action in a exercise.
+
+In the second example below the portal page is been used for the generation of reports.  In the example their are three options add graph, add table and export report.  The first two options allow for the adding of information to the report based on results of the exercises the patient they are viewing has completed.
+
+![alt text]( ./images/care provider report.png "Care Provider report generation UI")
+
+When a care provider goes to add a new graph or table a popup window is shown to them and they select what exercise, and result they want to see from it on the table or graph. Export function creates a pdf client side through the use of jsPDF. The library for the table and graphs hasn’t been chosen yet but highcharts seems like a nice choice.
+
+The third choice given in the sample is account management which gives options of changing care provider for a patient, changing name,
