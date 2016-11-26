@@ -1,11 +1,12 @@
 <div>
-    <div ng-repeat="(hand, exercises) in data" ng-hide="exercises.length ==0">
-        <h2 class="HandID">{{hand}} Hand Exercises</h2>
-        <div ng-attr-id = "{{ hand + 'ExercisesContainer'}}" ng-repeat="exercise in exercises">
-            <div class="exerciseBox" ng-click = "selectedExercise(hand, exercise)">
-                <img ng-src ="./exercises/{{exercise}}/img/thumbnail.png" />
+    <div ng-repeat="(hand, exercises) in data" ng-hide="exercises.length == 0">
+        <h2 class="row HandID" ng-model="show" ng-click="show = !show" ng-init="show=true">{{hand}} Hand Exercises</h2>
+        <div ng-show="show" ng-attr-id = "{{ hand + 'ExercisesContainer'}}" ng-repeat="exercise in exercises">
+            <div class="exerciseBox col-md-3 col-md-offset-2" ng-click = "selectedExercise(hand, exercise)">
+                <img ng-src ="./exercises/{{exercise}}/img/thumbnail.png" class="col-md-3"/>
                 <p>{{exercise}}</p>
             </div>
         </div>
+        <div class="splitter"></div>
     </div>
 </div>
