@@ -18,7 +18,7 @@
 
         $query = "select Comment, DOF
                         FROM feedback
-                        WHERE PID ='$PID' LIMIT 25";
+                        WHERE PID ='$PID' ORDER BY DOF DESC LIMIT 75";
 
         $queryResult = @mysqli_query($databaseConnection, $query) OR trigger_error($databaseConnection->error."[ $query]");
 
@@ -30,8 +30,8 @@
 
         while($resultRow = mysqli_fetch_assoc($queryResult)) {
             $dateTime = new DateTime($resultRow['DOF']);
-            $date = $dateTime->format('Y-m-d');
-            $time = $dateTime->format('H:i:s');
+            $date = $dateTime->format('d/m/Y');
+            $time = $dateTime->format('H:i');
             $results->addComment($date, $time,$resultRow['Comment']);
         }
 
