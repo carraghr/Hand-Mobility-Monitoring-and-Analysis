@@ -10,158 +10,145 @@ html, body {
     display: none;
 }
 
-.container{
-    width:100%;
-    height:100%;
-    margin:0;
-    padding:0;
+
+@media all and (min-width:980px){
+/*
+    #logo{
+
+        border: solid 1px black;
+        height: 1%;
+    }
+
+    #logo img{
+        width: 161px;
+        height: 1%;
+        border: solid 1px rebeccapurple;
+    }
+*/
+    #userInfo{
+        margin:0;
+        padding:0;
+    }
+
+    #WelcomeMessage{
+        font-size: 4.5vh;
+        margin:0;
+        padding:0;
+        border: none;
+    }
+
+    #userInfo #Consultant{
+        font-size: 1.5vh;
+        margin:0;
+        padding:0;
+        border: none;
+    }
 }
 
-.container .header{
-    width:80%;
-    height: 10%;
-    margin:0 0 0 10%;
-    padding:0;
+.active{
+    color: white;
+    background-color: #0b85dc;
 }
 
-.container .header #logo{
-    width:10%;
-    height: 100%;
-    float: left;
+#container-fluid{
+    margin-bottom: 60px !important;
 }
 
-.container .header #userInfo{
-    margin:0;
-    padding:0;
-    border: none;
-    font-family: "Arial Black";
-    font-size: 1em;
-    height: 100%;
-    float: left;
-}
-
-.container .header #userInfo #WelcomeMessage{
-    font-size: 4.5vh;
-    margin:0;
-    padding:0;
-    border: none;
-}
-
-.container .header #userInfo #Consultant{
-    font-size: 1.5vh;
-    margin:0;
-    padding:0;
-    border: none;
-}
-
-.container .header #Logout{
-    float : right;
-    width: 5%;
-    height: 100%;
-    margin: 0;
-    padding:0;
+#Logout{
     text-align: right;
 }
 
-.container .header #Logout a{
+#Logout a{
     margin: 15% 5% 0 0;
     color: black;
     text-decoration: none;
 }
 
-.container .header #Logout a:visited{
+#header #Logout a:visited{
     color: black;
     text-decoration: none;
 }
 
-.container .footer{
-    width:80%;
-    margin:0 0 0 10%;
-    padding:0;
+.padding{
+    width: 100%;
+    height: 30px;
 }
 
-.container .content {
-    width:80%;
-    height: 86%;
-    margin-left: 10%;
-    border: solid 1px black;
-    overflow:  auto;
-    padding: 0;
+#footer{
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    /* Set the fixed height of the footer here */
+    height: 30px;
+    background-color: #0b85dc;
 }
 
-.container .content #NavBar{
-    background: #0b85dc;
-    padding: 0;
-    margin: 0;
-    box-sizing:border-box;
-    max-width: 100%;
-}
+.HandID{
 
-#NavBar > ul {
-    padding : 0;
-    margin : 0;
-    display : flex;
-    box-sizing:border-box;
-}
-
-#NavBar > ul > li {
-    list-style : none;
-    flex : 1;
-    box-sizing:border-box;
-}
-
-#NavBar > ul > li > a {
-    display: block;
-    box-sizing:border-box;
-    text-align: center;
-    color: white;
-}
-
-#NavBar > ul > li :hover {
-    background : rgb(240,100,100);
-}
-
-.container .content #NavBar a{
-    text-decoration: none;
-}
-
-.container .content h2.HandID{
-    width:100%;
-    border: none;
-    overflow:  auto;
     background-color:#0b85dc;
     text-transform: capitalize;
     text-align: center;
     color: white;
-    padding: 1% 0;
     clear: left;
-    margin : 0;
+    padding: 1% 0;
+    margin: 0;
 }
 
-.container .content .exerciseBox{
+#rigthExercisesContainer{
+    width: 100%;
+    overflow: inherit;
+}
+
+.exerciseBox{
     border: solid 1px black;
-    width: 15%;
-    height: 30%;
-    margin: 3% 0 3% 3%;
-    float : left;
+    padding: 0;
+    margin: 1% 0;
+    float: left;
 }
 
-.container .content .exerciseBox:hover{
+.exerciseBox:hover{
     cursor: pointer;
 }
 
-.container .content .exerciseBox img{
+.exerciseBox img{
     display: block;
     margin: 0;
     padding: 0;
-    max-width: 100%;
-    max-height: 80%;
+    width:100%;
+    float: left;
 }
 
-.container .content .exerciseBox p{
+.exerciseBox p{
     text-transform: capitalize;
     text-align: center;
     padding: 1.5% 0;
     margin: 0;
     font-size: 1.5em;
+}
+
+.splitter{
+    margin-bottom:0 ;
+}
+
+.comment{
+    margin: 10px 0;
+    padding: 0;
+}
+
+.comment hr{
+    width: 100%;
+    margin: 1px 0;
+    padding: 0;
+    border-top: 1px solid black;
+}
+
+.comment .commentDetails{
+    margin: 0;
+    padding-top: 10px;
+    padding-left: 10px;
+}
+
+.comment .commentMessage{
+    margin: 0;
+    padding: 10px 10px;
 }
