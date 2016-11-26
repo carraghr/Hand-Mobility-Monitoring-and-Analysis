@@ -1,9 +1,9 @@
-<div class="content" xmlns="http://www.w3.org/1999/html">
-        <div id = "NavBar">
-                <ul>
-                        <li><a href="#exercise">Exercises</a></li>
-                        <li><a href="#feedback">Feedback</a></li>
-                </ul>
+
+        <div class="clearfix"></div>
+        <ul class = "nav nav-tabs nav-justified" >
+                <li><a ng-class="{ active: isActive('/exercise') }" href="#exercise">Exercises</a></li>
+                <li><a  ng-class="{ active: isActive('/feedback') }" href="#feedback">Feedback</a></li>
+        </ul>
+        <div id="content">
+                <div ng-view></div>
         </div>
-        <div ng-view></div>
-</div>
