@@ -1,0 +1,18 @@
+<div class="CommentPoster">
+    <form ng-submit="postComment()">
+        <div class="CommentEntry">
+            <label>Comment</label>
+            <br>
+            <input type="text" name="comment" placeholder="Write a Comment" ng-model="comment">
+            <br>
+            <button type="submit">Submit</button>
+        </div>
+    </form>
+</div>
+<div ng-repeat="(feedback, comments) in data">
+   <div class="comment" ng-repeat="comment in comments">
+       <p>{{comment.date}}</p>
+       <p>{{comment.time}}</p>
+       <p>{{comment.message}}</p>
+   </div>
+</div>

@@ -2,10 +2,14 @@
     session_start();
 
     if(!isset($_SESSION['user_id'])){
-        require ('./php/loginFunctions.php');
+        require('./assests/php/loginFunctions.php');
         redirectUser('../index.html');
-    }else{
-        echo "</br>";
-        echo '<a href="./php/logout.php"> logout </a>';
     }
-?>
+
+    $PageTitle = "Portal";
+    $patientName = $_SESSION['name'];
+    $consultantName = $_SESSION['consultant'];
+
+    include('./assests/html/header.html');
+    include('./assests/html/content.html');
+    include('./assests/html/footer.html');
