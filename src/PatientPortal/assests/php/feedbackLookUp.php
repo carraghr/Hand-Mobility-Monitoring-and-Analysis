@@ -6,7 +6,7 @@
     session_id($SID);
     session_start();
 
-    //require('./loginFunctions.php');
+
     if(!isset($_SESSION['user_id'])){
         //need to echo an error
         echo "failed";

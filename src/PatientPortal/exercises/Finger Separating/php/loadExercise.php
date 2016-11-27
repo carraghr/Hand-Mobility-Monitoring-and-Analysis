@@ -2,8 +2,8 @@
     session_start();
 
     if(!isset($_SESSION['user_id'])){
-        require('../../../../PatientPortal/assests/php/loginFunctions.php');
-        redirectUser('../../../../index.html');
+        require('../../../../assets/php/redirect.php');
+        redirectUser('../../../../index.php');
     }
 
     $PageTitle = 'Finger Separating Exercise';

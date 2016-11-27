@@ -2,7 +2,7 @@
     session_start();
 
     if(!isset($_SESSION['user_id'])){
-        require('loginFunctions.php');
+        require('../../../assets/php/redirect.php');
         redirectUser();
     }
     else{

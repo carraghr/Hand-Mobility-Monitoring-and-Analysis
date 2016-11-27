@@ -8,9 +8,9 @@
     session_id($SID);
     session_start();
 
-    require('../../../php/loginFunctions.php');
+    require('../../../../assets/php/redirect.php');
     if(!isset($_SESSION['user_id'])){
-        redirectUser('../../../../index.html');
+        redirectUser('../../../../index.php');
     }
 
     require('../../../../databaseConnection.php');

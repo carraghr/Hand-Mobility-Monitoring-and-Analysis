@@ -1,9 +1,9 @@
 <?php
     session_start();
-    require('loginFunctions.php');
+    require('../../../assets/php/redirect.php');
     if(!isset($_SESSION['user_id'])){
 
-        redirectUser();
+        redirectUser('../../../index.php');
 
     }else{
         $_SESSION = array();
@@ -11,4 +11,4 @@
         setcookie('PHPSESSID','',time()-3600,'/','',0,0);
     }
 
-    redirectUser();
+    redirectUser('../../../index.php');

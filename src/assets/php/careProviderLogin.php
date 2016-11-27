@@ -1,23 +1,5 @@
 <?php
-    # Script containing functionallity of login process for a care provider.
 
-    function redirectUser($page = '../../index.php'){
-
-        $url = 'http://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF']);
-
-        //Because of \\ and // difference in OS need to remove
-        $url = rtrim($url,'/\\');
-
-        $url .= '/' . $page;
-
-        //redirect happens here
-        header("location: $url");
-        exit(0);
-    }
-
-    /*
-     * validate login details
-     */
     function validateLoginDetails($databaseConnection, $username = '', $password = ''){
 
         $user = mysqli_real_escape_string($databaseConnection, trim($username));
@@ -27,8 +9,8 @@
         $salt = null;
 
         $saltQuery = "Select Salt
-                      from careprovider 
-                      where UserName = '$user'";
+                          from careprovider 
+                          where UserName = '$user'";
 
         $saltQueryResult = @mysqli_query($databaseConnection, $saltQuery) OR trigger_error($databaseConnection->error."[ $saltQueryResult]");
         if ($saltQueryResult) {
@@ -50,8 +32,8 @@
         $hash = crypt($pass, $salt);
 
         $query = "Select StaffID, Level 
-                  from careprovider 
-                  where UserName = '$user' and Pass = '$hash'";
+                      from careprovider 
+                      where UserName = '$user' and Pass = '$hash'";
 
         $queryResult = @mysqli_query($databaseConnection, $query) OR trigger_error($databaseConnection->error."[ $query]");
 
@@ -66,8 +48,8 @@
                     $staffID = $row['StaffID'];
 
                     $query = "Select SupID
-                              from supervisor
-                              where '$staffID' = SID";
+                                  from supervisor
+                                  where '$staffID' = SID";
 
                     $queryResult = @mysqli_query($databaseConnection, $query) or trigger_error($databaseConnection->error."[ $query]");
 

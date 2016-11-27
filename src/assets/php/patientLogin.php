@@ -1,23 +1,5 @@
 <?php
-    # Script containing functionality of login process for a care provider.
 
-    function redirectUser($page = '../../index.php'){
-
-        $url = 'http://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF']);
-
-        //Because of \\ and // difference in OS need to remove
-        $url = rtrim($url,'/\\');
-
-        $url .= '/' . $page;
-
-        //redirect happens here
-        header("location: $url");
-        exit(0);
-    }
-
-    /*
-     * validate login details
-     */
     function validateLoginDetails($databaseConnection, $username = '', $password = ''){
 
         $user = mysqli_real_escape_string($databaseConnection, trim($username));
@@ -27,8 +9,8 @@
         $salt = null;
 
         $saltQuery = "Select Salt
-                          from Patient 
-                          where UserName = '$user'";
+                              from Patient 
+                              where UserName = '$user'";
 
         $saltQueryResult = @mysqli_query($databaseConnection, $saltQuery) OR trigger_error($databaseConnection->error."[ $saltQueryResult]");
 
@@ -51,8 +33,8 @@
         $hash = crypt($pass, $salt);
 
         $patientQuery = "Select PatientID, NameFirst,NameLast 
-                      from Patient 
-                      where UserName = '$user' and Pass = '$hash'";
+                          from Patient 
+                          where UserName = '$user' and Pass = '$hash'";
 
         $patientQueryResult = @mysqli_query($databaseConnection, $patientQuery) OR trigger_error($databaseConnection->error."[ $patientQuery]");
 
