@@ -307,7 +307,7 @@ The user interface for the patient has to be build to be usable by people with d
 
 For the patient portal I first used draw.io to create a layout prototype to see what was the best way to layout the main functions given to the user through the portal.
 
-![alt text]( ./images/patient UI.png "Database Scheme")
+![alt text]( ./images/exercisePage-v1.png "Patient UI for portal page")
 
 In the above design I have a simple header for the page with a logo, welcome message and logout option for the portal, as well as some basic secondary information to the user such as the consultant they are under and the time of their login to the portal page.
 
@@ -315,7 +315,7 @@ The main content of the page contains the option between Exercises, where the us
 
 To implement this design I looked into using Angular however with the projects current setup both development environment with PHPstorm  and the type of Server I’m going to be using setting up Angular to work was not possible without spending a lot of time on it without getting any development done first. For this reason I went with AngularJS instead.
 
-To create the basic implementation of the above in angularjs I created portal module with two controllers exercise and comments. Both these controllers are connected to a template html file through the use of routeProvider that is used to update the view when a user selects either the exercise tab or feedback. Using ng-view I can switch bettween the two with out having to reload the whole site again. The two  controller connect to the php back end to get data from the mysql database through the use of a http call. Passing a PHPSESSID to only get relevant information from the server about them.
+To create the basic implementation of the above in angularjs I created portal module with two controllers exercise and comments. Both these controllers are connected to a template html file through the use of routeProvider that is used to update the view when a user selects either the exercise tab or feedback. Using ng-view I can switch between the two with out having to reload the whole site again. The two  controller connect to the php back end to get data from the mysql database through the use of a http call. Passing a PHPSESSID to only get relevant information from the server about them.
 
 Through the use of this I have created a UI based on the prototype that allows for only the selected exercises by a care provider to be shown to the patient.  The same is true with comments/feedback.
 
