@@ -31,7 +31,7 @@
 
         $hash = crypt($pass, $salt);
 
-        $query = "Select StaffID, Level 
+        $query = "Select StaffID, Level, NameFirst,NameLast 
                       from careprovider 
                       where UserName = '$user' and Pass = '$hash'";
 
