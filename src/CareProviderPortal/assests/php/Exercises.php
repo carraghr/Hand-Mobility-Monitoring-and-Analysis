@@ -1,6 +1,6 @@
 <?php
 
-class target{
+class Target{
     public $location;
     public $target;
 
@@ -27,7 +27,7 @@ class Exercise{
     }
 
     public function addTarget($hand, $location, $target){
-        $tempComment = new target($location, $target);
+        $tempComment = new Target($location, $target);
         if(strcmp($hand,"right") == 0){
             array_push($this->rightHand, $tempComment);
         }else if(strcmp($hand,"left") == 0){
@@ -79,5 +79,4 @@ class Exercises{
 
         return json_encode($i);
     }
-
 }

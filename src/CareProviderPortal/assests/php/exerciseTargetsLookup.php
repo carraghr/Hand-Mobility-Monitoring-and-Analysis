@@ -20,9 +20,6 @@
 
         $queryResult = @mysqli_query($databaseConnection, $query) OR trigger_error($databaseConnection->error . "[ $query]");
 
-        $results = array();
-
-
         require_once('./Exercises.php');
 
         $results = new Exercises();
