@@ -1,0 +1,28 @@
+<div class="col-md-2 col-md-offset-2">
+    <button class="btn btn-success">Add Patient</button>
+</div>
+<div class="col-md-4 col-md-offset-2">
+    <form class="navbar-form navbar-right" role="search" ng-submit="patient.getPatientData()">
+        <div class="form-group">
+            <input type="text" class="form-control" ng-model="patientID" placeholder="Patient ID" name="Patient ID">
+        </div>
+        <button type="submit" class="btn btn-default">Submit</button>
+    </form>
+</div>
+
+
+<div class="clearfix"></div>
+
+<div class="col-md-8 col-md-offset-2 well" ng-show="patient.show">
+    <p id="patientName">Name: {{patient.patientInfo.NameFirst + ' ' + patient.patientInfo.NameLast}}</p>
+    <p id="patientDOB">Date of Birth: {{patient.patientInfo.DOB}}</p>
+</div>
+
+<div class="clearfix"></div>
+<ul class = "nav nav-tabs nav-justified" ng-show="patient.show">
+    <li><a class="active" ng-class="{ active: isActive('/Exercise') }" href="#exercises">Exercise Scheme</a></li>
+    <li><a ng-class="{ active: isActive('/Report') }" href="#report">Report Generation</a></li>
+    <li><a ng-class="{ active: isActive('/Account') }" href="#account">Account Management</a></li>
+</ul>
+<div class="clearfix"></div>
+<div ng-show="patient.show" ng-view></div>
