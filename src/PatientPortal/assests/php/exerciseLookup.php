@@ -18,7 +18,7 @@
 
         $query = "select Exercise, Hand
                     FROM Targets
-                    WHERE PID ='$PID' group by Hand";
+                    WHERE PID ='$PID' group by Hand, Exercise";
 
         $queryResult = @mysqli_query($databaseConnection, $query) OR trigger_error($databaseConnection->error."[ $query]");
 

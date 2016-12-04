@@ -87,3 +87,20 @@ create table Feedback (
   FOREIGN KEY (PID)
   REFERENCES Patient(PatientID)
 );
+
+create TABLE Exercises(
+  Name varchar(25) not null,
+
+  PRIMARY KEY (Exercise)
+);
+
+create table ExerciseTargetLocations(
+  Exercise varchar(25) not null,
+  Location  varchar(8) not null,
+
+  PRIMARY KEY (Exercise,Location),
+
+  CONSTRAINT `ExerciseTargetLocation`
+  FOREIGN KEY (Exercise)
+  REFERENCES Exercises(Name)
+);

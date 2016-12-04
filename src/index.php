@@ -1,27 +1,22 @@
 <?php
 
-    session_start();
-
-    include('databaseConnection.php');
-
     if ($_SERVER['REQUEST_METHOD']=='POST'){
+        include('databaseConnection.php');
+
         //Username and password sent from a form need to check which one.
-
         $typeOfUser = $_POST['login'];
-
         $userName = $_POST['userName'];
         $password = $_POST['password'];
 
         if(strcasecmp($typeOfUser,'patient') == 0){
-
             require_once('./assets/php/patientLogin.php');
 
             list($check, $data) = validateLoginDetails($databaseConnection,$userName,$password);
 
             //check if login details are right
             if ($check){
+                session_start();
                 //Set session data
-
                 $PID = $data['PatientID'];
                 $_SESSION['user_id'] = $PID;
                 $_SESSION['name'] = $data['NameFirst']. " ". $data['NameLast'];
@@ -34,17 +29,16 @@
 
                 $careProviderInfoResult = @mysqli_query($databaseConnection, $careProviderInfo) OR trigger_error($databaseConnection->error."[ $careProviderInfo]");
                 mysqli_close($databaseConnection);
-                if ($careProviderInfoResult) {
-                    if (mysqli_num_rows($careProviderInfoResult) == 1) {
-
+                if ($careProviderInfoResult){
+                    if (mysqli_num_rows($careProviderInfoResult) == 1){
                         //get record
                         $row = mysqli_fetch_array($careProviderInfoResult, MYSQLI_ASSOC);
 
                         //return true and result
                         $_SESSION['consultant'] = $row['NameFirst'] . " " . $row['NameLast'];
-
                     }
                 }
+
 
                 $url = 'http://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF']);
 
@@ -65,15 +59,14 @@
 
             //check if login details are right
             if ($check){
-
+                session_start();
                 $_SESSION['type'] = $typeOfUser;
                 $_SESSION['user_id'] = $data['StaffID'];
+                $_SESSION['name'] = $data['NameFirst']. " ". $data['NameLast'];
                 $_SESSION['Level'] = $data['Level'];
                 if(strcmp($data['Level'], 'pro') !== 0){
                     $_SESSION['SupID'] = $data['SupID'];
-
                 }
-
                 $url = 'http://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF']);
 
                 //Because of \\ and // difference in OS need to remove

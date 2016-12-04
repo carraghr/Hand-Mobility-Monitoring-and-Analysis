@@ -333,7 +333,7 @@ The above gives two other options add exercise and change exercise. These option
 
 In the second example below the portal page is been used for the generation of reports.  In the example their are three options add graph, add table and export report.  The first two options allow for the adding of information to the report based on results of the exercises the patient they are viewing has completed.
 
-![alt text]( ./images/care provider report.png "Care Provider report generation UI")
+![alt text]( ./images/care provider report.png "Care-Provider report generation UI")
 
 When a care provider goes to add a new graph or table a popup window is shown to them and they select what exercise, and result they want to see from it on the table or graph. Export function creates a pdf client side through the use of jsPDF. The library for the table and graphs hasn’t been chosen yet but highcharts seems like a nice choice.
 

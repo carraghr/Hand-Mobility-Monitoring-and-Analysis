@@ -1,0 +1,22 @@
+<div ng-repeat="(exerciseInfo, exercises) in patientExericseInfo">
+    <div ng-repeat="exercise in exercises">
+        <div class="well col-md-6 col-md-offset-3">
+            <p>Name: {{exercise.Name}}</p>
+            <p>Repetitions: {{exercise.reps}}</p>
+            <p>Sequences: {{exercise.seq}}</p>
+            <p class="targets">Targets: </p>
+            <div  class="targets" ng-show="exercise.leftHand.length != 0">
+                <p>Left Hand</p>
+                <div ng-repeat="targets in exercise.leftHand" >
+                    {{targets.location}} : {{targets.target}}
+                </div>
+            </div>
+            <div  class="targets" ng-show="exercise.rightHand.length != 0">
+                <p>Right Hand</p>
+                <div ng-repeat="targets in exercise.rightHand" >
+                    {{targets.location}} : {{targets.target}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
