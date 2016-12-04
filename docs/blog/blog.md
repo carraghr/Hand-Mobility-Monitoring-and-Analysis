@@ -84,7 +84,7 @@ Like most login systems it takes a user name and password. The password is hashe
  
 At the moment the database scheme looks like.
 
-![alt text]( ./images/database scheme v1.png "Logo Title Text 1")
+![alt text]( ./images/database-scheme-v1.png "Database scheme version 1")
 
 To pervert SQL injections in the login system I use the php method  mysqli_real_escape_string to make sure there are not ' or other charachers that could alter the mysql query been executed to the database.
 
@@ -327,13 +327,13 @@ With a simple patient UI layout done  I started focusing on the care provider po
 
 Below is an example of the portal page with a patient been viewed by a care provider. In this sample they are looking at a patients exercise set that they must complete as part of there recovery.  They can see the exercise name, image of the game stage to id what exercise it is, and their chosen target locations and values along with the sequences and repetition they have also chosen, for the difficulty of the exercise.
 
-![alt text]( ./images/care provider UI exercise.png "Care Provider exercise options UI")
+![alt text]( ./images/care-provider-UI-exercise.png "Care Provider exercise options UI")
 
 The above gives two other options add exercise and change exercise. These options are for the editing of a patients exercise goals, for example targets to meet or times to repeat an action in a exercise.
 
 In the second example below the portal page is been used for the generation of reports.  In the example their are three options add graph, add table and export report.  The first two options allow for the adding of information to the report based on results of the exercises the patient they are viewing has completed.
 
-![alt text]( ./images/care provider report.png "Care-Provider report generation UI")
+![alt text]( ./images/care-provider-report.png "Care-Provider report generation UI")
 
 When a care provider goes to add a new graph or table a popup window is shown to them and they select what exercise, and result they want to see from it on the table or graph. Export function creates a pdf client side through the use of jsPDF. The library for the table and graphs hasn’t been chosen yet but highcharts seems like a nice choice.
 
