@@ -1,3 +1,51 @@
+FingerBase = function(){
+    var baseHoles = [];
+    var center = {x:0, y:0};
+
+	return{
+
+	    createBase : function(x, y, numberOfElements, elementColor, backgroundColor, elementRadius){
+            center.x=x;
+            center.y=y;
+
+            let offset = elementRadius;
+            let rightIndex= 0;
+            if(numberOfElements % 2 != 0){
+                baseHoles[numberOfElements] = new Circle();
+				baseHoles[numberOfElements].setCenter(center.x,center.y);
+				baseHoles[numberOfElements].setColor(elementColor,backgroundColor);
+                baseHoles[numberOfElements].setSize(elementRadius);
+				rightIndex = (numberOfElements / 2) + 1;
+            }else{
+				rightIndex = (numberOfElements / 2);
+            }
+            for(let leftIndex = numberOfElements/2-1; rightIndex < numberOfElements && leftIndex>=0; rightIndex++,leftIndex--){
+                baseHoles[rightIndex] = new Circle();
+				baseHoles[rightIndex].setCenter(center.x + offset,center.y);
+				baseHoles[rightIndex].setColor(elementColor,backgroundColor);
+				baseHoles[rightIndex].setSize(elementRadius);
+
+				baseHoles[leftIndex] = new Circle();
+				baseHoles[leftIndex].setCenter(center.x - offset,center.y);
+				baseHoles[leftIndex].setColor(elementColor,backgroundColor);
+				baseHoles[leftIndex].setSize(elementRadius);
+            }
+        },
+
+		setColor : function (index, elementColor, backgroundColor) {
+			if(index > 0 && index < baseHoles.length){
+			    baseHoles[index].setColor(elementColor,backgroundColor);
+            }
+		},
+
+		draw : function(gl) {
+			for(let index = 0; index < baseHoles.length; index++){
+			    baseHoles[index].draw(gl);
+            }
+		}
+	};
+};
+
 Drop = function(){
     var drop = new Circle();
     drop.setSize(100);
