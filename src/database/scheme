@@ -73,7 +73,10 @@ create table Targets(
 
   constraint `PatientTargetsFK_1`
   foreign key (PID)
-  references Patient(PatientID)
+  references Patient(PatientID),
+
+  foreign key (Exercise)
+  references Exercises(Name)
 );
 
 create table Feedback (
@@ -90,6 +93,7 @@ create table Feedback (
 
 create TABLE Exercises(
   Name varchar(25) not null,
+  MeasurementUnit VARCHAR(10) not NULL,
 
   PRIMARY KEY (Exercise)
 );
@@ -103,4 +107,23 @@ create table ExerciseTargetLocations(
   CONSTRAINT `ExerciseTargetLocation`
   FOREIGN KEY (Exercise)
   REFERENCES Exercises(Name)
+);
+
+create table ThumbFingerTipExercise(
+  PID varchar(10) not null,
+  DOE DATETIME not null,
+  Hand VARCHAR(5) not NULL,
+  Repetition int not null,
+  Sequence int not null,
+  FingerTip VARCHAR(6) not NULL ,
+  Minimum DECIMAL(4,2) not NULL,
+  Mean DECIMAL(4,2) not NULL,
+  Median DECIMAL(4,2) not NULL,
+  Maximum DECIMAL(4,2) not NULL,
+
+  primary key(PID, DOE, Repetition, Sequence, FingerTip),
+
+  constraint `PatientThumbFingerTipFK_1`
+  foreign key (PID)
+  references Patient(PatientID)
 );
