@@ -18,10 +18,10 @@
     include('../../Common/html/gameStage.html');
 
     echo "<script type='text/javascript'>";
-    echo "var targets = ".json_encode($results).";\n\r";
-    echo "var repsToDo = ". $reps.";\n\r";
-    echo "var seqsToDo = ". $seq.";\n\r";
-    echo "var selectedHand = '".$SelectedHand."';\n\r";
+        echo "var targets = ".json_encode($results).";\n\r";
+        echo "var repsToDo = ". $reps.";\n\r";
+        echo "var seqsToDo = ". $seq.";\n\r";
+        echo "var selectedHand = '".$SelectedHand."';\n\r";
     echo "</script>";
 
     include('../html/resourcesToLoad.html');
