@@ -6,8 +6,8 @@ create table CareProvider(
   StaffID varchar(10) not null,
   Level varchar(3) not null,
   UserName varchar(20) not null,
-  Pass VARCHAR(13) null,
-  Salt BLOB(10) NULL,
+  Pass VARCHAR(118) null,
+  Salt VARCHAR(48) NULL,
 
   primary key(StaffID),
   UNIQUE (UserName)
@@ -31,8 +31,8 @@ create table Patient(
   CPID varchar(10) not null,
   DOB date,
   UserName varchar(20) not null,
-  Pass VARCHAR(13) null,
-  Salt BLOB(10) NULL,
+  Pass VARCHAR(118) null,
+  Salt VARCHAR(48) NULL,
 
   primary key(PatientID),
   constraint `PatientCareProviderFK_1`
@@ -58,6 +58,24 @@ create table FingerSeparationExercise(
   constraint `PatientFingerSeparationFK_1`
   foreign key (PID)
   references Patient(PatientID)
+);
+
+create TABLE Exercises(
+  Name varchar(25) not null,
+  MeasurementUnit VARCHAR(10) not NULL,
+
+  PRIMARY KEY (Name)
+);
+
+create table ExerciseTargetLocations(
+  Exercise varchar(25) not null,
+  Location  varchar(8) not null,
+
+  PRIMARY KEY (Exercise,Location),
+
+  CONSTRAINT `ExerciseTargetLocation`
+  FOREIGN KEY (Exercise)
+  REFERENCES Exercises(Name)
 );
 
 create table Targets(
@@ -91,23 +109,7 @@ create table Feedback (
   REFERENCES Patient(PatientID)
 );
 
-create TABLE Exercises(
-  Name varchar(25) not null,
-  MeasurementUnit VARCHAR(10) not NULL,
 
-  PRIMARY KEY (Exercise)
-);
-
-create table ExerciseTargetLocations(
-  Exercise varchar(25) not null,
-  Location  varchar(8) not null,
-
-  PRIMARY KEY (Exercise,Location),
-
-  CONSTRAINT `ExerciseTargetLocation`
-  FOREIGN KEY (Exercise)
-  REFERENCES Exercises(Name)
-);
 
 create table ThumbFingerTipExercise(
   PID varchar(10) not null,
