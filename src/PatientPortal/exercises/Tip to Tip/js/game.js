@@ -24,19 +24,19 @@ Game = {
         return this.playable == 'playable';
     },
 
-    processTracking : function(repsToDo, sequencePosition, recordings){
+    processTracking : function(repsToDo, sequencePosition, finger,recordings){
 
         let repCount = this.repsDone;
-        if(sequencePosition === this.sequence){
-            repCount-=1;
-        }
+		if(this.endOfRecord){
+			repCount -=1;
+		}
 
-        let start = (repCount === 1 &&  sequencePosition === 1);
-        let end = (repCount === repsToDo &&  sequencePosition === this.sequence);
+        var temp = { record : { rep : repCount, sequence: sequencePosition, distances : recordings, finger: finger }, start : this.startOfRecord, end : this.endOfRecord };
 
-        var temp = { record : { rep : repCount, sequence: sequencePosition, angles : recordings }, start : start, end : end };
+        if(this.startOfRecord){
+			this.startOfRecord = false;
+		}
         this.webworker.postMessage(temp);
-
 
     },
 
@@ -45,10 +45,36 @@ Game = {
         this.sequence = seqsToDo;
         this.score = 0;
 
+		this.gl = Main.gl;
+
 		this.numberOfBaseInput = 4;
 
 		this.base = new FingerBase();
-		this.base.createBase();
+		this.base.createBase(this.gl.drawingBufferWidth / 2, this.gl.drawingBufferHeight * 0.1,this.numberOfBaseInput, [1.0, 0.5, 0.0],[0.24, 0.522, 0.863], this.gl.drawingBufferHeight * 0.2);
+
+		this.nodes = [];
+
+		this.fingers = fingersSelected;
+		this.fingersToExercise = this.fingers.length;
+		this.fingerToExerciseIndex = 0;
+		this.selectNodeToHit();
+		this.sequenceIndex = 0;
+
+		this.baseNodeLocation = this.base.getNodeCenter(this.nodeToHit);
+		for(let index = 0; index < this.sequence; index++){
+			if(index == 0){
+				this.nodes[index] = new Drop();
+				this.nodes[index].setCenter(this.baseNodeLocation.x, this.gl.drawingBufferHeight * 0.90);
+				this.nodes[index].setSize(this.gl.drawingBufferHeight * 0.15);
+				this.nodes[index].setColor([1.0, 0.5, 0.0],[0.24, 0.522, 0.863]);
+			}else{
+				this.nodes[index] = new Drop();
+				let center = this.nodes[index -1].getCenter();
+				this.nodes[index].setCenter(this.baseNodeLocation.x, center.y + (this.gl.drawingBufferHeight * 0.15) +  (this.gl.drawingBufferHeight * 0.1));
+				this.nodes[index].setSize(this.gl.drawingBufferHeight * 0.15);
+				this.nodes[index].setColor([1.0, 0.5, 0.0],[0.24, 0.522, 0.863]);
+			}
+		}
 
         this.webworker = new Worker('../../Tip to Tip/js/dataProcessing.js');
 
@@ -60,14 +86,13 @@ Game = {
                 str = '{ "exerciseRecord" : [' + json+ ',';
             }else if(e.data.end === true){
                 let cookie = document.cookie.split(';');
-                console.log(cookie);
                 str = json + ']';
                 for(let i = 0; i < cookie.length; i++){
                     if(cookie[i].includes("PHPSESSID")){
-                        let value = cookie[i].substring(cookie[i].indexOf("=")).trim();
+                        let value = cookie[i].substring(cookie[i].indexOf("=")).trim().substring(1);;
                         str = str + ',"PHPSESSID" : "' + value +'"';
                     }else if(cookie[i].includes("SelectedHand")){
-                        let value = cookie[i].substring(cookie[i].indexOf("=")).trim();
+                        let value = cookie[i].substring(cookie[i].indexOf("=")).trim().substring(1);
                         str = str + ',"SelectedHand" : "' + value +'"';
                     }
                 }
@@ -94,22 +119,111 @@ Game = {
                         console.log(request.responseText);
                         if(request.responseText == 1){
                             let redirect = window.location.href;
-                            let index2 = redirect.lastIndexOf('/exercises/Finger Separating');
+                            let index2 = redirect.lastIndexOf('/exercises/Tip%20to%20Tip');
                             redirect = redirect.substring(0,index2);
+                            console.log(redirect);
                             window.location.href = redirect;
                         }
                     }
                 };
             }
         });
+
+        this.startOfRecord = true;
+		this.endOfRecord = false;
+
+		this.status = 'paused';
+		this.playable = 'playable';
     },
 
-    tick : function(theta){
+    selectNodeToHit : function(){
+        let finger = this.fingers[this.fingerToExerciseIndex];
+		if (finger === "index"){
+			this.nodeToHit = 0;
+		} else if (finger === "middle") {
+			this.nodeToHit = 1;
+		} else if (finger === "ring") {
+			this.nodeToHit = 2;
+		} else if (finger === "pinky") {
+			this.nodeToHit = 3;
+		}
+		this.baseNodeLocation = this.base.getNodeCenter(this.nodeToHit);
+    },
+
+    checkFingerPlacement : function(finger){
+		if (finger === "index"){
+			return this.nodeToHit == 0;
+		}else if (finger === "middle") {
+			return this.nodeToHit == 1;
+		}else if (finger === "ring") {
+			return this.nodeToHit == 2;
+		}else if (finger === "pinky") {
+			return this.nodeToHit == 3;
+		}
+    },
+
+    tick : function(theta,finger){
+		let lastPosition = this.sequenceIndex;
+		let lastBasePosition = this.fingerToExerciseIndex;
+		for(let index = this.sequenceIndex; index < this.sequence; index++){
+			if(theta > 1){
+				this.nodes[index].tick(1);
+			}else{
+				this.nodes[index].tick(theta);
+			}
+
+		}
+		let rightBase = this.checkFingerPlacement(finger);//this is for scoring points
+		//shortestFinger check also that the finger is on the right base node.
+		console.log(this.nodeToHit);
+		let nodeDroped = this.base.baseNodeBottomHit(this.nodeToHit, this.nodes[this.sequenceIndex]);
+		if(nodeDroped){
+			this.sequenceIndex = (this.sequenceIndex + 1) % this.sequence;
+			if(this.sequenceIndex == 0){
+				this.fingerToExerciseIndex = (this.fingerToExerciseIndex + 1) % this.fingersToExercise ;
+				if(this.fingerToExerciseIndex == 0){
+					this.repsDone++;
+                }
+				this.selectNodeToHit();
+				if(this.repsDone <= repsToDo){
+					for (let index = 0; index < this.sequence; index++) {
+						if (index == 0){
+							this.nodes[index].setCenter(this.baseNodeLocation.x, this.gl.drawingBufferHeight * 0.90);
+							this.nodes[index].setSize(this.gl.drawingBufferHeight * 0.15);
+						}else{
+							let center = this.nodes[index - 1].getCenter();
+							this.nodes[index].setCenter(this.baseNodeLocation.x, center.y + (this.gl.drawingBufferHeight * 0.15) +  (this.gl.drawingBufferHeight * 0.1));
+							this.nodes[index].setSize(this.gl.drawingBufferHeight * 0.15);
+						}
+					}
+				}else{
+					this.endOfRecord = true;
+					this.status = "complete";
+				}
+			}
+			if(rightBase){
+			    //increase score.
+            }
+		}
+		return { seq :lastPosition + 1, finger: lastBasePosition};
     },
 
     distanceCheck : function(){
+        //check the distance between the nodes and the base node to be hit.
+
+		return (this.base.distanceFromNodeBaseHoleTop(this.nodeToHit,this.nodes[this.sequenceIndex]) < (this.gl.drawingBufferHeight * 0.15))
+				&&
+				(this.base.distanceFromNodeBaseHoleButom(this.nodeToHit,this.nodes[this.sequenceIndex]) > 0)  ;
     },
 
     drawScene : function(){
-    }
+		this.gl.clearColor(0.24, 0.522, 0.863, 1);
+		this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+		this.base.draw(this.gl);
+
+		for(let index = this.sequenceIndex; index < this.sequence; index++){
+			this.nodes[index].draw(this.gl);
+		}
+	}
+
 };
