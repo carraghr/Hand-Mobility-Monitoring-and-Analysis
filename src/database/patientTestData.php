@@ -6,7 +6,6 @@ $hash = crypt('password0', $salt);
 $query = "insert into Patient values ('p0f','p0l','1232890','12328961','DATE()','patient0','$hash','$salt')";
 $queryResult = @mysqli_query($databaseConnection, $query) OR trigger_error($databaseConnection->error."[ $query]");
 
-
 $salt = '$6$rounds=5000$'.  bin2hex(random_bytes (16)).'$';
 $hash = crypt('password1', $salt);
 $query = "insert into Patient values ('p1f','p1l','1232891','12328961','DATE()','patient1','$hash','$salt')";

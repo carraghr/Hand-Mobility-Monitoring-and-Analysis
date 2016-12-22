@@ -9,17 +9,16 @@
         $salt = null;
 
         $saltQuery = "Select Salt
-                              from Patient 
-                              where UserName = '$user'";
+                      from Patient 
+                      where UserName = '$user'";
 
         $saltQueryResult = @mysqli_query($databaseConnection, $saltQuery) OR trigger_error($databaseConnection->error."[ $saltQueryResult]");
 
         if ($saltQueryResult) {
             if (mysqli_num_rows($saltQueryResult) == 1) {
-                //get record
+                //get salt from returned results
                 $row = mysqli_fetch_array($saltQueryResult, MYSQLI_ASSOC);
-
-                $salt=$row['Salt'];
+                $salt = $row['Salt'];
             }
         }else{
             $error = array();
@@ -32,14 +31,11 @@
 
         $hash = crypt($pass, $salt);
 
-        $patientQuery = "Select PatientID, NameFirst,NameLast 
+        $patientQuery = "Select PatientID, NameFirst, NameLast 
                           from Patient 
                           where UserName = '$user' and Pass = '$hash'";
 
         $patientQueryResult = @mysqli_query($databaseConnection, $patientQuery) OR trigger_error($databaseConnection->error."[ $patientQuery]");
-
-
-
 
         if ($patientQueryResult){
             if(mysqli_num_rows($patientQueryResult) == 1 ){
@@ -55,7 +51,6 @@
                 $error[] = "The username and password entered do not match";
                 return array(false,$error);
             }
-
         }else{
             $error = array();
             $error[] = "Account could not be found on the system";

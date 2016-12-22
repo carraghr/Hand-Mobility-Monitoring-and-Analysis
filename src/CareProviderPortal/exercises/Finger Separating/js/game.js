@@ -106,20 +106,20 @@ Game = {
         //this.bucket.setDefaultPosition(this.gl.drawingBufferWidth/2, this.gl.drawingBufferHeight * 0.075);
         this.bucket.create(this.gl.drawingBufferWidth/2, this.gl.drawingBufferHeight * 0.075 ,4);
 
-        this.droplets = [];
-        this.leader = 0;
+        this.nodes = [];
+        this.sequenceIndex = 0;
         for(let index = 0; index < this.sequence; index++){
             if(index == 0){
-                this.droplets[index] = new Drop();
-                this.droplets[index].setCenter(this.gl.drawingBufferWidth / 2, this.gl.drawingBufferHeight * 0.90);
-                this.droplets[index].setSize(this.gl.drawingBufferHeight * 0.15);
-                this.droplets[index].setColor([1.0, 0.5, 0.0],[0.24, 0.522, 0.863]);
+                this.nodes[index] = new Drop();
+                this.nodes[index].setCenter(this.gl.drawingBufferWidth / 2, this.gl.drawingBufferHeight * 0.90);
+                this.nodes[index].setSize(this.gl.drawingBufferHeight * 0.15);
+                this.nodes[index].setColor([1.0, 0.5, 0.0],[0.24, 0.522, 0.863]);
             }else{
-                this.droplets[index] = new Drop();
-                let center = this.droplets[index -1].getCenter();
-                this.droplets[index].setCenter(center.x, center.y + (this.gl.drawingBufferHeight * 0.15) +  (this.gl.drawingBufferHeight * 0.1));
-                this.droplets[index].setSize(this.gl.drawingBufferHeight * 0.15);
-                this.droplets[index].setColor([1.0, 0.5, 0.0],[0.24, 0.522, 0.863]);
+                this.nodes[index] = new Drop();
+                let center = this.nodes[index -1].getCenter();
+                this.nodes[index].setCenter(center.x, center.y + (this.gl.drawingBufferHeight * 0.15) +  (this.gl.drawingBufferHeight * 0.1));
+                this.nodes[index].setSize(this.gl.drawingBufferHeight * 0.15);
+                this.nodes[index].setColor([1.0, 0.5, 0.0],[0.24, 0.522, 0.863]);
             }
         }
         this.status = 'paused';
@@ -131,30 +131,30 @@ Game = {
     },
 
     tick : function(theta){
-        let lastPosition = this.leader;
-        for(let index = this.leader; index < this.sequence; index++){
+        let lastPosition = this.sequenceIndex;
+        for(let index = this.sequenceIndex; index < this.sequence; index++){
             if(theta > 1){
-                this.droplets[index].tick(1);
+                this.nodes[index].tick(1);
             }else{
-                this.droplets[index].tick(theta);
+                this.nodes[index].tick(theta);
             }
 
         }
-        let miss = this.bucket.dropLidCollision(this.droplets[this.leader]);
-        let goal = this.bucket.dropContentCollision(this.droplets[this.leader]);
+        let miss = this.bucket.dropLidCollision(this.nodes[this.sequenceIndex]);
+        let goal = this.bucket.dropContentCollision(this.nodes[this.sequenceIndex]);
         if(miss || goal){
-            this.leader = (this.leader + 1) % this.sequence;
-            if(this.leader == 0){
+            this.sequenceIndex = (this.sequenceIndex + 1) % this.sequence;
+            if(this.sequenceIndex == 0){
                 this.repsDone++;
                 if(this.repsDone <= repsToDo){
                     for (let index = 0; index < this.sequence; index++) {
                         if (index == 0){
-                            this.droplets[index].setCenter(this.gl.drawingBufferWidth / 2, this.gl.drawingBufferHeight * 0.90);
-                            this.droplets[index].setSize(this.gl.drawingBufferHeight * 0.15);
+                            this.nodes[index].setCenter(this.gl.drawingBufferWidth / 2, this.gl.drawingBufferHeight * 0.90);
+                            this.nodes[index].setSize(this.gl.drawingBufferHeight * 0.15);
                         }else{
-                            let center = this.droplets[index - 1].getCenter();
-                            this.droplets[index].setCenter(center.x, center.y + (this.gl.drawingBufferHeight * 0.15) +  (this.gl.drawingBufferHeight * 0.1));
-                            this.droplets[index].setSize(this.gl.drawingBufferHeight * 0.15);
+                            let center = this.nodes[index - 1].getCenter();
+                            this.nodes[index].setCenter(center.x, center.y + (this.gl.drawingBufferHeight * 0.15) +  (this.gl.drawingBufferHeight * 0.1));
+                            this.nodes[index].setSize(this.gl.drawingBufferHeight * 0.15);
                         }
                     }
                 }else{
@@ -169,14 +169,14 @@ Game = {
     },
 
     distanceCheck : function(){
-        return (this.bucket.distanceFromDrop(this.droplets[this.leader])) <= (this.gl.drawingBufferHeight * 0.1);
+        return (this.bucket.distanceFromDrop(this.nodes[this.sequenceIndex])) <= (this.gl.drawingBufferHeight * 0.1);
     },
 
     drawScene : function(){
         this.gl.clearColor(0.24, 0.522, 0.863, 1);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-        for(let index = this.leader; index < this.sequence; index++){
-            this.droplets[index].draw(this.gl);
+        for(let index = this.sequenceIndex; index < this.sequence; index++){
+            this.nodes[index].draw(this.gl);
         }
         this.bucket.draw(this.gl);
     }

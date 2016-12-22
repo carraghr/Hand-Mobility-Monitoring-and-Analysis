@@ -11,11 +11,20 @@
     $query = "insert into ExerciseTargetLocations values ('Finger Separating','middle')";
     $queryResult = @mysqli_query($databaseConnection, $query) OR trigger_error($databaseConnection->error."[ $query]");
 
-    $query = "insert into ExerciseTargetLocations values ('Finger Separating','pinky')";
+    $query = "insert into ExerciseTargetLocations values ('Finger Separating','ring')";
     $queryResult = @mysqli_query($databaseConnection, $query) OR trigger_error($databaseConnection->error."[ $query]");
 
+    $query = "insert into ExerciseTargetLocations values ('Tip to Tip','index')";
+    $queryResult = @mysqli_query($databaseConnection, $query) OR trigger_error($databaseConnection->error."[ $query]");
 
+    $query = "insert into ExerciseTargetLocations values ('Tip to Tip','middle')";
+    $queryResult = @mysqli_query($databaseConnection, $query) OR trigger_error($databaseConnection->error."[ $query]");
 
+    $query = "insert into ExerciseTargetLocations values ('Tip to Tip','ring')";
+    $queryResult = @mysqli_query($databaseConnection, $query) OR trigger_error($databaseConnection->error."[ $query]");
+
+    $query = "insert into ExerciseTargetLocations values ('Tip to Tip','pinky')";
+    $queryResult = @mysqli_query($databaseConnection, $query) OR trigger_error($databaseConnection->error."[ $query]");
 
     $query = "insert into ExerciseTargetLocations values ('1','a')";
     $queryResult = @mysqli_query($databaseConnection, $query) OR trigger_error($databaseConnection->error."[ $query]");
