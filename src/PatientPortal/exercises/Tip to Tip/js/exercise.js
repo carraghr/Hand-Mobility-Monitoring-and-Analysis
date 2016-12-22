@@ -1,41 +1,35 @@
 window.TO_DEG = 180 / Math.PI;
 
 var time = Date.now();
-var record = {};
+var record = [];
 var recording = false;
-var seq;
-var fingeresSelected = Object.keys(targets);
+var trackRecord;
 
 var resetRecord = function(){
-    for(let index = 0; index < fingeresSelected.length; index++){
-        record[fingeresSelected[index]] = [];
+    for(let index = 0; index < fingersSelected.length; index++){
+        record[fingersSelected[index]] = [];
     }
 };
 
-(function () {
-    resetRecord();
-})();
-
 var measurement = function(hand,fingers){
-
     let distances = {};
     let joint = 0;
     let thumb = vec3.create();
     hand.thumb.distal.lerp(thumb,joint);
 
-    for(let fingerGap = 0; fingerGap < fingers.length; fingerGap++){
+    for(let fingerTip = 0; fingerTip < fingers.length; fingerTip++){
         let finger = vec3.create();
-        if (fingers[fingerGap] === "index") {
+        if (fingers[fingerTip] === "index") {
             hand.indexFinger.distal.lerp(finger,joint);
-        } else if (fingers[fingerGap] === "middle") {
+        } else if (fingers[fingerTip] === "middle") {
            hand.middleFinger.distal.lerp(finger,joint);
-        } else if (fingers[fingerGap] === "ring") {
+        } else if (fingers[fingerTip] === "ring") {
             hand.ringFinger.distal.lerp(finger,joint);
-        } else if (fingers[fingerGap] === "pinky") {
+        } else if (fingers[fingerTip] === "pinky") {
             hand.pinky.distal.lerp(finger,joint);
         }
         let distance = vec3.distance(thumb,finger);
-        distances[fingers[fingerGap]]=(distance / 10).toPrecision(2);
+        distances[fingers[fingerTip]]=(distance / 10).toPrecision(2);
     }
     return distances;
 };
@@ -52,9 +46,9 @@ var targetMeet = function(distances, targets){
     return (targetMet/fingers.length);
 };
 
-var shortestDistance = function(distances){
+var fingerShortestDistance = function(distances){
 	let fingers = Object.keys(distances);
-	let shortestDistance =distances[fingers[0]];
+	let shortestDistance = distances[fingers[0]];
 	let shortestFinger;
 
 	for(let finger of fingers){
@@ -67,35 +61,31 @@ var shortestDistance = function(distances){
 };
 
 Leap.loop({background:false, frameEventName:"animationFrame"},function (frame){
+
     if(Game.isPlayable()){
         if (!Game.isPaused() && !Game.isCompleted()){
             if (frame.hands.length == 0) {
                 Game.pause();
-            } else if (frame.hands.length == 1 && frame.hands[0].type != selectedHand) {
+            }else if (frame.hands.length == 1 && frame.hands[0].type != selectedHand){
                 Game.pause();
-            } else {
-                for (let handIndex = 0, numberOfHands = frame.hands.length; handIndex < numberOfHands; handIndex++) {
-
+            }else {
+                for(let handIndex = 0, numberOfHands = frame.hands.length; handIndex < numberOfHands; handIndex++){
                     let hand = frame.hands[handIndex];
-
-                    if (hand.type == selectedHand){
-
-                         let distances = measurement(hand, fingeresSelected);
-
+                    if(hand.type == selectedHand){
+                         let distances = measurement(hand, fingersSelected);
+                         let shortestFinger = fingerShortestDistance(distances);
                          let t1 = Date.now();
                          let theta = (t1 - time) / 0.001;
                          time = t1;
-                         seq  = Game.tick(theta);
-                         Game.drawScene();
-
+                         trackRecord  = Game.tick(theta,shortestFinger);
+                         Game.drawScene(shortestFinger);
                          if (Game.distanceCheck()) {
-							 for(let index = 0; index < fingeresSelected.length; index++) {
-							 	record[fingeresSelected[index]].push(angles[fingeresSelected[index]]);
-							 }
-							 recording = true;
+                             record.push(distances[fingersSelected[trackRecord.finger]]);
+							 console.log(record);
+                             recording = true;
                          }else if (recording) {
-							 Game.processTracking(repsToDo, seq, record);
-							 resetRecord();
+							 Game.processTracking(repsToDo, trackRecord.seq, fingersSelected[trackRecord.finger], record);
+							 record=[];
 							 recording = false;
                          }
 					}
@@ -110,30 +100,27 @@ Leap.loop({background:false, frameEventName:"animationFrame"},function (frame){
 
                     Game.resume();
 
-                    let angles = measurement(hand, fingeresSelected);
+					let distances = measurement(hand, fingersSelected);
+					let shortestFinger = fingerShortestDistance(distances);
+					let t1 = Date.now();
+					let theta = (t1 - time) / 0.001;
+					time = t1;
+					trackRecord  = Game.tick(theta,shortestFinger);
+					Game.drawScene(shortestFinger);
 
-                    Game.separateLid(targetMeet(angles, targets));
-
-                    let t1 = Date.now();
-                    let theta = 0.001;
-                    time = t1;
-                    seq  = Game.tick(theta);
-                    Game.drawScene();
-
-                    if (Game.distanceCheck()) {
-                        for(let index = 0; index < fingeresSelected.length; index++) {
-                            record[fingeresSelected[index]].push(angles[fingeresSelected[index]]);
-                        }recording = true;
-                    } else if (recording) {
-                        Game.processTracking(repsToDo, seq, record);
-                        resetRecord();
-                        recording = false;
-                    }
+					if (Game.distanceCheck()) {
+						record.push(distances[fingersSelected[trackRecord.finger]]);
+						recording = true;
+					}else if (recording) {
+						Game.processTracking(repsToDo, trackRecord.seq, trackRecord.finger, record);
+						record=[];
+						recording = false;
+					}
                 }
             }
         }else if(Game.isCompleted()){
             if (recording) {
-                Game.processTracking(repsToDo, seq, record);
+                Game.processTracking(repsToDo, trackRecord, record);
                 record = [];
                 recording = false;
                 Game.tick(1);
