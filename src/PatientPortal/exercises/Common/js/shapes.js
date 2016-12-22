@@ -1,25 +1,31 @@
 FingerBase = function(){
     var baseHoles = [];
     var center = {x:0, y:0};
+    var height;
 
 	return{
 
-	    createBase : function(x, y, numberOfElements, elementColor, backgroundColor, elementRadius){
-            center.x=x;
-            center.y=y;
+	    createBase : function(x, y, numberOfElements, elementColor, backgroundColor, elementSize){
+            center.x = x;
+            center.y = y;
+			let elementRadius = elementSize;
+			height = elementSize/2;
 
-            let offset = elementRadius;
+			let offset = 1;
             let rightIndex= 0;
             if(numberOfElements % 2 != 0){
-                baseHoles[numberOfElements] = new Circle();
-				baseHoles[numberOfElements].setCenter(center.x,center.y);
-				baseHoles[numberOfElements].setColor(elementColor,backgroundColor);
-                baseHoles[numberOfElements].setSize(elementRadius);
-				rightIndex = (numberOfElements / 2) + 1;
+                let index = Math.floor(numberOfElements/2);
+                baseHoles[index] = new Circle();
+				baseHoles[index].setCenter(center.x,center.y);
+				baseHoles[index].setColor(elementColor,backgroundColor);
+                baseHoles[index].setSize(elementRadius);
+				rightIndex = Math.floor(index) + 1;
+				offset += elementRadius ;
             }else{
-				rightIndex = (numberOfElements / 2);
+				rightIndex = Math.floor(numberOfElements / 2);
+				offset += elementRadius/2;
             }
-            for(let leftIndex = numberOfElements/2-1; rightIndex < numberOfElements && leftIndex>=0; rightIndex++,leftIndex--){
+            for(let leftIndex = Math.floor(numberOfElements/2) - 1; rightIndex < numberOfElements && leftIndex >= 0; rightIndex++,leftIndex--){
                 baseHoles[rightIndex] = new Circle();
 				baseHoles[rightIndex].setCenter(center.x + offset,center.y);
 				baseHoles[rightIndex].setColor(elementColor,backgroundColor);
@@ -29,8 +35,17 @@ FingerBase = function(){
 				baseHoles[leftIndex].setCenter(center.x - offset,center.y);
 				baseHoles[leftIndex].setColor(elementColor,backgroundColor);
 				baseHoles[leftIndex].setSize(elementRadius);
+				offset += (elementRadius) + 1;
             }
         },
+
+		getNodeCenter : function (index){
+			if(index >= 0 && index < baseHoles.length){
+                return baseHoles[index].getCenter();
+			}else{
+			    console.log("wrong Index: " + index);
+            }
+		},
 
 		setColor : function (index, elementColor, backgroundColor) {
 			if(index > 0 && index < baseHoles.length){
@@ -42,6 +57,28 @@ FingerBase = function(){
 			for(let index = 0; index < baseHoles.length; index++){
 			    baseHoles[index].draw(gl);
             }
+		},
+
+		baseNodeBottomHit : function(baseHoleIndex, node){
+            let holeCenter = baseHoles[baseHoleIndex].getCenter();
+            let holeRadius = baseHoles[baseHoleIndex].getSize()/2;
+
+            let nodeCenter = node.getCenter();
+            let nodeRadius = node.getSize()/2;
+
+			return (holeCenter.y - holeRadius) >= (nodeCenter.y + nodeRadius);
+        },
+
+		distanceFromNodeBaseHoleTop:function (baseHoleIndex,node){
+            let circleCenter = baseHoles[baseHoleIndex].getCenter();
+			let holeCenter = node.getCenter();
+            return Math.sqrt(Math.pow( Math.abs(circleCenter.x - holeCenter.x ) , 2) + Math.pow(Math.abs(circleCenter.y - (holeCenter.y + height)), 2));
+        },
+
+		distanceFromNodeBaseHoleButom:function (baseHoleIndex,node){
+			let circleCenter = baseHoles[baseHoleIndex].getCenter();
+			let holeCenter = node.getCenter();
+			return Math.sqrt(Math.pow( Math.abs(circleCenter.x - holeCenter.x ) , 2) + Math.pow(Math.abs(circleCenter.y - (holeCenter.y - height)), 2));
 		}
 	};
 };
@@ -308,8 +345,15 @@ Circle = function(){
         },
 
         tick: function(theta){
+        },
+
+        circleCollision : function(circle){
+            let circleCenter = circle.getCenter();
+            let circleRadius = circle.getSize()/2;
+
+            return Math.pow(Math.abs(circleCenter.x - center.x),2) + Math.pow(Math.abs(circleCenter.y - center.y),2) <= Math.pow(radius + circleRadius,2);
         }
-    };
+	};
 };
 
 Rectangle = function(){
