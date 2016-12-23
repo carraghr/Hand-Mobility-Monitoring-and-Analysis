@@ -721,3 +721,121 @@ Triangle = function(){
         }
     };
 };
+
+
+CircleWithoutBackground = function(){
+
+	var program = Main.glFilledCircleProgram;
+
+	var center = {x:0,y:0};
+	var radius = 1;
+	var color= [];
+	var defaultPosition = [0, 0, 0];
+
+	var vertices = [];
+
+	var hasChangedLocation = true, hasChangedSize = false;
+
+	return {
+
+		setColor : function(circle){
+			color = circle;
+		},
+
+		setDefaultPosition : function (x, y) {
+
+			defaultPosition[0] = x;
+			defaultPosition[1] = y;
+
+			center.x = x;
+			center.y = y;
+
+			hasChangedLocation = true;
+		},
+
+		restoreDefaultPosition : function (){
+			center.x = defaultPosition[0];
+			center.y = defaultPosition[1];
+			hasChangedLocation = true;
+		},
+
+		setCenter : function (x, y) {
+
+			center.x = x;
+			center.y = y;
+
+			hasChangedLocation = true;
+		},
+
+		getCenter : function(){
+			return center;
+		},
+
+		setSize : function(size){
+			radius = size/2;
+			hasChangedSize = true;
+		},
+
+		getSize : function(){
+			return radius * 2;
+		},
+
+		moveRight : function(space){
+			center.x += space;
+		},
+
+		moveLeft : function(space){
+			center.x -= space;
+		},
+
+		moveUp : function(space){
+			center.y += space;
+		},
+
+		moveDown : function(space){
+			center.y -= space;
+		},
+
+		draw : function(gl){
+
+			gl.useProgram(program);
+
+			gl.uniform2f(program.u_resolution, gl.drawingBufferWidth, gl.drawingBufferHeight);
+
+			//if(hasChangedLocation || hasChangedSize){
+				let ATTRIBUTES = 2;
+			    let numFans = 32;
+				let degreePerFan = (2 * Math.PI) / numFans;
+
+				vertices = [center.x, center.y];
+				for(let i = 0; i <= numFans; i ++ ){
+                    let index = ATTRIBUTES * i + 2;
+					let angle = degreePerFan * (i+1);
+					vertices[index]= center.x + Math.cos(angle) * radius;
+					vertices[index + 1] = center.y + Math.sin(angle) * radius;
+				}
+			//}
+
+            color = [1,0,0];
+			gl.uniform3f(program.colorLoc, color[0], color[1], color[2]);
+
+            let vertBuffer = gl.createBuffer();
+			gl.bindBuffer(gl.ARRAY_BUFFER, vertBuffer);
+			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+			gl.vertexAttribPointer(program.positionLoc, 2, gl.FLOAT, gl.FALSE, ATTRIBUTES * Float32Array.BYTES_PER_ELEMENT, 0);
+			gl.enableVertexAttribArray(program.positionLoc);
+
+			gl.drawArrays(gl.TRIANGLE_FAN, 0, vertices.length/ATTRIBUTES);
+		},
+
+		tick: function(theta){
+		},
+
+		circleCollision : function(circle){
+			let circleCenter = circle.getCenter();
+			let circleRadius = circle.getSize()/2;
+
+			return Math.pow(Math.abs(circleCenter.x - center.x),2) + Math.pow(Math.abs(circleCenter.y - center.y),2) <= Math.pow(radius + circleRadius,2);
+		}
+	};
+};

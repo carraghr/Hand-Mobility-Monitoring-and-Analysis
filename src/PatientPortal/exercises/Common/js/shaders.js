@@ -24,6 +24,32 @@ var Shaders = {
             '',
         '}'
     ],
+
+	circleFilledVertexShaderCode: ['precision mediump float;',     //Precision Qualifiers
+		'attribute vec2 vertPosition;', //Incoming data from user for position of shape
+		'uniform vec3 color;',        //Incoming data from user for colour of shape
+		'uniform vec2 u_resolution;',   //Incoming data from user for resolution of shape in respect to canvas
+		'',
+		'varying vec3 fragColor;', //Output for fragment shader
+		'',
+		'void main(void){',
+		'fragColor = color;',
+		'vec2 clipSpace = vertPosition / u_resolution * 2.0  - 1.0;',
+		'gl_Position = vec4(clipSpace , 0, 1);',
+		'}'
+	],
+
+	circleFilledFragmentShaderCode: ['precision mediump float;',
+		'',
+		'varying vec3 fragColor;',
+		'',
+		'void main(){',
+		'',
+		'gl_FragColor = vec4(fragColor,1.0);',
+		'',
+		'}'
+	],
+
     circleVertexShaderCode : [  'precision mediump float;',  // Precision Qualifiers
         'attribute vec2 vertPosition;',//Incoming data from user for position of shape
         '',

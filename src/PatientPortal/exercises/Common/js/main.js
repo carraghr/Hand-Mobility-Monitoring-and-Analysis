@@ -24,6 +24,13 @@ Main = {
             colorLoc : this.gl.getAttribLocation(this.glPolygonProgram, "color"),
             u_resolution : this.gl.getUniformLocation(this.glPolygonProgram, "u_resolution")});
 
+		this.glFilledCircleProgram = ProgramUtils.initProgram(this.gl, Shaders.circleFilledVertexShaderCode.join('\n'), Shaders.circleFilledFragmentShaderCode.join('\n'));
+
+		_.extend(this.glFilledCircleProgram,{positionLoc : this.gl.getAttribLocation(this.glFilledCircleProgram, "vertPosition"),
+			colorLoc : this.gl.getUniformLocation(this.glFilledCircleProgram, "color"),
+			u_resolution : this.gl.getUniformLocation(this.glFilledCircleProgram, "u_resolution")});
+
+
         this.glCircleProgram = ProgramUtils.initProgram(this.gl, Shaders.circleVertexShaderCode.join('\n'), Shaders.circleFragmentShaderCode.join('\n'));
 
         _.extend(this.glCircleProgram,{ positionLoc : this.gl.getAttribLocation(this.glCircleProgram, "vertPosition"),
