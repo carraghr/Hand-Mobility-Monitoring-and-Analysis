@@ -55,7 +55,7 @@ portal.controller('exerciseScheme', function exercises($scope,$http,$location,$c
 
 	let location = $location.absUrl().substring(0,$location.absUrl().lastIndexOf("CareProviderPortal/")+18);
 
-	$scope.getExerciseData = function (PID){
+	$scope.getExerciseData = function(){
 		let request = {
 			method: 'POST',
 			url: location + '/assests/php/exerciseTargetsLookup.php',
@@ -131,8 +131,7 @@ portal.controller('exerciseScheme', function exercises($scope,$http,$location,$c
 		});
 	}
 
-	$scope.isActive = function (viewLocation) {
-		console.log($location.path());
+	$scope.isActive = function (viewLocation){
 		return viewLocation === $location.path() || ($location.path() === "/" && viewLocation==="/exercises");
 	};
 
