@@ -36,7 +36,7 @@
 
         while($resultRow = mysqli_fetch_assoc($queryResult)){
 
-            $results->addExercise($resultRow['Exercise'], $resultRow['Repetition'], $resultRow['Sequence'], $resultRow['Hand'], $resultRow['Location'], $resultRow['Movement']);
+            $results->addExercise($resultRow['Exercise'], $resultRow['Repetition'], $resultRow['Sequence'], $resultRow['Hand'], $resultRow['Movement'], $resultRow['Target']);
         }
         echo json_encode($results);
     }

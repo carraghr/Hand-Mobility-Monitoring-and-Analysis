@@ -1,10 +1,11 @@
 <?php
-function submitExericse($databaseConnection, $patientID, $exerciseName, $hand, $location, $target, $reps, $seqs){
+function submitExercise($databaseConnection, $patientID, $exerciseName, $hand, $location, $target, $reps, $seqs){
 
     $exerciseAdditionQuery = "select Area from exercises where Name = '$exerciseName'";
 
     $exerciseType = @mysqli_query($databaseConnection, $exerciseAdditionQuery) OR trigger_error($databaseConnection->error . "[$exerciseAdditionQuery]");
     $resultRow = mysqli_fetch_assoc($exerciseType);
+
     if(strcmp($resultRow['Area'],"Hand" ) == 0){
         $exerciseAdditionQuery = "insert into handtargets values ('$patientID','$exerciseName','$hand','$location','$target','$reps','$seqs')";
 
@@ -12,7 +13,7 @@ function submitExericse($databaseConnection, $patientID, $exerciseName, $hand, $
 
         return $exerciseNameQueryResult;
     }else{
-        $exerciseAdditionQuery = "insert into WristTargets values ('$patientID','$exerciseName','$hand','$location','$target','$reps','$seqs')";
+        $exerciseAdditionQuery = "insert into wristtargets values ('$patientID','$exerciseName','$hand','$location','$target','$reps','$seqs')";
 
         $exerciseNameQueryResult = @mysqli_query($databaseConnection, $exerciseAdditionQuery) OR trigger_error($databaseConnection->error . "[$exerciseAdditionQuery]");
 
@@ -27,7 +28,7 @@ function exerciseTargetLookup($databaseConnection, $exerciseName){
     $resultRow = mysqli_fetch_assoc($exerciseType);
     if(strcmp($resultRow['Area'],"Hand" ) == 0){
         $exerciseLocationQuery = "select Location
-                  from HandExerciseTargetLocations
+                  from handexercisetargetlocations
                   where Exercise = '$exerciseName'";
 
         $exerciseNameQueryResult = @mysqli_query($databaseConnection, $exerciseLocationQuery) OR trigger_error($databaseConnection->error . "[$exerciseLocationQuery]");
@@ -41,7 +42,7 @@ function exerciseTargetLookup($databaseConnection, $exerciseName){
         return $results;
     }else{
         $exerciseLocationQuery = "select Movement
-                  from WristExerciseTargetLocations
+                  from wristexercisetargetlocations
                   where Exercise = '$exerciseName'";
 
         $exerciseNameQueryResult = @mysqli_query($databaseConnection, $exerciseLocationQuery) OR trigger_error($databaseConnection->error . "[$exerciseLocationQuery]");
@@ -64,7 +65,7 @@ function getTargets($hand, $locations, $form, $indexOfLocations){
     for($index = $indexOfLocations, $count= 0;   $count < $numberOfLocations; $index++, $count++){
         $targetInstance = $form[$index]['name'];
         for($locationIndex = 0; $locationIndex < $numberOfLocations;$locationIndex++){
-            if(strcmp($targetInstance,$hand. $locations[$locationIndex])==0 && $form[$index]['value'] > 0){
+            if(strcmp($targetInstance, $hand. $locations[$locationIndex])==0 && $form[$index]['value'] > 0){
                 array_push($targets, new Target($locations[$locationIndex],$form[$index]['value']));
             }
         }
