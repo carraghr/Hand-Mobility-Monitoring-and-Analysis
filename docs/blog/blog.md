@@ -338,3 +338,16 @@ In the second example below the portal page is been used for the generation of r
 When a care provider goes to add a new graph or table a popup window is shown to them and they select what exercise, and result they want to see from it on the table or graph. Export function creates a pdf client side through the use of jsPDF. The library for the table and graphs hasn’t been chosen yet but highcharts seems like a nice choice.
 
 The third choice given in the sample is account management which gives options of changing care provider for a patient, changing name,
+
+
+##UI Implementation
+
+To implement my design for both the patient UI and care provider UI I used the AngularJS and Bootstrap. I use AngularJS to create single page applications(SPA's) for both portals for care providers and patients end users. To do this I had to create set of components for the web pages. Bootstrap was used to speed up the process of create the html pages so I did not spend time creating css to get the same layout that I designed with draw io.
+
+For a patients portal I had to create an exercise component and a feedback component. These components are linked to a route of a url so that when one from the main tab selection they do not reload the page when loading a new updated view of the page. The exercise tab shows all exercises that the patient has for each hand to do split by which hand it is to be done by. This is done so that if they only have to do exercises on one hand the page is not covered with unnecessary headers.
+
+The care provider has three main components these are exercise, report and account. The exercise component deals with a patients exercise scheme and the options available to the care provider for each exercises adding, removing and changing targets. For this to work I with the design done above I had to use ng-include to change between subviews, with ng-includes I had a variable template change and update every time a user selected a different sub menu option.
+
+The form popup for adding an extra exercise to a patients set was do using UI Bootstraps, which is a javascript library that has bootstrap components written in pure AngularJS, uibModal class which allowed for a uibModalInstance and controller to be created in angular to deal with displaying the form and its submission of data to the server and its response.
+
+At the moment only the exercise portion of the care provider portal is done with the options of adding and viewing exercises for a patient. The changing and removal of an exercise still has to be implemented however getting more exercises done takes priority at the moment. 
