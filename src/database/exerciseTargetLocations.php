@@ -60,3 +60,9 @@
 
     $query = "insert into HandExerciseTargetLocations values ('8','w')";
     $queryResult = @mysqli_query($databaseConnection, $query) OR trigger_error($databaseConnection->error."[ $query]");
+
+    $query = "insert into wristexercisetargetlocations values ('Wave','flexion')";
+    $queryResult = @mysqli_query($databaseConnection, $query) OR trigger_error($databaseConnection->error."[ $query]");
+
+    $query = "insert into wristexercisetargetlocations values ('Wave','extension')";
+    $queryResult = @mysqli_query($databaseConnection, $query) OR trigger_error($databaseConnection->error."[ $query]");

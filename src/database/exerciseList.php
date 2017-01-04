@@ -7,6 +7,9 @@
     $query = "insert into exercises values ('Tip to Tip','Hand','Hand','centimeters')";
     $queryResult = @mysqli_query($databaseConnection, $query) OR trigger_error($databaseConnection->error."[ $query]");
 
+    $query = "insert into exercises values ('Wave','Wrist','Degress','centimeters')";
+    $queryResult = @mysqli_query($databaseConnection, $query) OR trigger_error($databaseConnection->error."[ $query]");
+
     $query = "insert into exercises values ('1','Hand','Hand','nothing')";
     $queryResult = @mysqli_query($databaseConnection, $query) OR trigger_error($databaseConnection->error."[ $query]");
 

@@ -41,25 +41,6 @@ create table Patient(
   UNIQUE (UserName)
 );
 
-create table FingerSeparationExercise(
-  PID varchar(10) not null,
-  DOE DATETIME not null,
-  Hand VARCHAR(5) not NULL,
-  Repetition int not null,
-  Sequence int not null,
-  FingerGap VARCHAR(6) not NULL ,
-  Minimum DECIMAL(4,2) not NULL,
-  Mean DECIMAL(4,2) not NULL,
-  Median DECIMAL(4,2) not NULL,
-  Maximum DECIMAL(4,2) not NULL,
-
-  primary key(PID, DOE,Repetition,Sequence,FingerGap),
-
-  constraint `PatientFingerSeparationFK_1`
-  foreign key (PID)
-  references Patient(PatientID)
-);
-
 create TABLE Exercises(
   Name varchar(25) not null,
   Area VARCHAR(10) not null,
@@ -82,9 +63,9 @@ create table HandExerciseTargetLocations(
 
 create table WristExerciseTargetLocations(
   Exercise varchar(25) not null,
-  Movement varchar(8) not null,
+  Movement varchar(10) not null,
 
-  PRIMARY KEY (Exercise,Movement),
+  PRIMARY KEY (Exercise, Movement),
 
   CONSTRAINT `WristExerciseTargetLocation`
   FOREIGN KEY (Exercise)
@@ -100,7 +81,7 @@ create table HandTargets (
   Repetition int not null,
   Sequence int not null,
 
-  primary key(PID, Exercise,Hand, Location),
+  primary key(PID, Exercise, Hand, Location),
 
   constraint `PatientHandTargetsFK_1`
   foreign key (PID)
@@ -129,20 +110,6 @@ create table WristTargets (
   references Exercises(Name)
 );
 
-create table Feedback (
-  PID VARCHAR(10) NOT NULL,
-  DOF DATETIME    NOT NULL,
-  Comment TEXT  NOT NULL,
-
-  PRIMARY KEY (PID,DOF),
-
-  CONSTRAINT `PatientFeedbackFK`
-  FOREIGN KEY (PID)
-  REFERENCES Patient(PatientID)
-);
-
-
-
 create table ThumbFingerTipExercise(
   PID varchar(10) not null,
   DOE DATETIME not null,
@@ -160,4 +127,54 @@ create table ThumbFingerTipExercise(
   constraint `PatientThumbFingerTipFK_1`
   foreign key (PID)
   references Patient(PatientID)
+);
+
+create table FingerSeparationExercise(
+  PID varchar(10) not null,
+  DOE DATETIME not null,
+  Hand VARCHAR(5) not NULL,
+  Repetition int not null,
+  Sequence int not null,
+  FingerGap VARCHAR(6) not NULL ,
+  Minimum DECIMAL(4,2) not NULL,
+  Mean DECIMAL(4,2) not NULL,
+  Median DECIMAL(4,2) not NULL,
+  Maximum DECIMAL(4,2) not NULL,
+
+  primary key(PID, DOE, Repetition, Sequence, FingerGap),
+
+  constraint `PatientFingerSeparationFK_1`
+  foreign key (PID)
+  references Patient(PatientID)
+);
+
+create table WaveExercise(
+  PID varchar(10) not null,
+  DOE DATETIME not null,
+  Hand VARCHAR(5) not NULL,
+  Repetition int not null,
+  Sequence int not null,
+  Movement VARCHAR(6) not NULL ,
+  Minimum DECIMAL(4,2) not NULL,
+  Mean DECIMAL(4,2) not NULL,
+  Median DECIMAL(4,2) not NULL,
+  Maximum DECIMAL(4,2) not NULL,
+
+  primary key(PID, DOE, Repetition, Sequence, Movement),
+
+  constraint `PatientWaveFK_1`
+  foreign key (PID)
+  references Patient(PatientID)
+);
+
+create table Feedback (
+  PID VARCHAR(10) NOT NULL,
+  DOF DATETIME    NOT NULL,
+  Comment TEXT  NOT NULL,
+
+  PRIMARY KEY (PID,DOF),
+
+  CONSTRAINT `PatientFeedbackFK`
+  FOREIGN KEY (PID)
+  REFERENCES Patient(PatientID)
 );
