@@ -12,7 +12,7 @@
     $ID = $_SESSION['user_id'];
 
 
-    include_once('../../Common/php/exerciseInformation.php');
+    include_once('../../Common/php/handExerciseInformation.php');
 
     include('../../Common/html/header.html');
     include('../html/instructions.html');

@@ -1,13 +1,13 @@
 Game = {
 
     pause : function() {
-        var text = document.getElementById('gameStatus');
+        let text = document.getElementById('gameStatus');
         text.innerHTML = "paused";
         this.status = 'paused';
     },
 
     resume : function(){
-        var text = document.getElementById('gameStatus');
+		let text = document.getElementById('gameStatus');
         text.innerHTML = "playing";
         this.status = 'playing';
     },
@@ -50,7 +50,7 @@ Game = {
 		this.numberOfBaseInput = 4;
 
 		this.base = new FingerBase();
-		this.base.createBase(this.gl.drawingBufferWidth / 2, this.gl.drawingBufferHeight * 0.1,this.numberOfBaseInput, [1.0, 0.5, 0.0],[0.24, 0.522, 0.863], this.gl.drawingBufferHeight * 0.2);
+		this.base.createBase(this.gl.drawingBufferWidth / 2, this.gl.drawingBufferHeight * 0.1,this.numberOfBaseInput, [1.0, 0.5, 0.0], [0.24, 0.522, 0.863], this.gl.drawingBufferHeight * 0.2);
 
 		this.nodes = [];
 
@@ -63,16 +63,16 @@ Game = {
 		this.baseNodeLocation = this.base.getNodeCenter(this.nodeToHit);
 		for(let index = 0; index < this.sequence; index++){
 			if(index == 0){
-				this.nodes[index] = new Drop();
+				this.nodes[index] = new Node();
 				this.nodes[index].setCenter(this.baseNodeLocation.x, this.gl.drawingBufferHeight * 0.90);
 				this.nodes[index].setSize(this.gl.drawingBufferHeight * 0.15);
-				this.nodes[index].setColor([1.0, 0.5, 0.0],[0.24, 0.522, 0.863]);
+				this.nodes[index].setColor([1.0, 0.0, 0.0]);
 			}else{
-				this.nodes[index] = new Drop();
+				this.nodes[index] = new Node();
 				let center = this.nodes[index -1].getCenter();
 				this.nodes[index].setCenter(this.baseNodeLocation.x, center.y + (this.gl.drawingBufferHeight * 0.15) +  (this.gl.drawingBufferHeight * 0.1));
 				this.nodes[index].setSize(this.gl.drawingBufferHeight * 0.15);
-				this.nodes[index].setColor([1.0, 0.5, 0.0],[0.24, 0.522, 0.863]);
+				this.nodes[index].setColor([1.0, 0.0, 0.0]);
 			}
 		}
 
@@ -162,7 +162,21 @@ Game = {
 		}
     },
 
-    tick : function(theta,finger){
+	nodeToHighlight : function(finger){
+		if (finger === "index"){
+			return 0;
+		}else if (finger === "middle") {
+			return 1;
+		}else if (finger === "ring") {
+			return 2;
+		}else if (finger === "pinky") {
+			return 3;
+		}
+	},
+
+	tick : function(theta,finger){
+		this.highlightedNode = this.nodeToHighlight(finger);
+		this.base.highlightBaseHole(this.highlightedNode);
 		let lastPosition = this.sequenceIndex;
 		let lastBasePosition = this.fingerToExerciseIndex;
 		for(let index = this.sequenceIndex; index < this.sequence; index++){
@@ -171,12 +185,16 @@ Game = {
 			}else{
 				this.nodes[index].tick(theta);
 			}
-
 		}
 		let rightBase = this.checkFingerPlacement(finger);//this is for scoring points
+		let inBase = this.base.checkCollision(this.fingerToExerciseIndex,this.nodes[this.sequenceIndex]);
 		//shortestFinger check also that the finger is on the right base node.
-		console.log(this.nodeToHit);
 		let nodeDroped = this.base.baseNodeBottomHit(this.nodeToHit, this.nodes[this.sequenceIndex]);
+
+		if(!rightBase && inBase){
+			this.scored = false;
+		}
+
 		if(nodeDroped){
 			this.sequenceIndex = (this.sequenceIndex + 1) % this.sequence;
 			if(this.sequenceIndex == 0){
@@ -189,11 +207,9 @@ Game = {
 					for (let index = 0; index < this.sequence; index++) {
 						if (index == 0){
 							this.nodes[index].setCenter(this.baseNodeLocation.x, this.gl.drawingBufferHeight * 0.90);
-							this.nodes[index].setSize(this.gl.drawingBufferHeight * 0.15);
 						}else{
 							let center = this.nodes[index - 1].getCenter();
 							this.nodes[index].setCenter(this.baseNodeLocation.x, center.y + (this.gl.drawingBufferHeight * 0.15) +  (this.gl.drawingBufferHeight * 0.1));
-							this.nodes[index].setSize(this.gl.drawingBufferHeight * 0.15);
 						}
 					}
 				}else{
@@ -201,29 +217,29 @@ Game = {
 					this.status = "complete";
 				}
 			}
-			if(rightBase){
+			if(rightBase && this.scored){
 			    //increase score.
+
             }
+			this.scored = true;
 		}
 		return { seq :lastPosition + 1, finger: lastBasePosition};
     },
 
     distanceCheck : function(){
-        //check the distance between the nodes and the base node to be hit.
-
 		return (this.base.distanceFromNodeBaseHoleTop(this.nodeToHit,this.nodes[this.sequenceIndex]) < (this.gl.drawingBufferHeight * 0.15))
 				&&
-				(this.base.distanceFromNodeBaseHoleButom(this.nodeToHit,this.nodes[this.sequenceIndex]) > 0)  ;
+				(this.base.distanceFromNodeBaseHoleBottom(this.nodeToHit,this.nodes[this.sequenceIndex]) > 0)  ;
     },
 
-    drawScene : function(){
+	drawScene : function(){
 		this.gl.clearColor(0.24, 0.522, 0.863, 1);
 		this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 		this.base.draw(this.gl);
-
 		for(let index = this.sequenceIndex; index < this.sequence; index++){
 			this.nodes[index].draw(this.gl);
 		}
+		if(this.highlightedNode != "undefined")
+		this.base.restoreColor(this.highlightedNode);
 	}
-
 };

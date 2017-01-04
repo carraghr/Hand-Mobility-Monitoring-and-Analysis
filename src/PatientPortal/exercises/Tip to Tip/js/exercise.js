@@ -49,7 +49,7 @@ var targetMeet = function(distances, targets){
 var fingerShortestDistance = function(distances){
 	let fingers = Object.keys(distances);
 	let shortestDistance = distances[fingers[0]];
-	let shortestFinger;
+	let shortestFinger = fingers[0];
 
 	for(let finger of fingers){
 		if(shortestDistance > distances[finger]){
@@ -78,10 +78,8 @@ Leap.loop({background:false, frameEventName:"animationFrame"},function (frame){
                          let theta = (t1 - time) / 0.001;
                          time = t1;
                          trackRecord  = Game.tick(theta,shortestFinger);
-                         Game.drawScene(shortestFinger);
                          if (Game.distanceCheck()) {
                              record.push(distances[fingersSelected[trackRecord.finger]]);
-							 console.log(record);
                              recording = true;
                          }else if (recording) {
 							 Game.processTracking(repsToDo, trackRecord.seq, fingersSelected[trackRecord.finger], record);
@@ -97,17 +95,13 @@ Leap.loop({background:false, frameEventName:"animationFrame"},function (frame){
                 let hand = frame.hands[handIndex];
 
                 if (hand.type == selectedHand) {
-
                     Game.resume();
-
 					let distances = measurement(hand, fingersSelected);
 					let shortestFinger = fingerShortestDistance(distances);
 					let t1 = Date.now();
 					let theta = (t1 - time) / 0.001;
 					time = t1;
 					trackRecord  = Game.tick(theta,shortestFinger);
-					Game.drawScene(shortestFinger);
-
 					if (Game.distanceCheck()) {
 						record.push(distances[fingersSelected[trackRecord.finger]]);
 						recording = true;
