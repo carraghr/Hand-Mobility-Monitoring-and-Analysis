@@ -41,6 +41,7 @@ Main = {
             backgroundColorLoc : this.gl.getUniformLocation(this.glCircleProgram, "background")});
 
         Game.init();
+        Game.tick(0,0);
         Game.drawScene();
     }
 };
