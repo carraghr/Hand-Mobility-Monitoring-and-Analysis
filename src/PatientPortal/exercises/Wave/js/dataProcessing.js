@@ -44,18 +44,13 @@ self.addEventListener('message', function (e) {
     let returnObject = {start : e.data.start, end : e.data.end };
     let record = [];
 
-    let data = e.data.record.angles; // objects of fingers filled with array of angles.
-    let keys = Object.keys(data);
-
-    for(let index = 0; index < keys.length; index++){
-        let angles = data[keys[index]];
-        let mean = meanOfAngles(angles);
-        let min = minOfAngles(angles);
-        let max = maxOfAngles(angles);
-        let median = medianOfAngles(angles);
-        let tempObject = {rep : ""+e.data.record.rep, sequence : ""+e.data.record.sequence, finger: ""+keys[index], minimum : ""+min, avg:""+mean, maximum : ""+max, median : ""+median};
-        record.push(tempObject);
-    }
+    let distances = e.data.record.distances; // objects of fingers filled with array of angles.
+    let mean = meanOfAngles(distances);
+    let min = minOfAngles(distances);
+    let max = maxOfAngles(distances);
+    let median = medianOfAngles(distances);
+    let tempObject = {rep : ""+e.data.record.rep, sequence : ""+e.data.record.sequence, finger: ""+e.data.record.finger, minimum : ""+min, avg:""+mean, maximum : ""+max, median : ""+median};
+    record.push(tempObject);
     returnObject.record = record;
     self.postMessage(returnObject);
 });

@@ -30,7 +30,7 @@
         $maximum = $record[0]->maximum;
         $median = $record[0]->median;
 
-        $insertResultQuery = "insert into FingerSeparationExercise VALUES ('$PID','$date','$Hand','$rep','$seq','$finger','$minimum','$avg','$median','$maximum')";
+        $insertResultQuery = "insert into waveexercise VALUES ('$PID','$date','$Hand','$rep','$seq','$finger','$minimum','$avg','$median','$maximum')";
         $flag = @mysqli_query($databaseConnection, $insertResultQuery) OR trigger_error($databaseConnection->error."[ $flag ]");
 
         if(!$flag){
