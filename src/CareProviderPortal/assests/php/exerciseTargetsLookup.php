@@ -15,7 +15,7 @@
         $PID = $_POST['PatientID'];
 
         $query = "select Exercise, Hand, Location, Target, Repetition,Sequence
-                        FROM targets
+                        FROM HandTargets
                         WHERE PID ='$PID'";
 
         $queryResult = @mysqli_query($databaseConnection, $query) OR trigger_error($databaseConnection->error . "[ $query]");
@@ -26,6 +26,17 @@
         while($resultRow = mysqli_fetch_assoc($queryResult)) {
 
             $results->addExercise($resultRow['Exercise'], $resultRow['Repetition'], $resultRow['Sequence'], $resultRow['Hand'], $resultRow['Location'], $resultRow['Target']);
+        }
+
+        $query = "select Exercise, Hand, Movement, Target, Repetition,Sequence
+                        FROM WristTargets
+                        WHERE PID ='$PID'";
+
+        $queryResult = @mysqli_query($databaseConnection, $query) OR trigger_error($databaseConnection->error . "[ $query]");
+
+        while($resultRow = mysqli_fetch_assoc($queryResult)){
+
+            $results->addExercise($resultRow['Exercise'], $resultRow['Repetition'], $resultRow['Sequence'], $resultRow['Hand'], $resultRow['Movement'], $resultRow['Target']);
         }
         echo json_encode($results);
     }

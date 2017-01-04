@@ -1,3 +1,248 @@
+Bar = function(){
+   let bar = new Rectangle();
+   let originalCenter = {x:0,y:0};
+   let show = true;
+
+   return {
+       createBar: function(x, y, width, height){
+		   originalCenter.x = x;
+		   originalCenter.y = y;
+           bar.setCenter(x, y);
+		   bar.setWidth(width);
+		   bar.setHeight(height);
+       },
+
+       moveDownfromCenter: function(amount){
+           bar.setCenter(originalCenter.x, originalCenter.y - amount)
+	   },
+
+	   moveUpfromCenter: function(amount){
+		   bar.setCenter(originalCenter.x, originalCenter.y + amount)
+	   },
+
+	   moveFromCenter: function(amount){
+		   bar.setCenter(originalCenter.x, originalCenter.y + amount)
+	   },
+
+	   distanceFromSameLevel: function(bullet){
+		   let circleCenter = bullet.getCenter();
+		   return Math.abs(originalCenter.x - circleCenter.x);
+	   },
+
+	   behindBullet:function(bullet){
+		   let bulletCenter = bullet.getCenter();
+		   let width = bullet.getSize();
+
+		   let distance =  (bulletCenter.x - width/2) - (originalCenter.x - (bar.getWidth()/2));
+
+		   return distance <= 0;
+	   },
+
+       draw:function(gl){
+           bar.draw(gl);
+	   },
+
+	   getBarHeight:function(){
+		   return bar.getHeight();
+	   }
+
+   };
+};
+
+Bullet = function(){
+	let node = new Circle();
+    let direction;
+    let show = true;
+
+	return {
+
+	    create: function (x, y, size, color, backgroundColor, directionToGo){
+            node.setCenter(x,y);
+            node.setSize(size);
+            node.setColor(color,backgroundColor);
+			direction = directionToGo;
+		},
+
+		setCenter: function (x, y){
+			node.setCenter(x, y);
+		},
+
+		setSize: function (r){
+			node.setSize(r);
+		},
+
+		getCenter: function (){
+			return node.getCenter();
+		},
+
+		getSize: function (){
+			return node.getSize();
+		},
+
+		invisable:function(){
+			show = false;
+		},
+		visable:function(){
+			show = true;
+		},
+
+		tick: function (theta){
+		    if(direction === "Up"){
+				node.moveUp(theta * 1);
+            }else if(direction === "Down"){
+				node.moveDown(theta * 1);
+            }else if(direction === "Left"){
+				node.moveLeft(theta * 1);
+			}else if(direction === "Right"){
+				node.moveRight(theta * 1);
+			}
+
+		},
+
+		draw: function (gl){
+			if(show){
+				node.draw(gl);
+			}
+		}
+	};
+};
+
+Node = function(){
+	var node = new CircleWithoutBackground();
+	node.setSize(100);
+	node.setCenter(0,1);
+
+	return{
+
+		setCenter : function (x,y) {
+			node.setCenter(x,y);
+		},
+
+		setColor : function (color) {
+			node.setColor(color);
+		},
+
+		setSize : function (r) {
+			node.setSize(r);
+		},
+
+		getCenter :function () {
+			return node.getCenter();
+		},
+
+		getSize : function () {
+			return node.getSize();
+		},
+
+		tick : function(theta) {
+			node.moveDown(theta * 1);
+		},
+
+		draw : function(gl,ratio) {
+			node.draw(gl,ratio);
+		}
+	};
+};
+
+FingerBase = function(){
+    var baseHoles = [];
+    var center = {x:0, y:0};
+    var height;
+    var colorNode = [];
+    var background = [];
+
+	return{
+
+	    createBase : function(x, y, numberOfElements, elementColor, backgroundColor, elementSize){
+            center.x = x;
+            center.y = y;
+			let elementRadius = elementSize;
+			height = elementSize/2;
+			colorNode = elementColor;
+			background = backgroundColor;
+
+			let offset = 1;
+            let rightIndex= 0;
+            if(numberOfElements % 2 != 0){
+                let index = Math.floor(numberOfElements/2);
+                baseHoles[index] = new Circle();
+				baseHoles[index].setCenter(center.x,center.y);
+				baseHoles[index].setColor(elementColor, backgroundColor);
+                baseHoles[index].setSize(elementRadius);
+				rightIndex = Math.floor(index) + 1;
+				offset += elementRadius ;
+            }else{
+				rightIndex = Math.floor(numberOfElements / 2);
+				offset += elementRadius/2;
+            }
+            for(let leftIndex = Math.floor(numberOfElements/2) - 1; rightIndex < numberOfElements && leftIndex >= 0; rightIndex++,leftIndex--){
+                baseHoles[rightIndex] = new Circle();
+				baseHoles[rightIndex].setCenter(center.x + offset,center.y);
+				baseHoles[rightIndex].setColor(elementColor, backgroundColor);
+				baseHoles[rightIndex].setSize(elementRadius);
+
+				baseHoles[leftIndex] = new Circle();
+				baseHoles[leftIndex].setCenter(center.x - offset,center.y);
+				baseHoles[leftIndex].setColor(elementColor, backgroundColor);
+				baseHoles[leftIndex].setSize(elementRadius);
+				offset += (elementRadius) + 1;
+            }
+        },
+
+        highlightBaseHole :function(index){
+			if(index >= 0 && index < baseHoles.length){
+				baseHoles[index].highlight(0.1);
+			}
+        },
+
+        restoreColor : function(index){
+			if(index >= 0 && index < baseHoles.length){
+				baseHoles[index].setColor([1,0.5,0],background);
+			}
+        },
+
+		getNodeCenter : function (index){
+			if(index >= 0 && index < baseHoles.length){
+                return baseHoles[index].getCenter();
+			}else{
+			    console.log("wrong Index: " + index);
+            }
+		},
+
+		draw : function(gl) {
+			for(let index = 0; index < baseHoles.length; index++){
+			    baseHoles[index].draw(gl);
+            }
+		},
+
+		baseNodeBottomHit : function(baseHoleIndex, node){
+            let holeCenter = baseHoles[baseHoleIndex].getCenter();
+            let holeRadius = baseHoles[baseHoleIndex].getSize()/2;
+
+            let nodeCenter = node.getCenter();
+            let nodeRadius = node.getSize()/2;
+
+			return (holeCenter.y - holeRadius) == (nodeCenter.y + nodeRadius);
+        },
+
+		distanceFromNodeBaseHoleTop:function (baseHoleIndex,node){
+            let circleCenter = baseHoles[baseHoleIndex].getCenter();
+			let holeCenter = node.getCenter();
+            return Math.sqrt(Math.pow( Math.abs(circleCenter.x - holeCenter.x ) , 2) + Math.pow(Math.abs(circleCenter.y - (holeCenter.y - height)), 2));
+        },
+
+		distanceFromNodeBaseHoleBottom:function (baseHoleIndex, node){
+			let circleCenter = baseHoles[baseHoleIndex].getCenter();
+			let holeCenter = node.getCenter();
+			return Math.sqrt(Math.pow( Math.abs(circleCenter.x - holeCenter.x ) , 2) + Math.pow(Math.abs(circleCenter.y - (holeCenter.y + height)), 2));
+		},
+
+		checkCollision:function (baseHoleIndex,node){
+            return baseHoles[baseHoleIndex].circleCollision(node);
+        }
+	};
+};
+
 Drop = function(){
     var drop = new Circle();
     drop.setSize(100);
@@ -159,7 +404,8 @@ Circle = function(){
 
     var center = {x:0,y:0};
     var radius = 1;
-    var colorOfCircle = [];
+    var color = [];
+    var backupColor = [];
     var backgroundColor = [];
     var defaultPosition = [0, 0, 0];
     var hasChangedLocation = true, hasChangedSize = false;
@@ -167,7 +413,7 @@ Circle = function(){
     return {
 
         setColor : function(circle, background){
-            colorOfCircle = circle;
+            color = circle;
             backgroundColor = background;
         },
 
@@ -211,18 +457,22 @@ Circle = function(){
 
         moveRight : function(space){
             center.x += space;
+			hasChangedLocation = true;
         },
 
         moveLeft : function(space){
             center.x -= space;
+			hasChangedLocation = true;
         },
 
         moveUp : function(space){
             center.y += space;
+			hasChangedLocation = true;
         },
 
         moveDown : function(space){
             center.y -= space;
+			hasChangedLocation = true;
         },
 
         draw : function(gl){
@@ -252,16 +502,35 @@ Circle = function(){
             gl.vertexAttribPointer(program.positionLoc, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
             gl.vertexAttribPointer(program.centerLocation, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 8);
             gl.vertexAttribPointer(program.radiusLocation, 1, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 16);
-
-            gl.uniform3f(program.circleColorLoc, colorOfCircle[0], colorOfCircle[1], colorOfCircle[2]);
+            gl.uniform3f(program.circleColorLoc, color[0], color[1], color[2]);
             gl.uniform3f(program.backgroundColorLoc, backgroundColor[0], backgroundColor[1], backgroundColor[2]);
 
             gl.drawArrays(gl.TRIANGLE_FAN, 0, 3);
         },
 
         tick: function(theta){
-        }
-    };
+        },
+
+        circleCollision : function(circle){
+            let circleCenter = circle.getCenter();
+            let circleRadius = circle.getSize()/2;
+
+            return Math.pow(Math.abs(circleCenter.x - center.x),2) + Math.pow(Math.abs(circleCenter.y - center.y),2) <= Math.pow(radius + circleRadius,2);
+        },
+
+		highlight : function(lighterby){
+			if((1*color[0]) - lighterby > 0){
+				color[0] = (1*color[0]) + lighterby;
+			}
+			if((1*color[1]) - lighterby > 0){
+				color[1] = (1*color[1]) + lighterby;
+			}
+			if((1*color[2]) - lighterby > 0){
+				color[2] = (1*color[2]) + lighterby;
+			}
+		}
+
+	};
 };
 
 Rectangle = function(){
@@ -628,4 +897,129 @@ Triangle = function(){
         tick: function(theta){
         }
     };
+};
+
+CircleWithoutBackground = function(){
+
+	var program = Main.glFilledCircleProgram;
+
+	var center = {x:0,y:0};
+	var radius = 1;
+	var color= [];
+	var defaultPosition = [0, 0, 0];
+
+	var vertices = [];
+
+	var hasChangedLocation = true, hasChangedSize = false;
+
+	var ATTRIBUTES = 2;
+	var numFans = 32;
+
+	return {
+
+		setColor : function(colorOfCircle){
+			color = colorOfCircle;
+		},
+
+		highlight : function(lighterby){
+			color[0] = color[0] + lighterby;
+			color[1] = color[1] + lighterby;
+			color[2] = color[2] + lighterby;
+		},
+
+		setDefaultPosition : function (x, y) {
+
+			defaultPosition[0] = x;
+			defaultPosition[1] = y;
+
+			center.x = x;
+			center.y = y;
+
+			hasChangedLocation = true;
+		},
+
+		restoreDefaultPosition : function (){
+			center.x = defaultPosition[0];
+			center.y = defaultPosition[1];
+			hasChangedLocation = true;
+		},
+
+		setCenter : function (x, y) {
+
+			center.x = x;
+			center.y = y;
+
+			hasChangedLocation = true;
+		},
+
+		getCenter : function(){
+			return center;
+		},
+
+		setSize : function(size){
+			radius = size/2;
+			hasChangedSize = true;
+		},
+
+		getSize : function(){
+			return radius * 2;
+		},
+
+		moveRight : function(space){
+			center.x += space;
+			hasChangedLocation = true;
+		},
+
+		moveLeft : function(space){
+			center.x -= space;
+			hasChangedLocation = true;
+		},
+
+		moveUp : function(space){
+			center.y += space;
+			hasChangedLocation = true;
+		},
+
+		moveDown : function(space){
+			center.y -= space;
+			hasChangedLocation = true;
+		},
+
+		draw : function(gl){
+
+			gl.useProgram(program);
+
+			gl.uniform2f(program.u_resolution, gl.drawingBufferWidth, gl.drawingBufferHeight);
+
+			if(hasChangedLocation || hasChangedSize){
+				let degreePerFan = (2 * Math.PI) / numFans;
+				vertices = [center.x, center.y];
+				for(let i = 0; i <= numFans; i ++ ){
+                    let index = ATTRIBUTES * i + 2;
+					let angle = degreePerFan * (i+1);
+					vertices[index]= center.x + Math.cos(angle) * radius;
+					vertices[index + 1] = center.y + Math.sin(angle) * radius;
+				}
+			}
+			gl.uniform3f(program.colorLoc, color[0], color[1], color[2]);
+
+            let vertBuffer = gl.createBuffer();
+			gl.bindBuffer(gl.ARRAY_BUFFER, vertBuffer);
+			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+			gl.vertexAttribPointer(program.positionLoc, 2, gl.FLOAT, gl.FALSE, ATTRIBUTES * Float32Array.BYTES_PER_ELEMENT, 0);
+			gl.enableVertexAttribArray(program.positionLoc);
+
+			gl.drawArrays(gl.TRIANGLE_FAN, 0, vertices.length/ATTRIBUTES);
+		},
+
+		tick: function(theta){
+		},
+
+		circleCollision : function(circle){
+			let circleCenter = circle.getCenter();
+			let circleRadius = circle.getSize()/2;
+
+			return Math.pow(Math.abs(circleCenter.x - center.x),2) + Math.pow(Math.abs(circleCenter.y - center.y),2) <= Math.pow(radius + circleRadius,2);
+		}
+	};
 };

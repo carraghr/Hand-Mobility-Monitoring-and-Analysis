@@ -55,7 +55,7 @@ portal.controller('exerciseScheme', function exercises($scope,$http,$location,$c
 
 	let location = $location.absUrl().substring(0,$location.absUrl().lastIndexOf("CareProviderPortal/")+18);
 
-	$scope.getExerciseData = function (PID){
+	$scope.getExerciseData = function(){
 		let request = {
 			method: 'POST',
 			url: location + '/assests/php/exerciseTargetsLookup.php',
@@ -131,8 +131,7 @@ portal.controller('exerciseScheme', function exercises($scope,$http,$location,$c
 		});
 	}
 
-	$scope.isActive = function (viewLocation) {
-		console.log($location.path());
+	$scope.isActive = function (viewLocation){
 		return viewLocation === $location.path() || ($location.path() === "/" && viewLocation==="/exercises");
 	};
 
@@ -140,21 +139,23 @@ portal.controller('exerciseScheme', function exercises($scope,$http,$location,$c
 
 portal.controller('ExerciseFormController', function ($uibModalInstance, $http, $httpParamSerializerJQLike, $cookies, exercise) {
 
-	var $form = this;
+	let $form = this;
 	$form.exercise = exercise;
+	let tempLoc = location.href;
+	tempLoc = tempLoc.substring(0,tempLoc.lastIndexOf("/#/"));
 
 	$form.ok = function () {
 		let formData = $('form[name ="ExerciseAdditionForm"]').serializeArray();
 		let request = {
 			method: 'POST',
-			url: location + '/assests/php/addExercise.php',
+			url: tempLoc + '/assests/php/addExercise.php',
 			headers: {'Content-Type': 'application/x-www-form-urlencoded'},
 			data: $httpParamSerializerJQLike({ 'PHPSESSID' : $cookies.get('PHPSESSID'), 'PatientID' : $cookies.get('PatientID'),'form':formData})
 		};
 
 		$http(request).then(function (response){
 			let remove = response.data;
-			console.log(response.data);
+			console.log(response);
 			$uibModalInstance.close(remove);
 		},function(response){});
 

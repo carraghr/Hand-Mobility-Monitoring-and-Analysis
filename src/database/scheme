@@ -6,8 +6,8 @@ create table CareProvider(
   StaffID varchar(10) not null,
   Level varchar(3) not null,
   UserName varchar(20) not null,
-  Pass VARCHAR(13) null,
-  Salt BLOB(10) NULL,
+  Pass VARCHAR(118) null,
+  Salt VARCHAR(48) NULL,
 
   primary key(StaffID),
   UNIQUE (UserName)
@@ -31,14 +31,102 @@ create table Patient(
   CPID varchar(10) not null,
   DOB date,
   UserName varchar(20) not null,
-  Pass VARCHAR(13) null,
-  Salt BLOB(10) NULL,
+  Pass VARCHAR(118) null,
+  Salt VARCHAR(48) NULL,
 
   primary key(PatientID),
   constraint `PatientCareProviderFK_1`
   foreign key (CPID)
   references CareProvider(StaffID),
   UNIQUE (UserName)
+);
+
+create TABLE Exercises(
+  Name varchar(25) not null,
+  Area VARCHAR(10) not null,
+  MeasurementUnit VARCHAR(10) not NULL,
+  Desctiption TEXT(100) NOT NULL,
+
+  PRIMARY KEY(Name)
+);
+
+create table HandExerciseTargetLocations(
+  Exercise varchar(25) not null,
+  Location  varchar(8) not null,
+
+  PRIMARY KEY (Exercise,Location),
+
+  CONSTRAINT `HandExerciseTargetLocation`
+  FOREIGN KEY (Exercise)
+  REFERENCES Exercises(Name)
+);
+
+create table WristExerciseTargetLocations(
+  Exercise varchar(25) not null,
+  Movement varchar(10) not null,
+
+  PRIMARY KEY (Exercise, Movement),
+
+  CONSTRAINT `WristExerciseTargetLocation`
+  FOREIGN KEY (Exercise)
+  REFERENCES Exercises(Name)
+);
+
+create table HandTargets (
+  PID varchar(10) not null,
+  Exercise varchar(25) not null,
+  Hand VARCHAR(5) not null,
+  Location  varchar(8) not null,
+  Target DECIMAL(4,2) not NULL,
+  Repetition int not null,
+  Sequence int not null,
+
+  primary key(PID, Exercise, Hand, Location),
+
+  constraint `PatientHandTargetsFK_1`
+  foreign key (PID)
+  references Patient(PatientID),
+
+  foreign key (Exercise)
+  references Exercises(Name)
+);
+
+create table WristTargets (
+  PID varchar(10) not null,
+  Exercise varchar(25) not null,
+  Hand VARCHAR(5) not null,
+  Movement  varchar(10) not null,
+  Target DECIMAL(4,2) not NULL,
+  Repetition int not null,
+  Sequence int not null,
+
+  primary key(PID, Exercise, Hand, Movement),
+
+  constraint `PatientWristTargetsFK_1`
+  foreign key (PID)
+  references Patient(PatientID),
+
+  foreign key (Exercise)
+  references Exercises(Name)
+);
+
+create table ThumbFingerTipExercise(
+  PID varchar(10) not null,
+  DOE DATETIME not null,
+  Hand VARCHAR(5) not NULL,
+  Repetition int not null,
+  Sequence int not null,
+  FingerTip VARCHAR(6) not NULL ,
+  Minimum DECIMAL(4,2) not NULL,
+  Mean DECIMAL(4,2) not NULL,
+  Median DECIMAL(4,2) not NULL,
+  Maximum DECIMAL(4,2) not NULL,
+
+  primary key(PID, DOE, Repetition, Sequence, FingerTip),
+
+  constraint `PatientThumbFingerTipFK_1`
+  foreign key (PID)
+  references Patient(PatientID)
 );
 
 create table FingerSeparationExercise(
@@ -53,25 +141,28 @@ create table FingerSeparationExercise(
   Median DECIMAL(4,2) not NULL,
   Maximum DECIMAL(4,2) not NULL,
 
-  primary key(PID, DOE,Repetition,Sequence,FingerGap),
+  primary key(PID, DOE, Repetition, Sequence, FingerGap),
 
   constraint `PatientFingerSeparationFK_1`
   foreign key (PID)
   references Patient(PatientID)
 );
 
-create table Targets(
+create table WaveExercise(
   PID varchar(10) not null,
-  Exercise varchar(25) not null,
-  Hand VARCHAR(5) not null,
-  Location  varchar(8) not null,
-  Target DECIMAL(4,2) not NULL,
+  DOE DATETIME not null,
+  Hand VARCHAR(5) not NULL,
   Repetition int not null,
   Sequence int not null,
+  Movement VARCHAR(6) not NULL ,
+  Minimum DECIMAL(4,2) not NULL,
+  Mean DECIMAL(4,2) not NULL,
+  Median DECIMAL(4,2) not NULL,
+  Maximum DECIMAL(4,2) not NULL,
 
-  primary key(PID, Exercise,Hand, Location),
+  primary key(PID, DOE, Repetition, Sequence, Movement),
 
-  constraint `PatientTargetsFK_1`
+  constraint `PatientWaveFK_1`
   foreign key (PID)
   references Patient(PatientID)
 );
@@ -86,21 +177,4 @@ create table Feedback (
   CONSTRAINT `PatientFeedbackFK`
   FOREIGN KEY (PID)
   REFERENCES Patient(PatientID)
-);
-
-create TABLE Exercises(
-  Name varchar(25) not null,
-
-  PRIMARY KEY (Exercise)
-);
-
-create table ExerciseTargetLocations(
-  Exercise varchar(25) not null,
-  Location  varchar(8) not null,
-
-  PRIMARY KEY (Exercise,Location),
-
-  CONSTRAINT `ExerciseTargetLocation`
-  FOREIGN KEY (Exercise)
-  REFERENCES Exercises(Name)
 );

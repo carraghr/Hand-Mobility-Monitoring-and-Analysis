@@ -1,7 +1,7 @@
 <div ng-repeat="(exerciseInfo, exercises) in additionalExericseInfo">
     <div ng-repeat="exercise in exercises">
         <div class="exerciseBox col-md-3 col-md-offset-2" ng-model="name" ng-init="name = exercise.Name" ng-click = "selectedExerciseToAdd(name,'.modal-parent')" data-toggle="modal" data-target="#myModal">
-            <img ng-src ="./exercises/{{exercise.Name}}/img/thumbnail.png" class="col-md-3"/>
+            <img ng-src ="./exercises/imgs/{{exercise.Name}}.png" class="col-md-3"/>
             <p>{{exercise.Name}}</p>
         </div>
     </div>

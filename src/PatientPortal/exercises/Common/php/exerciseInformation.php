@@ -27,7 +27,7 @@
     $reps;
     $seq;
 
-    while($resultRow = mysqli_fetch_assoc($queryResult)) {
+    if($resultRow = mysqli_fetch_assoc($queryResult)) {
         $reps = $resultRow['Repetition'];
         $seq = $resultRow['Sequence'];
     }

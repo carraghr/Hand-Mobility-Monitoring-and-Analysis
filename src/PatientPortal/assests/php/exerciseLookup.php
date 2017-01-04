@@ -17,13 +17,10 @@
         $PID = $_SESSION['user_id'];
 
         $query = "select Exercise, Hand
-                    FROM Targets
+                    FROM HandTargets
                     WHERE PID ='$PID' group by Hand, Exercise";
 
         $queryResult = @mysqli_query($databaseConnection, $query) OR trigger_error($databaseConnection->error."[ $query]");
-
-        $Hands = array();
-
 
         /*
          * In here split data by hand then by exercise
@@ -35,5 +32,18 @@
         while($resultRow = mysqli_fetch_assoc($queryResult)) {
             $results->addExercise($resultRow['Hand'],$resultRow['Exercise']);
         }
+
+        $query = "select Exercise, Hand
+                  FROM WristTargets
+                  WHERE PID ='$PID' group by Hand, Exercise";
+
+        $queryResult = @mysqli_query($databaseConnection, $query) OR trigger_error($databaseConnection->error."[ $query]");
+
+        while($resultRow = mysqli_fetch_assoc($queryResult)) {
+            $results->addExercise($resultRow['Hand'],$resultRow['Exercise']);
+        }
+
+
+
         echo $results->exportExercises();
     }

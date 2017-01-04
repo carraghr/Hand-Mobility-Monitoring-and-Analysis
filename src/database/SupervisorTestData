@@ -1,0 +1,33 @@
+use project;
+/*Supervisor*/
+
+insert into Supervisor
+values ('1235334','12328901');
+
+
+insert into Supervisor
+values ('1235361','12328901');
+
+
+insert into Supervisor
+values ('12354351','12328901');
+
+
+insert into Supervisor
+values ('125234901','12356541');
+
+
+insert into Supervisor
+values ('34531374','12356541');
+
+
+insert into Supervisor
+values ('35354366','12328901');
+
+
+insert into Supervisor
+values ('3653654','42413485');
+
+insert into Supervisor
+values ('13454563','42413485');
+

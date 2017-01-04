@@ -9,8 +9,8 @@
         $salt = null;
 
         $saltQuery = "Select Salt
-                          from careprovider 
-                          where UserName = '$user'";
+                      from careprovider 
+                      where UserName = '$user'";
 
         $saltQueryResult = @mysqli_query($databaseConnection, $saltQuery) OR trigger_error($databaseConnection->error."[ $saltQueryResult]");
         if ($saltQueryResult) {

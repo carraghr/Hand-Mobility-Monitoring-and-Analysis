@@ -3,7 +3,6 @@
     header("Content-type: application/x-www-form-urlencoded");
 
     if($_SERVER['REQUEST_METHOD']=='POST') {
-
         $SID = $_POST['PHPSESSID'];
         $PID = $_POST['PatientID'];
 
@@ -44,12 +43,14 @@
                 die();
             }else{
                 for($index = 0; $index < count($leftHand);$index++){
-                    if($leftHand[0]->target > 0 ){
-                       submitExericse($databaseConnection, $PID, $exerciseName, 'left',$leftHand[0]->location,$leftHand[0]->target, $repetitions, $sequences);
+                    if($leftHand[$index]->target > 0 ){
+                       submitExercise($databaseConnection, $PID, $exerciseName, 'left',$leftHand[$index]->location,$leftHand[0]->target, $repetitions, $sequences);
                     }
                 }
                 for($index = 0; $index < count($rightHand);$index++){
-                    submitExericse($databaseConnection, $PID, $exerciseName, 'right',$leftHand[0]->location,$leftHand[0]->target, $repetitions, $sequences);
+                    if($rightHand[$index]->target > 0 ) {
+                        submitExercise($databaseConnection, $PID, $exerciseName, 'right', $rightHand[$index]->location, $rightHand[$index]->target, $repetitions, $sequences);
+                    }
                 }
                 echo $exerciseName;
             }
