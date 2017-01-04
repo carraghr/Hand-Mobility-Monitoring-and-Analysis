@@ -20,7 +20,7 @@
                                   (select Hand.Exercise  
                                    from HandTargets as Hand 
                                    where PID='$PID') 
-                                  or
+                                  and Name not in
                                    (select Wrist.Exercise 
                                     from WristTargets as Wrist  
                                     where PID='$PID');";
