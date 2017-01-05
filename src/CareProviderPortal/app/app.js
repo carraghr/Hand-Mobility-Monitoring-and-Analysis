@@ -2,17 +2,17 @@ var portal = angular.module('portal',['ngCookies','ngRoute','ngAria','ui.bootstr
 
 portal.config(function ($routeProvider){
 	$routeProvider
-		.when('/',{
+		/*.when('/',{
 			templateUrl : './app/components/exercises/exercises.html',
 			controller : 'exerciseScheme'
-		})
+		})*/
 		.when('/exercises',{
 			templateUrl : './app/components/exercises/exercises.html',
 			controller : 'exerciseScheme'
 		})
-		.when('/report',{
-			templateUrl : './app/components/exercises/exercises.html',
-			controller : 'exerciseScheme'
+		.when('/reports',{
+			templateUrl : './app/components/report/reports.html',
+			controller : 'reportGeneration'
 		})
 		.when('/account',{
 			templateUrl : './app/components/exercises/exercises.html',
@@ -45,13 +45,16 @@ portal.controller('patientCtrl',function exercises($scope,$http,$location,$cooki
 			that.show = Object.keys(response.data).length != 0;
 		},function(response){});
 	}
+
+	this.isActive = function (viewLocation){
+		console.log("Passed: "+ viewLocation + " in view: "+$location.path());
+		return viewLocation === $location.path() || ($location.path() === "/" && viewLocation==="/exercises");
+	};
 });
 
 portal.controller('exerciseScheme', function exercises($scope,$http,$location,$cookies,$httpParamSerializerJQLike,$document,$uibModal){
 
-	$scope.templates =
-		[{ name: 'template1.html', url: 'template1.html'},
-			{ name: 'template2.html', url: 'template2.html'}];
+	$scope.templates = '';
 
 	let location = $location.absUrl().substring(0,$location.absUrl().lastIndexOf("CareProviderPortal/")+18);
 
@@ -132,7 +135,7 @@ portal.controller('exerciseScheme', function exercises($scope,$http,$location,$c
 	}
 
 	$scope.isActive = function (viewLocation){
-		return viewLocation === $location.path() || ($location.path() === "/" && viewLocation==="/exercises");
+		return ($location.path() === "/" || viewLocation==="/exercises");
 	};
 
 });

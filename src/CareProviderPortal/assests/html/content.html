@@ -20,9 +20,9 @@
 
 <div class="clearfix"></div>
 <ul class = "nav nav-tabs nav-justified" ng-show="patient.show">
-    <li><a class="active" ng-class="{ active: isActive('/Exercise') }" href="#exercises">Exercise Scheme</a></li>
-    <li><a ng-class="{ active: isActive('/Report') }" href="#report">Report Generation</a></li>
-    <li><a ng-class="{ active: isActive('/Account') }" href="#account">Account Management</a></li>
+    <li><a ng-class="{ active: patient.isActive('/exercises') }" href="#exercises">Exercise Scheme</a></li>
+    <li><a ng-class="{ active: patient.isActive('/reports') }" href="#reports">Report Generation</a></li>
+    <li><a ng-class="{ active: patient.isActive('/account') }" href="#account">Account Management</a></li>
 </ul>
 <div class="clearfix"></div>
 <div ng-show="patient.show" ng-view></div>
