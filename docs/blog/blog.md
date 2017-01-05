@@ -351,3 +351,19 @@ The care provider has three main components these are exercise, report and accou
 The form popup for adding an extra exercise to a patients set was do using UI Bootstraps, which is a javascript library that has bootstrap components written in pure AngularJS, uibModal class which allowed for a uibModalInstance and controller to be created in angular to deal with displaying the form and its submission of data to the server and its response.
 
 At the moment only the exercise portion of the care provider portal is done with the options of adding and viewing exercises for a patient. The changing and removal of an exercise still has to be implemented however getting more exercises done takes priority at the moment. 
+
+##Thumb to Finger Tip Exercise Implementation
+
+The second exercise I decided to implement was a thumb to finger tip exercise. In this exercise the patient moves their thumb to the tip of one of their fingers with the distance between the finger tip and thumb tip been measured. The goal of this exercise from a medical stand point is to be able to been the finger to be able to reach the thumb and for the thumb to be able to stretch to each fingers location, in a rotation move. 
+
+To get the measurement I had to use the Euclidean Distance between the thumbs distal phalanges bone and a fingers distal phalanges bone. I use the leaps lerp function for the bone to get the 3 dimensional matrix of the bone to the closest joint to the tip.  The distance is measured in millimeters.
+
+![alt text]( ./images/tipToTip.png "Tip to Tip exercise image of game stage")
+
+For the game element of the exercise I've gone with a hold a note as it passes a point in a base of four points as seen above. Depending on the which finger the thumb is closest to the corresponding node will change color to indicate that it is the node been pressed on and been allowed to have the node going down pass trough it and allow it to count as a score increase if they can keep the finger and thumb together for the time it is passing through.
+
+##Wrist Flexion and Extension Exercise Implementation
+
+The third exercise I decided to implement was a wrist movement exercise. While the wrist can be seen to be apart of the hand or arm depending on your view of it, it is still a major component for the mobility of the hand. The measurement for this exercise is the measurement of angle of the bend of the wrist when you bend your hand up or down. Such as a waving motion. To calculate this angle I had to get the position of the palm and the wrist in millimeters using the lerp function again on the hand palm and the arms wrist position. I then use these two points to get a third point which can be used a the corner of a right angled triangle. Using these three points I get the distance of the Adjacent and Opposite sides of the triangle made up of the three points and then use the formula tan(θ) = Opposite / Adjacent. To make sure I'm getting the right angle I have to check with a goniometer which is typically used on a patient by a physiotherapist.
+
+The game element of this exercise is similar to the tip to tip exercise above. The game will have a port open to a block that spans from the top to the bottom of the screen. Based on the angle of the bend in the wrist the port will move within the blocked span either up or down.
