@@ -20,7 +20,6 @@ portal.config(function ($routeProvider){
 		})
 });
 
-
 portal.controller('patientCtrl',function exercises($scope,$http,$location,$cookies,$httpParamSerializerJQLike){
 
 	let location = $location.absUrl().substring(0,$location.absUrl().lastIndexOf("CareProviderPortal/")+18);
@@ -47,8 +46,7 @@ portal.controller('patientCtrl',function exercises($scope,$http,$location,$cooki
 	}
 
 	this.isActive = function (viewLocation){
-		console.log("Passed: "+ viewLocation + " in view: "+$location.path());
-		return viewLocation === $location.path() || ($location.path() === "/" && viewLocation==="/exercises");
+		return viewLocation === $location.path();
 	};
 });
 
@@ -166,5 +164,161 @@ portal.controller('ExerciseFormController', function ($uibModalInstance, $http, 
 
 	$form.cancel = function () {
 		$uibModalInstance.dismiss('cancel');
+	};
+});
+
+portal.controller('reportGeneration', function reports($scope,$http,$location,$cookies,$httpParamSerializerJQLike,$document,$uibModal){
+
+	$scope.page = '';
+	$scope.reportElementsCount = 0;
+
+	$scope.isActive = function (viewLocation){
+		return viewLocation === $scope.page;
+	};
+
+	let location = $location.absUrl().substring(0,$location.absUrl().lastIndexOf("CareProviderPortal/")+18);
+
+	let request = {
+		method: 'POST',
+		url: location + '/assests/php/exerciseTargetsLookup.php',
+		headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+		data: $httpParamSerializerJQLike({ 'PHPSESSID' : $cookies.get('PHPSESSID'), 'PatientID' : $cookies.get('PatientID')})
+	};
+
+	$http(request).then(function (response){
+		$scope.Exericses = response.data;
+	},function(response){});
+
+	$scope.addGraph = function(parentSelector){
+		$scope.page ="addGraph";
+		var parentElem = parentSelector ? angular.element($document[0].querySelector(parentSelector)) : undefined;
+		var modalInstance = $uibModal.open({
+				animation: true,
+				ariaLabelledBy: 'modal-title',
+				ariaDescribedBy: 'modal-body',
+				templateUrl: './app/components/report/addGraph.html',
+				controller: 'graphFormController',
+				controllerAs: '$graphForm',
+				size: 'lg',
+				appendTo: parentElem,
+				resolve: {
+					exercise: $scope.Exericses,
+					graphicCount: $scope.reportElementsCount
+				}
+			}
+		);
+
+		modalInstance.result.then(function() {
+			$scope.reportElementsCount++;
+		}, function(){});
+	};
+
+	$scope.addTable = function(){
+		$scope.page = 'addTable';
+	};
+
+	$scope.exportReport = function(){
+		$scope.page = 'exportReport';
+	};
+});
+
+portal.controller('graphFormController', function ($uibModalInstance, $http, $httpParamSerializerJQLike,$document, $cookies, exercise, graphicCount) {
+
+	let $graphForm = this;
+	$graphForm.exercises = exercise.exercises;
+	$graphForm.SelectedExercise = {};
+	$graphForm.errors = [];
+	let tempLoc = location.href;
+	tempLoc = tempLoc.substring(0,tempLoc.lastIndexOf("/#/"));
+
+	$graphForm.hasErrors = function(){
+		return $graphForm.errors.length > 0;
+	}
+
+	$graphForm.isHand = function(str){
+		let temp = {};
+		try {
+			temp = JSON.parse(obj);
+			if(str === "left"){
+				return temp.leftHand.length > 0;
+			}
+			if(str === "right"){
+				return temp.rightHand.length > 0;
+			}
+			if(str === "both"){
+				return temp.bothHand.length > 0;
+			}
+		} catch (e) {
+			return false;
+		}
+	}
+
+	$graphForm.ok = function () {
+
+		let formData = $('form[name ="GraphAdditionForm"]').serializeArray();
+		console.log(formData);
+		let request = {
+			method: 'POST',
+			url: tempLoc + '/assests/php/reportRequest.php',
+			headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+			data: $httpParamSerializerJQLike({ 'PHPSESSID' : $cookies.get('PHPSESSID'), 'PatientID' : $cookies.get('PatientID'), 'exercise':JSON.stringify($graphForm.SelectedExercise),'form':formData})
+		};
+		$http(request).then(function (response){
+			let data = response.data;
+			if(data.valid){
+
+				let div = document.createElement("div");
+				div.id = "reportElement" + graphicCount;
+				document.getElementById('reportStage').appendChild(div);
+
+				Highcharts.setOptions({
+					chart: {
+						borderWidth: 5,
+						borderColor: '#e8eaeb',
+						borderRadius: 0,
+						backgroundColor: '#f7f7f7'
+					},
+					title: {
+						style: {
+							'fontSize': '1em'
+						},
+						useHTML: true,
+						x: -27,
+						y: 8,
+						text: '<span class="chart-title"> Grouped categories <span class="chart-href"> <a href="http://www.blacklabel.pl/highcharts" target="_blank"> Black Label </a> </span> <span class="chart-subtitle">plugin by </span></span>'
+					}
+				});
+
+				let chart = new Highcharts.Chart({
+					chart: {
+						renderTo: div.id,
+						type: "line"
+					},
+					series:data.series.data ,
+					xAxis: {categories: data.xAxis}
+				});
+				$uibModalInstance.close();
+			}else{
+				$graphForm.errors = data.errors
+			}
+		},function(response){});
+	};
+
+	$graphForm.cancel = function () {
+		$uibModalInstance.dismiss('cancel');
+	};
+
+	$graphForm.getSelectedExercise = function (exerciseName){
+		try{
+			for(let index = 0; index < $graphForm.exercises.length; index++){
+				let exercise = $graphForm.exercises[index];
+				if(exercise.Name === exerciseName){
+					$graphForm.SelectedExercise = exercise;
+				}
+			}
+			return Object.keys($graphForm.SelectedExercise).length != 0;
+		}catch (e) {
+			return false;
+		}
 	};
 });
