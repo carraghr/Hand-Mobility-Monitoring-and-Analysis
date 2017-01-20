@@ -301,7 +301,10 @@ portal.controller('graphFormController', function ($uibModalInstance, $http, $ht
 			}else{
 				$graphForm.errors = data.errors
 			}
-		},function(response){});
+			console.log(response);
+		},function(response){
+			console.log(response);
+		});
 	};
 
 	$graphForm.cancel = function () {

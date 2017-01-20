@@ -34,17 +34,18 @@ Game = {
         let start = (repCount === 1 &&  sequencePosition === 1);
         let end = (repCount === repsToDo &&  sequencePosition === this.sequence);
 
-        var temp = { record : { rep : repCount, sequence: sequencePosition, angles : recordings }, start : start, end : end };
+        var temp = { record : { rep : repCount, sequence: sequencePosition, angles : recordings }, start : this.startOfRecord, end : this.endOfRecord };
+
+		if(this.startOfRecord){
+			this.startOfRecord = false;
+		}
+
         this.webworker.postMessage(temp);
-
-
     },
 
     init : function(){
         this.repsDone = 1;
         this.sequence = seqsToDo;
-        console.log(this.sequence);
-        console.log(seqsToDo);
         this.score = 0;
 
         this.webworker = new Worker('../../Finger Separating/js/dataProcessing.js');
@@ -53,30 +54,29 @@ Game = {
             let str = "";
             let json = JSON.stringify(e.data.record);
             if(e.data.start === true){
-                str = '{ "exerciseRecord" : [' + json+ ',';
-            }else if(e.data.end === true){
+                str = '{ "exerciseRecord" : [';
+            }
+            str = str + json;
+            if(e.data.end === true){
                 let cookie = document.cookie.split(';');
-                console.log(cookie);
-                str = json + ']';
+                str = str + ']';
                 for(let i = 0; i < cookie.length; i++){
-                    if(cookie[i].includes("PHPSESSID")){
-                        let value = cookie[i].substring(cookie[i].indexOf("=")).trim();
-                        str = str + ',"PHPSESSID" : "' + value +'"';
-                    }else if(cookie[i].includes("SelectedHand")){
-                        let value = cookie[i].substring(cookie[i].indexOf("=")).trim();
-                        str = str + ',"SelectedHand" : "' + value +'"';
-                    }
+					if(cookie[i].includes("PHPSESSID")){
+						let value = cookie[i].substring(cookie[i].indexOf("=")).trim().substring(1);
+						str = str + ',"PHPSESSID" : "' + value +'"';
+					}else if(cookie[i].includes("SelectedHand")){
+						let value = cookie[i].substring(cookie[i].indexOf("=")).trim().substring(1);
+						str = str + ',"SelectedHand" : "' + value +'"';
+					}
                 }
                 str = str + ' }';
-
             }else{
-                str = json + ',';
+                str =  str + ',';
             }
 
             document.getElementById('json').insertAdjacentHTML( 'beforeend', str );
 
             if (e.data.end ===true){
-
                 let jsonString = document.getElementById('json').innerHTML;
                 let request = new XMLHttpRequest();
                 let url = window.location.href;
@@ -90,9 +90,9 @@ Game = {
                         console.log(request.responseText);
                         if(request.responseText == 1){
                             let redirect = window.location.href;
-                            let index2 = redirect.lastIndexOf('/exercises/Finger Separating');
+                            let index2 = redirect.lastIndexOf('/exercises/');
                             redirect = redirect.substring(0,index2);
-                            window.location.href = redirect;
+                          //  window.location.href = redirect;
                         }
                     }
                 };
@@ -124,6 +124,9 @@ Game = {
         }
         this.status = 'paused';
         this.playable = 'playable';
+
+		this.startOfRecord = true;
+		this.endOfRecord = false;
     },
 
     separateLid : function(distance){
@@ -143,8 +146,8 @@ Game = {
         let miss = this.bucket.dropLidCollision(this.nodes[this.sequenceIndex]);
         let goal = this.bucket.dropContentCollision(this.nodes[this.sequenceIndex]);
         if(miss || goal){
-            this.sequenceIndex = (this.sequenceIndex + 1) % this.sequence;
-            if(this.sequenceIndex == 0){
+            this.sequenceIndex +=1;
+            if(this.sequenceIndex == this.sequence){
                 this.repsDone++;
                 if(this.repsDone <= repsToDo){
                     for (let index = 0; index < this.sequence; index++) {
@@ -159,7 +162,9 @@ Game = {
                     }
                 }else{
                     this.status = "complete";
+					this.endOfRecord = true;
                 }
+				this.sequenceIndex = 0;
             }
             if(goal){
                 this.score++;

@@ -88,13 +88,13 @@ Game = {
                 let cookie = document.cookie.split(';');
                 str = json + ']';
                 for(let i = 0; i < cookie.length; i++){
-                    if(cookie[i].includes("PHPSESSID")){
-                        let value = cookie[i].substring(cookie[i].indexOf("=")).trim().substring(1);;
-                        str = str + ',"PHPSESSID" : "' + value +'"';
-                    }else if(cookie[i].includes("SelectedHand")){
-                        let value = cookie[i].substring(cookie[i].indexOf("=")).trim().substring(1);
-                        str = str + ',"SelectedHand" : "' + value +'"';
-                    }
+					if(cookie[i].includes("PHPSESSID")){
+						let value = cookie[i].substring(cookie[i].indexOf("=")).trim().substring(1);
+						str = str + ',"PHPSESSID" : "' + value +'"';
+					}else if(cookie[i].includes("SelectedHand")){
+						let value = cookie[i].substring(cookie[i].indexOf("=")).trim().substring(1);
+						str = str + ',"SelectedHand" : "' + value +'"';
+					}
                 }
                 str = str + ' }';
 
@@ -119,7 +119,7 @@ Game = {
                         console.log(request.responseText);
                         if(request.responseText == 1){
                             let redirect = window.location.href;
-                            let index2 = redirect.lastIndexOf('/exercises/Tip%20to%20Tip');
+                            let index2 = redirect.lastIndexOf('/exercises/');
                             redirect = redirect.substring(0,index2);
                             console.log(redirect);
                             window.location.href = redirect;

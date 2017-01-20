@@ -28,13 +28,13 @@ if($_SERVER['REQUEST_METHOD']=='POST') {
 
         switch ($form[1]['value']) {
             case "Finger Separating":
-                $table = "fingersepartionexercise";
+                $table = "FingerSeparationExercise";
                 break;
             case "Tip to Tip":
-                $table = "thumbfingertipexercise";
+                $table = "ThumbFingerTipExercise";
                 break;
             case "Wave":
-                $table = "waveexercise";
+                $table = "WaveExercise";
                 break;
             default:
                 $error = array("Unable to get exercise ". $form[1]['value'] ."! Please try again.");
@@ -94,8 +94,8 @@ if($_SERVER['REQUEST_METHOD']=='POST') {
         while($resultRow = mysqli_fetch_assoc($recordQuery)){
             $exerciseDate = new DateTime($resultRow['DOE']);
             if($dateTime == $exerciseDate && count($record)!=0 ){
-                $newDate->addRepetition("Repetition ".$resultRow['Repetition']);
-                $newDate->addRepetitionLocation("Repetition ".$resultRow['Repetition'], $resultRow[$movementOrLocation]);
+                $record[$recordIndex]->addRepetition($resultRow['Repetition']);
+                $record[$recordIndex]->addRepetitionLocation($resultRow['Repetition'],$resultRow[$movementOrLocation]);
             }else{
                 $dateTime = $exerciseDate;
                 $newDate = new Date($dateTime->format('d-m-Y'." ".'H:i'));
@@ -106,14 +106,14 @@ if($_SERVER['REQUEST_METHOD']=='POST') {
             }
             $series->addDataToSeries("Sequence ".$resultRow['Sequence'],(float)$resultRow[$validation['measurement']]);
         }
-        if(count($record) == 0){
+        if(count($record)==0){
             $valid = false;
-            $errors = array("Error: No Records could be found for request!");
+            $errors = array("Error: Can not find results for query!");
         }else{
             $valid = true;
             $errors = array();
         }
-        echo json_encode(array("valid"=>$valid, "errors"=>$errors, "xAxis"=>$record, "series"=>$series));
+        echo json_encode(array("valid"=>$valid ,"errors"=>$errors, "xAxes"=>$record, "series"=>$series));
         die();
     }
 }else{
