@@ -1,0 +1,92 @@
+<div class="modal-header">
+    <h4 class="modal-title">Add Graphic Form</h4>
+</div>
+<div class="modal-body row">
+    <div ng-show="$tableForm.hasErrors()">
+        <div ng-repeat="error in $tableForm.errors">
+            <div class="alert alert-danger">
+                <p>{{error}}</p>
+            </div>
+        </div>
+    </div>
+    <form name="tableAdditionForm">
+        <fieldset class="col-md-12">
+            <div class="form-group">
+                <label class="col-form-label col-md-2" for="exercise">Exercise:</label><select id="exercise" name="selectedExerciseName" ng-model="selectedExerciseName" ng-init="selectedExercise = ''" class="custom-select" required>
+                <option ng-repeat="exercise in $tableForm.exercises" value="{{exercise.Name}}">{{exercise.Name}}</option>
+            </select>
+            </div>
+
+            <div ng-show="$tableForm.getSelectedExercise(selectedExerciseName)"></div>
+
+            <div class="form-group">
+                <label class="col-form-label col-md-2">Hand</label><select name="selectedHand" ng-model="selectedHand" required>
+                <option  ng-show="$tableForm.SelectedExercise.leftHand.length > 0">Left</option>
+                <option  ng-show="$tableForm.SelectedExercise.rightHand.length > 0">Right</option>
+            </select>
+            </div>
+
+            <div class="form-group">
+                <div ng-show="selectedHand != 'Left' && selectedHand != 'Right'" >
+                    <label class="col-form-label col-md-2" name="ignore">Location</label><select>
+                    <option></option>
+                </select>
+                </div>
+                <div ng-show="selectedHand === 'Left'" >
+                    <label class="col-form-label col-md-2" for="locationSelection">Location</label><select id="locationSelection" name="selectedHandLeft" class="custom-select">
+                    <option value="all">All</option>
+                    <option ng-repeat="target in $tableForm.SelectedExercise.leftHand" value="{{target.location}}">{{target.location}}</option>
+                </select>
+                </div>
+                <div ng-show="selectedHand === 'Right'">
+                    <label class="col-form-label col-md-2" for="location">Location</label><select id="location" name="selectedHandRight" class="custom-select">
+                    <option value="all">All</option>
+                    <option ng-repeat="target in $tableForm.SelectedExercise.rightHand" value="{{target.location}}">{{target.location}}</option>
+                </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-form-label col-md-2">Record</label>
+                <select name="record" class="custom-select" required>
+                    <option>Minimum</option>
+                    <option>Mean</option>
+                    <option>Median</option>
+                    <option>Maximum</option>
+                </select>
+            </div>
+            <div class="form-group clearfix">
+                <label class="col-form-label col-md-3">Repetition Selection</label>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2" for="allRepetitionCheckBox">All Repetitions:</label>  <input class="form-check-input" type="checkbox" name="allRepetition" id="allRepetitionCheckBox">
+            </div>
+            <div class="form-group clearfix">
+                <label class="col-md-3" for="repetitionIndexSelector">Repetition Index:</label>  <input name="repetitionIndex" id="repetitionIndexSelector" type="number" min="1" ng-max="$tableForm.SelectedExercise.reps"> Max: {{$tableForm.SelectedExercise.reps}}
+            </div>
+            <div class="form-group clearfix">
+                <label class="col-md-3">Sequence Selection</label>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2" for="allSequencesCheckBox">All Sequences:</label>  <input name="allSequences" id="allSequencesCheckBox" class="form-check-input" type="checkbox" name="allSeq">
+            </div>
+            <div class="form-group">
+                <label class="col-md-3" for="sequencesIndexSelector">Sequence Index:</label>  <input name="sequencesIndex" id="sequencesIndexSelector" type="number" min="1" max="$tableForm.SelectedExercise.seq"> Max: {{$tableForm.SelectedExercise.seq}}
+            </div>
+            <div class="form-group clearfix">
+                <label class="col-form-label col-md-2">Date Selection</label>
+            </div>
+            <div class="form-group">
+                <label class="col-form-label col-md-2">Start Date:</label><input name="startDate" type="Date" required>
+            </div>
+            <div class="form-group">
+                <label class="col-form-label col-md-2">End Date:</label><input name="endDate" type="Date">
+            </div>
+        </fieldset>
+    </form>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-success pull-left" ng-click="$tableForm.ok()">Add Graph</button>
+    <button type="button" class="btn btn-danger" ng-click="$tableForm.cancel()">Close</button>
+</div>
