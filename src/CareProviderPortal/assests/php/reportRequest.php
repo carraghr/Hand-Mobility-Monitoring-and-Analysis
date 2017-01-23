@@ -94,8 +94,8 @@ if($_SERVER['REQUEST_METHOD']=='POST') {
         while($resultRow = mysqli_fetch_assoc($recordQuery)){
             $exerciseDate = new DateTime($resultRow['DOE']);
             if($dateTime == $exerciseDate && count($record)!=0 ){
-                $record[$recordIndex]->addRepetition($resultRow['Repetition']);
-                $record[$recordIndex]->addRepetitionLocation($resultRow['Repetition'],$resultRow[$movementOrLocation]);
+                $record[$recordIndex]->addRepetition("Repetition ".$resultRow['Repetition']);
+                $record[$recordIndex]->addRepetitionLocation("Repetition ".$resultRow['Repetition'],$resultRow[$movementOrLocation]);
             }else{
                 $dateTime = $exerciseDate;
                 $newDate = new Date($dateTime->format('d-m-Y'." ".'H:i'));
@@ -113,7 +113,7 @@ if($_SERVER['REQUEST_METHOD']=='POST') {
             $valid = true;
             $errors = array();
         }
-        echo json_encode(array("valid"=>$valid ,"errors"=>$errors, "xAxes"=>$record, "series"=>$series));
+        echo json_encode(array("valid"=>$valid ,"errors"=>$errors, "xAxis"=>$record, "series"=>$series));
         die();
     }
 }else{
