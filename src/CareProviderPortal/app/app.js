@@ -270,29 +270,41 @@ portal.controller('reportGeneration', function reports($scope,$http,$location,$c
 
 		exportPDF.setFontSize(40);
 		exportPDF.text(35, 25, "My Exported Charts");
-		var stage = document.getElementById("reportStage");
+		let stage = document.getElementById("reportStage");
 		let index = 0;
 		//console.log(stage);
-		for (var i=0; i < stage.childNodes.length; i++) {
+		for (let i=0; i < stage.childNodes.length; i++) {
 			//console.log(stage.childNodes[i].nodeType);
 			if(stage.childNodes[i].nodeType == 1){
 				if(stage.childNodes[i].id.includes("reportElement")){
 					//console.log(stage.childNodes[i].childNodes.length);
-					for (var i2=0; i2 < stage.childNodes[i].childNodes.length; i2++) {
-						console.log(i2)
-						console.log(stage.childNodes[i].childNodes[i2])
-						if(stage.childNodes[i].childNodes[i2].id.includes("graph") && !stage.childNodes[i].childNodes[i2].id.includes("For")){
-							console.log(document.getElementById(stage.childNodes[i].childNodes[1].id));
+					for (let i2=0; i2 < stage.childNodes[i].childNodes.length; i2++){
+						if(stage.childNodes[i].childNodes[i2].id.includes("graph")){
 							let source = $(document.getElementById(stage.childNodes[i].childNodes[i2].id));
-							console.log(source.highcharts());
 							let imageData = source.highcharts().createCanvas();
 							exportPDF.addImage(imageData, 'JPEG', 25, (index * chartHeight) + 40, 150, chartHeight);
-						}else{
+						}else if(stage.childNodes[i].childNodes[i2].id.includes("table")){
 							//TODO table export
+							let table = stage.childNodes[i].childNodes[i2];
+							console.log(table);
+							let header = table.childNodes[0];
+							let rows = [];
+							let columns = [{title: "Date and Time of Exercise", dataKey:"date"},
+											{title: "Repetition", dataKey:"repetition" },
+											{title: "Sequence", dataKey:"sequence"},
+											{title: "Location", dataKey:"location"},
+											{title: header.childNodes[4].childNodes[0].textContent, dataKey:"value"}
+											];
+
+							for(let rowsIndex = 1; rowsIndex < table.childNodes.length; rowsIndex++){
+								let row = table.childNodes[rowsIndex];
+								let temp = {date:row.childNodes[0].childNodes[0].textContent ,repetition: row.childNodes[1].childNodes[0].textContent,sequence:row.childNodes[2].childNodes[0].textContent,location:row.childNodes[3].childNodes[0].textContent,value:row.childNodes[4].childNodes[0].textContent};
+								rows.push(temp);
+							}
+							exportPDF.autoTable(columns, rows);
 						}
 						if(stage.childNodes[i].childNodes[i2].id.includes("textareaForReportElement")){
 							let source = document.getElementById(stage.childNodes[i].childNodes[i2].id);
-							//console.log(source.value);
 							if(source.value != ""){
 								exportPDF.setFontSize(40);
 								exportPDF.text(35, (index * chartHeight) + 50, source.value);
@@ -475,9 +487,9 @@ portal.controller('tableFormController', function ($uibModalInstance, $http, $ht
 				document.getElementById('reportStage').appendChild(reportElement);
 
 				let tableObject = data.tableInfo;
-				console.log(tableObject);
 
 				let table = document.createElement('table');
+				table.id = "table" + tableCount;
 				let header =tableObject.header;
 				let headerRow = document.createElement('tr');
 				for(let index = 0; index < header.length; index++){
