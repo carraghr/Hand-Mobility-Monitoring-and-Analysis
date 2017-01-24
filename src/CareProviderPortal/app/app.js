@@ -277,17 +277,14 @@ portal.controller('reportGeneration', function reports($scope,$http,$location,$c
 			//console.log(stage.childNodes[i].nodeType);
 			if(stage.childNodes[i].nodeType == 1){
 				if(stage.childNodes[i].id.includes("reportElement")){
-					//console.log(stage.childNodes[i].childNodes.length);
 					for (let i2=0; i2 < stage.childNodes[i].childNodes.length; i2++){
 						if(stage.childNodes[i].childNodes[i2].id.includes("graph")){
 							let source = $(document.getElementById(stage.childNodes[i].childNodes[i2].id));
 							let imageData = source.highcharts().createCanvas();
 							exportPDF.addImage(imageData, 'JPEG', 25, (index * chartHeight) + 40, 150, chartHeight);
 						}else if(stage.childNodes[i].childNodes[i2].id.includes("table")){
-							//TODO table export
 							let table = stage.childNodes[i].childNodes[i2];
-							console.log(table);
-							let header = table.childNodes[0];
+							let header = table.childNodes[0].childNodes[0];
 							let rows = [];
 							let columns = [{title: "Date and Time of Exercise", dataKey:"date"},
 											{title: "Repetition", dataKey:"repetition" },
@@ -296,8 +293,8 @@ portal.controller('reportGeneration', function reports($scope,$http,$location,$c
 											{title: header.childNodes[4].childNodes[0].textContent, dataKey:"value"}
 											];
 
-							for(let rowsIndex = 1; rowsIndex < table.childNodes.length; rowsIndex++){
-								let row = table.childNodes[rowsIndex];
+							for(let rowsIndex = 1; rowsIndex < table.childNodes[1].childNodes.length; rowsIndex++){
+								let row = table.childNodes[1].childNodes[rowsIndex];
 								let temp = {date:row.childNodes[0].childNodes[0].textContent ,repetition: row.childNodes[1].childNodes[0].textContent,sequence:row.childNodes[2].childNodes[0].textContent,location:row.childNodes[3].childNodes[0].textContent,value:row.childNodes[4].childNodes[0].textContent};
 								rows.push(temp);
 							}
@@ -311,10 +308,6 @@ portal.controller('reportGeneration', function reports($scope,$http,$location,$c
 							}
 							index++;
 						}
-
-						//var imageData = $(stage.childNodes[i]).highcharts().createCanvas();
-						//doc.addImage(imageData, 'JPEG', 45, (index * chartHeight) + 40, 150, chartHeight);
-						//index++;
 					}
 				}
 			}
@@ -408,8 +401,6 @@ portal.controller('graphFormController', function ($uibModalInstance, $http, $ht
 					xAxis: {categories: data.xAxis}
 				});
 
-				//console.log(JSON.stringify(data.series.data));
-				//console.log(JSON.stringify(data.xAxis));
 				$uibModalInstance.close();
 			}else{
 				$graphForm.errors = data.errors
@@ -478,9 +469,7 @@ portal.controller('tableFormController', function ($uibModalInstance, $http, $ht
 		};
 		$http(request).then(function (response){
 			let data = response.data;
-
 			if(data.valid){
-
 				let reportElement = document.createElement("div");
 				reportElement.id = "reportElement" + reportElementCount;
 				reportElement.className  = "reportElement";
@@ -490,7 +479,9 @@ portal.controller('tableFormController', function ($uibModalInstance, $http, $ht
 
 				let table = document.createElement('table');
 				table.id = "table" + tableCount;
+				table.className="table table-striped table-hover table-bordered";
 				let header =tableObject.header;
+				let thead = document.createElement('thead');
 				let headerRow = document.createElement('tr');
 				for(let index = 0; index < header.length; index++){
 
@@ -501,8 +492,12 @@ portal.controller('tableFormController', function ($uibModalInstance, $http, $ht
 					td1.appendChild(value);
 					headerRow.appendChild(td1);
 				}
-				table.appendChild(headerRow);
 
+				thead.appendChild(headerRow);
+				table.appendChild(thead);
+
+
+				let tbody = document.createElement('tbody');
 				let rows =tableObject.rows;
 
 				for(let rowsIndex = 0; rowsIndex < rows.length; rowsIndex++){
@@ -513,9 +508,10 @@ portal.controller('tableFormController', function ($uibModalInstance, $http, $ht
 						let value = document.createTextNode(row[rowValueIndex]);
 						td1.appendChild(value);
 						rowElement.appendChild(td1);
-						table.appendChild(rowElement);
+						tbody.appendChild(rowElement);
 					}
 				}
+				table.appendChild(tbody);
 				document.getElementById("reportElement" + reportElementCount).appendChild(table);
 
 				let textArea = document.createElement("textarea");
