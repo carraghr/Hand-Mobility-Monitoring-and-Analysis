@@ -176,6 +176,7 @@ function formValidation($form, $exercise){
             $startDateInRange = (strtotime($form[$dateIndex]['value']) <= $currentDateInTime);
             $endDateInRange = (strtotime($form[$dateIndex+1]['value']) <= $currentDateInTime);
             $dateOrder =  (strtotime($form[$dateIndex]['value']) <= strtotime($form[$dateIndex+1]['value']));
+            break;
         }
     }
 

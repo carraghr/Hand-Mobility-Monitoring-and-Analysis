@@ -180,24 +180,15 @@ function formValidation($form, $exercise){
 
     $currentDateInTime = strtotime(date('y-m-d'));
 
-    if(strcmp($form[8]['name'],'startDate') == 0){
-        $startDate = $form[8]['value'];
-        $endDate = $form[9]['value'];
-        $startDateInRange = (strtotime($form[8]['value']) <= $currentDateInTime);
-        $endDateInRange = (strtotime($form[9]['value']) <= $currentDateInTime);
-        $dateOrder =  (strtotime($form[8]['value']) <= strtotime($form[9]['value']));
-    }else if(strcmp($form[9]['name'],'startDate') == 0){
-        $startDate = $form[9]['value'];
-        $endDate = $form[10]['value'];
-        $startDateInRange = (strtotime($form[9]['value']) <= $currentDateInTime);
-        $endDateInRange = (strtotime(($form[10]['value'])) <= $currentDateInTime);
-        $dateOrder =  (strtotime($form[9]['value']) <= strtotime(($form[10]['value'])));
-    }else{
-        $startDate = $form[10]['value'];
-        $endDate = $form[11]['value'];
-        $startDateInRange = (strtotime($form[10]['value']) <= $currentDateInTime);
-        $endDateInRange = (strtotime($form[11]['value']) <= $currentDateInTime);
-        $dateOrder =  (strtotime($form[10]['value']) <= strtotime($form[11]['value']));
+    for($dateIndex = 8; $dateIndex < 11;$dateIndex++){
+        if(strcmp($form[$dateIndex]['name'],'startDate') == 0){
+            $startDate = $form[$dateIndex]['value'];
+            $endDate = $form[$dateIndex+1]['value'];
+            $startDateInRange = (strtotime($form[$dateIndex]['value']) <= $currentDateInTime);
+            $endDateInRange = (strtotime($form[$dateIndex+1]['value']) <= $currentDateInTime);
+            $dateOrder =  (strtotime($form[$dateIndex]['value']) <= strtotime($form[$dateIndex+1]['value']));
+            break;
+        }
     }
 
     if(!$correctName){
