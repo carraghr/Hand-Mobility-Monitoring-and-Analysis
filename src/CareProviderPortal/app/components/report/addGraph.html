@@ -2,7 +2,7 @@
     <h4 class="modal-title">Add Graphic Form</h4>
 </div>
 <div class="modal-body row">
-    <div ng-show="hasErrors()">
+    <div ng-show="$graphForm.hasErrors()">
         <div ng-repeat="error in $graphForm.errors">
             <div class="alert alert-danger">
                 <p>{{error}}</p>
