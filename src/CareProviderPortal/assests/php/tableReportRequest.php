@@ -26,7 +26,7 @@ if($_SERVER['REQUEST_METHOD']=='POST') {
 
         $table = "";
 
-        switch ($form[0]['value']) {
+        switch ($form[1]['value']) {
             case "Finger Separating":
                 $table = "FingerSeparationExercise";
                 break;
@@ -37,14 +37,14 @@ if($_SERVER['REQUEST_METHOD']=='POST') {
                 $table = "WaveExercise";
                 break;
             default:
-                $error = array("Unable to get exercise ". $form[0]['value'] ."! Please try again.");
+                $error = array("Unable to get exercise ". $form[1]['value'] ."! Please try again.");
                 echo json_encode(array("valid"=> false, "errors" => $error));
                 die();
         }
 
         require('../../../databaseConnection.php');
 
-        $movementOrLocation = exerciseLocationOrMovement($form[0]['value'], $databaseConnection);
+        $movementOrLocation = exerciseLocationOrMovement($form[1]['value'], $databaseConnection);
 
         if(strcmp($movementOrLocation,"Location") ==0 ){
             if(strcmp($validation['location'], "all") == 0){
@@ -122,8 +122,8 @@ function exerciseLocationOrMovement($exerciseName, $databaseConnection){
 
 function formValidation($form, $exercise){
 
-    $correctName = strcmp($form[0]['value'],$exercise['Name']) == 0;
-    $hand = $form[1]['value'];
+    $correctName = strcmp($form[1]['value'],$exercise['Name']) == 0;
+    $hand = $form[2]['value'];
 
     $allRepetition = false;
     $allSequences = false;
@@ -139,28 +139,28 @@ function formValidation($form, $exercise){
     $endDate ="";
 
     if(strcmp($hand,'Left') == 0){
-        $location = $form[2]['value'];
-    }else{
         $location = $form[3]['value'];
+    }else{
+        $location = $form[4]['value'];
     }
 
-    $measurement = $form[4]['value'];
+    $measurement = $form[5]['value'];
 
     $error  = array();
 
-    if(strcmp($form[5]['name'],'allRepetition') != 0){//request is not asking for all repetitions on exercise
-        $repInRange = $form[5]['value'] >= 1 && $form[5]['value'] <= $exercise['reps'];
-        $repetitionIndex = $form[5]['value'];
-        if(strcmp($form[6]['name'],'allSequences') != 0){//request is not asking for all seq in exercise seqs
-            $seqInRange = $form[6]['value'] >= 1 && $form[6]['value'] <= $exercise['seq'];
-            $sequenceIndex = $form[6]['value'];
+    if(strcmp($form[6]['name'],'allRepetition') != 0){//request is not asking for all repetitions on exercise
+        $repInRange = $form[6]['value'] >= 1 && $form[6]['value'] <= $exercise['reps'];
+        $repetitionIndex = $form[6]['value'];
+        if(strcmp($form[7]['name'],'allSequences') != 0){//request is not asking for all seq in exercise seqs
+            $seqInRange = $form[7]['value'] >= 1 && $form[7]['value'] <= $exercise['seq'];
+            $sequenceIndex = $form[7]['value'];
         }else{
             $allSequences = true;
         }
     }
-    else if(strcmp($form[7]['name'],'allSequences') != 0){//request is asking for all reps but not all all sequences
-        $seqInRange = $form[7]['value'] >= 1 && $form[7]['value'] <= $exercise['seq'];
-        $sequenceIndex = $form[7]['value'];
+    else if(strcmp($form[8]['name'],'allSequences') != 0){//request is asking for all reps but not all all sequences
+        $seqInRange = $form[8]['value'] >= 1 && $form[8]['value'] <= $exercise['seq'];
+        $sequenceIndex = $form[8]['value'];
         $allRepetition = true;
     }else{
         $allRepetition = true;
@@ -169,7 +169,7 @@ function formValidation($form, $exercise){
 
     $currentDateInTime = strtotime(date('y-m-d'));
 
-    for($dateIndex = 7; $dateIndex<11;$dateIndex++){
+    for($dateIndex = 8; $dateIndex < 11;$dateIndex++){
         if(strcmp($form[$dateIndex]['name'],'startDate') == 0){
             $startDate = $form[$dateIndex]['value'];
             $endDate = $form[$dateIndex+1]['value'];

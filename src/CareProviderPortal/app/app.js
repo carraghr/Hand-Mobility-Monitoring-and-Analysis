@@ -257,7 +257,7 @@ portal.controller('reportGeneration', function reports($scope,$http,$location,$c
 			exportPDF.setFontSize(15);
 			exportPDF.text(20, 30, 'Name: last, first');
 			exportPDF.text(20, 37, 'Id: 12328901');
-
+			exportPDF.setFontSize(10);
 			let elementsOffset = 42;
 
 			for(let childNodeIndex = 0; childNodeIndex < stage.childNodes.length; childNodeIndex++){
@@ -267,11 +267,9 @@ portal.controller('reportGeneration', function reports($scope,$http,$location,$c
 							if(stage.childNodes[childNodeIndex].childNodes[i2].id.includes("graph")){
 								let source = $(document.getElementById(stage.childNodes[childNodeIndex].childNodes[i2].id));
 								let imageData = source.highcharts().createCanvas();
-								console.log(exportPDF.internal.pageSize.height);
 
-								//image to add, 'format', x of paper, y of paper, width of image, height of image
 								let tempCheck = elementsOffset + chartHeight + 7;
-								if(tempCheck > exportPDF.internal.pageSize.height){
+								if(tempCheck >= exportPDF.internal.pageSize.height){
 									exportPDF.addPage();
 									elementsOffset = 30;
 								}
@@ -300,7 +298,7 @@ portal.controller('reportGeneration', function reports($scope,$http,$location,$c
 									};
 									rows.push(temp);
 								}
-								if(elementsOffset + 35 > exportPDF.internal.pageSize.height){
+								if(elementsOffset + 7 >= exportPDF.internal.pageSize.height){
 									exportPDF.addPage();
 									elementsOffset = 30;
 								}
@@ -310,16 +308,34 @@ portal.controller('reportGeneration', function reports($scope,$http,$location,$c
 							if(stage.childNodes[childNodeIndex].childNodes[i2].id.includes("textareaForReportElement")){
 								let source = document.getElementById(stage.childNodes[childNodeIndex].childNodes[i2].id);
 								if(source.value != ""){
-									let text = exportPDF.splitTextToSize(source.value,exportPDF.internal.pageSize.width - 40);
-									for(let textIndex = 0; textIndex<text.length; textIndex++){
-										if(elementsOffset + 7 > exportPDF.internal.pageSize.height){
+									let text = exportPDF.splitTextToSize(source.value, exportPDF.internal.pageSize.width - 40);
+									for(let textIndex = 0; textIndex < text.length; textIndex++){
+										if(elementsOffset + 7 >= exportPDF.internal.pageSize.height){
 											exportPDF.addPage();
 											elementsOffset = 30;
 										}
 										exportPDF.text(20, elementsOffset, text[textIndex]);
-										elementsOffset+=7;
+										elementsOffset += 7;
 									}
 
+								}
+							}
+							if(stage.childNodes[childNodeIndex].childNodes[i2].id.includes("Title")){
+								let source = document.getElementById(stage.childNodes[childNodeIndex].childNodes[i2].id);
+								console.log(source.textContent);
+								if(source.textContent != ""){
+									exportPDF.setFontSize(15);
+									let text = exportPDF.splitTextToSize(source.textContent,exportPDF.internal.pageSize.width - 40);
+									for(let textIndex = 0; textIndex<text.length; textIndex++){
+										if(elementsOffset + 10 >= exportPDF.internal.pageSize.height){
+											exportPDF.addPage();
+											elementsOffset = 30;
+										}
+
+										exportPDF.text((exportPDF.internal.pageSize.width/2) - text[textIndex].length , elementsOffset, text[textIndex]);
+										elementsOffset+=7;
+									}
+									exportPDF.setFontSize(10);
 								}
 							}
 						}
@@ -365,6 +381,7 @@ portal.controller('graphFormController', function ($uibModalInstance, $http, $ht
 
 	$graphForm.ok = function () {
 		let formData = $('form[name ="GraphAdditionForm"]').serializeArray();
+		console.log(formData);
 		let request = {
 			method: 'POST',
 			url: tempLoc + '/assests/php/reportRequest.php',
@@ -379,30 +396,33 @@ portal.controller('graphFormController', function ($uibModalInstance, $http, $ht
 				reportElement.className  = "reportElement";
 				document.getElementById('reportStage').appendChild(reportElement);
 
+				let title = document.createElement("div");
+				title.id = "reportElement" + reportElementCount+"Title";
+				title.textContent = formData[0].value;
+				title.className  = "title";
+				reportElement.appendChild(title);
+
 				let div = document.createElement("div");
 				div.id = "graph" + graphCount;
-				document.getElementById("reportElement" + reportElementCount).appendChild(div);
+				reportElement.appendChild(div);
 
 				let textArea = document.createElement("textarea");
 				textArea.id = "textareaForReportElement" + reportElementCount;
 				textArea.className  = "textArea";
-				document.getElementById("reportElement" + reportElementCount).appendChild(textArea);
+				reportElement.appendChild(textArea);
 
 				Highcharts.setOptions({
 					chart: {
-						borderWidth: 5,
+						borderWidth: 1,
 						borderColor: '#e8eaeb',
 						borderRadius: 0,
-						backgroundColor: '#f7f7f7'
+						backgroundColor: '#fcfcfc'
 					},
-					title: {
-						style: {
-							'fontSize': '1em'
-						},
-						useHTML: true,
-						x: -27,
-						y: 8,
-						text: ''
+					exporting: {
+						enabled: false
+					},
+					title:{
+						text: null
 					}
 				});
 
@@ -489,6 +509,12 @@ portal.controller('tableFormController', function ($uibModalInstance, $http, $ht
 				reportElement.className  = "reportElement";
 				document.getElementById('reportStage').appendChild(reportElement);
 
+				let title = document.createElement("div");
+				title.id = "reportElement" + reportElementCount+"Title";
+				title.textContent = formData[0].value;
+				title.className  = "title";
+				reportElement.appendChild(title);
+
 				let tableObject = data.tableInfo;
 
 				let table = document.createElement('table');
@@ -526,12 +552,12 @@ portal.controller('tableFormController', function ($uibModalInstance, $http, $ht
 					}
 				}
 				table.appendChild(tbody);
-				document.getElementById("reportElement" + reportElementCount).appendChild(table);
+				reportElement.appendChild(table);
 
 				let textArea = document.createElement("textarea");
 				textArea.id = "textareaForReportElement" + reportElementCount;
 				textArea.className  = "textArea";
-				document.getElementById("reportElement" + reportElementCount).appendChild(textArea);
+				reportElement.appendChild(textArea);
 
 				$uibModalInstance.close();
 			}else{
