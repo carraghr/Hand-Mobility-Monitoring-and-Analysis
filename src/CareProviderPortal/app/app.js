@@ -49,10 +49,15 @@ portal.controller('patientCtrl',function exercises($scope,$http,$location,$cooki
 portal.controller('exerciseScheme', function exercises($scope,$http,$location,$cookies,$httpParamSerializerJQLike,$document,$uibModal){
 
 	$scope.templates = '';
-
+	$scope.page = '';
 	let location = $location.absUrl().substring(0,$location.absUrl().lastIndexOf("CareProviderPortal/")+18);
 
+	$scope.isActive = function (viewLocation){
+		return viewLocation === $scope.page;
+	};
+
 	$scope.getExerciseData = function(){
+		$scope.page = 'setExercises';
 		let request = {
 			method: 'POST',
 			url: location + '/assests/php/exerciseTargetsLookup.php',
@@ -65,9 +70,10 @@ portal.controller('exerciseScheme', function exercises($scope,$http,$location,$c
 			$scope.patientExericseInfo = response.data;
 		},function(response){});
 		$scope.template = './app/components/exercises/setExercises.html';
-	}
+	};
 
 	$scope.getAdditionalExercises = function (){
+		$scope.page = 'addExercise';
 		let request = {
 			method: 'POST',
 			url: location + '/assests/php/additionalExercises.php',
@@ -81,18 +87,18 @@ portal.controller('exerciseScheme', function exercises($scope,$http,$location,$c
 		},function(response){});
 
 		$scope.template = './app/components/exercises/addExercises.html';
-	}
+	};
 
-	var getExerciseInformation = function (name){
+	let getExerciseInformation = function (name){
 		let exercises = $scope.additionalExericseInfo['exercises'];
 		for(let i=0;i<exercises.length;i++){
 			if(exercises[i].Name === name ){
 				return exercises[i];
 			}
 		}
-	}
+	};
 
-	var remove = function (name){
+	let remove = function (name){
 		let exercises = $scope.additionalExericseInfo['exercises'];
 		for(let i=0;i<exercises.length;i++){
 			if(exercises[i].Name === name ){
@@ -100,12 +106,12 @@ portal.controller('exerciseScheme', function exercises($scope,$http,$location,$c
 				$scope.additionalExericseInfo['exercises'] = exercises;
 			}
 		}
-	}
+	};
 
 	$scope.selectedExerciseToAdd = function(name,parentSelector){
 		$scope.selectedExercise =  getExerciseInformation(name);
-		var parentElem = parentSelector ? angular.element($document[0].querySelector(parentSelector)) : undefined;
-		var modalInstance = $uibModal.open({
+		let parentElem = parentSelector ? angular.element($document[0].querySelector(parentSelector)) : undefined;
+		let modalInstance = $uibModal.open({
 				animation: true,
 				ariaLabelledBy: 'modal-title',
 				ariaDescribedBy: 'modal-body',
@@ -127,10 +133,6 @@ portal.controller('exerciseScheme', function exercises($scope,$http,$location,$c
 			//$log.info('Modal dismissed at: ' + new Date());
 		});
 	}
-
-	$scope.isActive = function (viewLocation){
-		return ($location.path() === "/" || viewLocation==="/exercises");
-	};
 
 });
 
@@ -189,8 +191,8 @@ portal.controller('reportGeneration', function reports($scope,$http,$location,$c
 
 	$scope.addGraph = function(parentSelector){
 		$scope.page ="addGraph";
-		var parentElem = parentSelector ? angular.element($document[0].querySelector(parentSelector)) : undefined;
-		var modalInstance = $uibModal.open({
+		let parentElem = parentSelector ? angular.element($document[0].querySelector(parentSelector)) : undefined;
+		let modalInstance = $uibModal.open({
 				animation: true,
 				ariaLabelledBy: 'modal-title',
 				ariaDescribedBy: 'modal-body',
@@ -209,14 +211,15 @@ portal.controller('reportGeneration', function reports($scope,$http,$location,$c
 		modalInstance.result.then(function() {
 			$scope.reportElementsCount++;
 			$scope.reportGraphCount++;
-		}, function(){});
+			$scope.page ="";
+		}, function(){$scope.page ="";});
 	};
 
 	$scope.addTable = function(parentSelector){
 		$scope.page = 'addTable';
 
-		var parentElem = parentSelector ? angular.element($document[0].querySelector(parentSelector)) : undefined;
-		var modalInstance = $uibModal.open({
+		let parentElem = parentSelector ? angular.element($document[0].querySelector(parentSelector)) : undefined;
+		let modalInstance = $uibModal.open({
 				animation: true,
 				ariaLabelledBy: 'modal-title',
 				ariaDescribedBy: 'modal-body',
@@ -235,61 +238,97 @@ portal.controller('reportGeneration', function reports($scope,$http,$location,$c
 		modalInstance.result.then(function() {
 			$scope.reportElementsCount++;
 			$scope.reportTableCount++;
-		}, function(){});
+			$scope.page ="";
+		}, function(){$scope.page ="";});
 	};
 
-	$scope.exportReport = function(){
+	$scope.exportReport = function(patient){
 		$scope.page = 'exportReport';
 
-		let exportPDF = new jsPDF();
-
-		let chartHeight = 80;
-
-		exportPDF.setFontSize(40);
-		exportPDF.text(35, 25, "My Exported Charts");
 		let stage = document.getElementById("reportStage");
-		let index = 0;
-		//console.log(stage);
-		for (let i=0; i < stage.childNodes.length; i++) {
-			//console.log(stage.childNodes[i].nodeType);
-			if(stage.childNodes[i].nodeType == 1){
-				if(stage.childNodes[i].id.includes("reportElement")){
-					for (let i2=0; i2 < stage.childNodes[i].childNodes.length; i2++){
-						if(stage.childNodes[i].childNodes[i2].id.includes("graph")){
-							let source = $(document.getElementById(stage.childNodes[i].childNodes[i2].id));
-							let imageData = source.highcharts().createCanvas();
-							exportPDF.addImage(imageData, 'JPEG', 25, (index * chartHeight) + 40, 150, chartHeight);
-						}else if(stage.childNodes[i].childNodes[i2].id.includes("table")){
-							let table = stage.childNodes[i].childNodes[i2];
-							let header = table.childNodes[0].childNodes[0];
-							let rows = [];
-							let columns = [{title: "Date and Time of Exercise", dataKey:"date"},
-											{title: "Repetition", dataKey:"repetition" },
-											{title: "Sequence", dataKey:"sequence"},
-											{title: "Location", dataKey:"location"},
-											{title: header.childNodes[4].childNodes[0].textContent, dataKey:"value"}
-											];
 
-							for(let rowsIndex = 1; rowsIndex < table.childNodes[1].childNodes.length; rowsIndex++){
-								let row = table.childNodes[1].childNodes[rowsIndex];
-								let temp = {date:row.childNodes[0].childNodes[0].textContent ,repetition: row.childNodes[1].childNodes[0].textContent,sequence:row.childNodes[2].childNodes[0].textContent,location:row.childNodes[3].childNodes[0].textContent,value:row.childNodes[4].childNodes[0].textContent};
-								rows.push(temp);
+		if(stage.childNodes.length > 0){
+			let exportPDF = new jsPDF();
+
+			let chartHeight = 80;
+
+			exportPDF.setFontSize(22);
+			exportPDF.text(20, 20, 'Progress Report 17/1/17');
+			exportPDF.setFontSize(15);
+			exportPDF.text(20, 30, 'Name: last, first');
+			exportPDF.text(20, 37, 'Id: 12328901');
+
+			let elementsOffset = 42;
+
+			for(let childNodeIndex = 0; childNodeIndex < stage.childNodes.length; childNodeIndex++){
+				if(stage.childNodes[childNodeIndex].nodeType == 1){
+					if(stage.childNodes[childNodeIndex].id.includes("reportElement")){
+						for(let i2 = 0; i2 < stage.childNodes[childNodeIndex].childNodes.length; i2++){
+							if(stage.childNodes[childNodeIndex].childNodes[i2].id.includes("graph")){
+								let source = $(document.getElementById(stage.childNodes[childNodeIndex].childNodes[i2].id));
+								let imageData = source.highcharts().createCanvas();
+								console.log(exportPDF.internal.pageSize.height);
+
+								//image to add, 'format', x of paper, y of paper, width of image, height of image
+								let tempCheck = elementsOffset + chartHeight + 7;
+								if(tempCheck > exportPDF.internal.pageSize.height){
+									exportPDF.addPage();
+									elementsOffset = 30;
+								}
+
+								exportPDF.addImage(imageData, 'JPEG', 20, elementsOffset, exportPDF.internal.pageSize.width - 40, chartHeight);
+								elementsOffset += chartHeight + 7;
+							}else if(stage.childNodes[childNodeIndex].childNodes[i2].id.includes("table")){
+								let table = stage.childNodes[childNodeIndex].childNodes[i2];
+								let header = table.childNodes[0].childNodes[0];
+								let rows = [];
+								let columns = [{title: "Date and Time of Exercise", dataKey: "date"},
+												{title: "Repetition", dataKey: "repetition"},
+												{title: "Sequence", dataKey: "sequence"},
+												{title: "Location", dataKey: "location"},
+												{title: header.childNodes[4].childNodes[0].textContent, dataKey: "value"}
+								];
+
+								for(let rowsIndex = 0; rowsIndex < table.childNodes[1].childNodes.length; rowsIndex++){
+									let row = table.childNodes[1].childNodes[rowsIndex];
+									let temp = {
+										date: row.childNodes[0].childNodes[0].textContent,
+										repetition: row.childNodes[1].childNodes[0].textContent,
+										sequence: row.childNodes[2].childNodes[0].textContent,
+										location: row.childNodes[3].childNodes[0].textContent,
+										value: row.childNodes[4].childNodes[0].textContent
+									};
+									rows.push(temp);
+								}
+								if(elementsOffset + 35 > exportPDF.internal.pageSize.height){
+									exportPDF.addPage();
+									elementsOffset = 30;
+								}
+								exportPDF.autoTable(columns, rows,{startY:elementsOffset, showHeader:'everyPage'});
+								elementsOffset = exportPDF.autoTable.previous.finalY + 7;
 							}
-							exportPDF.autoTable(columns, rows);
-						}
-						if(stage.childNodes[i].childNodes[i2].id.includes("textareaForReportElement")){
-							let source = document.getElementById(stage.childNodes[i].childNodes[i2].id);
-							if(source.value != ""){
-								exportPDF.setFontSize(40);
-								exportPDF.text(35, (index * chartHeight) + 50, source.value);
+							if(stage.childNodes[childNodeIndex].childNodes[i2].id.includes("textareaForReportElement")){
+								let source = document.getElementById(stage.childNodes[childNodeIndex].childNodes[i2].id);
+								if(source.value != ""){
+									let text = exportPDF.splitTextToSize(source.value,exportPDF.internal.pageSize.width - 40);
+									for(let textIndex = 0; textIndex<text.length; textIndex++){
+										if(elementsOffset + 7 > exportPDF.internal.pageSize.height){
+											exportPDF.addPage();
+											elementsOffset = 30;
+										}
+										exportPDF.text(20, elementsOffset, text[textIndex]);
+										elementsOffset+=7;
+									}
+
+								}
 							}
-							index++;
 						}
 					}
 				}
 			}
+			exportPDF.save('demo.pdf');
 		}
-		exportPDF.save('demo.pdf');
+		$scope.page ="";
 	};
 });
 
@@ -326,7 +365,6 @@ portal.controller('graphFormController', function ($uibModalInstance, $http, $ht
 
 	$graphForm.ok = function () {
 		let formData = $('form[name ="GraphAdditionForm"]').serializeArray();
-		console.log(formData);
 		let request = {
 			method: 'POST',
 			url: tempLoc + '/assests/php/reportRequest.php',
@@ -335,7 +373,6 @@ portal.controller('graphFormController', function ($uibModalInstance, $http, $ht
 		};
 		$http(request).then(function (response){
 			let data = response.data;
-			console.log(data);
 			if(data.valid){
 				let reportElement = document.createElement("div");
 				reportElement.id = "reportElement" + reportElementCount;
