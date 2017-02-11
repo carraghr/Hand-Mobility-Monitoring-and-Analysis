@@ -1,8 +1,8 @@
 <div ng-controller="exerciseScheme">
     <div class="col-md-6 col-md-offset-3">
-        <ul class="nav nav-pills nav-justified">
-            <li class="active"><a ng-click="getExerciseData(patientID)">Set Exercises</a></li>
-            <li><a ng-click="getAdditionalExercises(patientID)">Add Exercise</a></li>
+        <ul id ="exerciseOptions" class="nav nav-pills nav-justified">
+            <li><a  ng-class="{active: isActive('setExercises')}" ng-click="getExerciseData(patientID)">Set Exercises</a></li>
+            <li ng-class="{active: isActive('addExercise')}"><a ng-click="getAdditionalExercises(patientID)">Add Exercise</a></li>
         </ul>
     </div>
     <div class="clearfix"></div>

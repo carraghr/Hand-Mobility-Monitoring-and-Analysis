@@ -16,14 +16,15 @@ class Exercise{
     public $rightHand;
     public $reps;
     public $seq;
+    public $area;
 
-    public function __construct($name, $reps, $seq){
+    public function __construct($name, $reps, $seq, $area){
         $this->Name = $name;
         $this->reps = $reps;
         $this->seq = $seq;
         $this->leftHand = array();
         $this->rightHand = array();
-
+        $this->area = $area;
     }
 
     public function addTarget($hand, $location, $target){
@@ -48,7 +49,7 @@ class Exercises{
         $this->exercises =array();
     }
 
-    public function addExercise($name, $reps, $seqs, $hand, $location, $target){
+    public function addExercise($name, $reps, $seqs, $area, $hand, $location, $target){
         $isThere = false;
         for($i=0; $i < count($this->exercises); $i++){
             if($this->exercises[$i]->isExercise($name)){
@@ -58,7 +59,7 @@ class Exercises{
             }
         }
         if(!$isThere){
-            $temp = new Exercise($name, $reps, $seqs);
+            $temp = new Exercise($name, $reps, $seqs, $area);
             $temp->addTarget( $hand, $location, $target);
             array_push($this->exercises, $temp);
         }

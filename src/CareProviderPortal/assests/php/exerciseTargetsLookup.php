@@ -25,7 +25,7 @@
         $results = new Exercises();
         while($resultRow = mysqli_fetch_assoc($queryResult)) {
 
-            $results->addExercise($resultRow['Exercise'], $resultRow['Repetition'], $resultRow['Sequence'], $resultRow['Hand'], $resultRow['Location'], $resultRow['Target']);
+            $results->addExercise($resultRow['Exercise'], $resultRow['Repetition'], $resultRow['Sequence'], "Hand", $resultRow['Hand'], $resultRow['Location'], $resultRow['Target']);
         }
 
         $query = "select Exercise, Hand, Movement, Target, Repetition,Sequence
@@ -35,8 +35,7 @@
         $queryResult = @mysqli_query($databaseConnection, $query) OR trigger_error($databaseConnection->error . "[ $query]");
 
         while($resultRow = mysqli_fetch_assoc($queryResult)){
-
-            $results->addExercise($resultRow['Exercise'], $resultRow['Repetition'], $resultRow['Sequence'], $resultRow['Hand'], $resultRow['Movement'], $resultRow['Target']);
+            $results->addExercise($resultRow['Exercise'], $resultRow['Repetition'], $resultRow['Sequence'], "Wrist", $resultRow['Hand'], $resultRow['Movement'], $resultRow['Target']);
         }
         echo json_encode($results);
     }

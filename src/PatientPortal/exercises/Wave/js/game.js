@@ -144,7 +144,7 @@ Game = {
                         console.log(request.responseText);
                         if(request.responseText == 1){
                             let redirect = window.location.href;
-                            let index2 = redirect.lastIndexOf('/exercises/Wave');
+                            let index2 = redirect.lastIndexOf('/exercises/');
                             redirect = redirect.substring(0,index2);
                             console.log(redirect);
                             window.location.href = redirect;

@@ -48,8 +48,8 @@
                 $exerciseTargetLocationsQueryResult = @mysqli_query($databaseConnection, $exerciseTargetLocationsQuery) OR trigger_error($databaseConnection->error . "[$exerciseTargetLocationsQuery]");
 
                 while($locationRow = mysqli_fetch_assoc($exerciseTargetLocationsQueryResult)){
-                    $results->addExercise($exerciseName, 0, 0, "left", $locationRow['Location'], 0);
-                    $results->addExercise($exerciseName, 0, 0, "right", $locationRow['Location'], 0);
+                    $results->addExercise($exerciseName, 0, 0, "Hand", "left", $locationRow['Location'], 0);
+                    $results->addExercise($exerciseName, 0, 0, "Hand", "right", $locationRow['Location'], 0);
                 }
             }else{
                 $exerciseTargetLocationsQuery = "select Movement
@@ -59,8 +59,8 @@
                 $exerciseTargetLocationsQueryResult = @mysqli_query($databaseConnection, $exerciseTargetLocationsQuery) OR trigger_error($databaseConnection->error . "[$exerciseTargetLocationsQuery]");
 
                 while($locationRow = mysqli_fetch_assoc($exerciseTargetLocationsQueryResult)){
-                    $results->addExercise($exerciseName, 0, 0, "left", $locationRow['Movement'], 0);
-                    $results->addExercise($exerciseName, 0, 0, "right", $locationRow['Movement'], 0);
+                    $results->addExercise($exerciseName, 0, 0, "Wrist", "left", $locationRow['Movement'], 0);
+                    $results->addExercise($exerciseName, 0, 0, "Wrist", "right", $locationRow['Movement'], 0);
                 }
             }
 

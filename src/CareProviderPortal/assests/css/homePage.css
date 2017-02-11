@@ -45,6 +45,16 @@ html, body {
     }
 }
 
+#exerciseOptions ul li a:hover{
+    color: white;
+    background-color: #0b85dc;
+}
+
+#reportOptions ul li a:hover{
+    color: white;
+    background-color: #0b85dc;
+}
+
 .active{
     color: white;
     background-color: #0b85dc;
@@ -118,4 +128,23 @@ html, body {
 
 .splitter{
     margin-bottom:0 ;
+}
+
+.reportElement{
+    margin-top: 2%;
+    margin-bottom: 2%;
+}
+
+.textArea{
+    margin-top: 1%;
+    width: 100%;
+    height: 100px;
+}
+
+.title{
+    text-align: center;
+    display: block;
+    font-size: 1.5em;
+    margin: 0.83em 0 0.83em 0;
+    font-weight: bold;
 }

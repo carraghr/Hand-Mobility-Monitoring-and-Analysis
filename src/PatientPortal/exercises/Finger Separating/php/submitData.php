@@ -21,20 +21,25 @@
     $PID = $_SESSION['user_id'];
     $flag = true;
 
+    //echo json_encode($recordsOfResults);
+    //die();
+
     foreach($recordsOfResults as $record){
-        $rep = $record[0]->rep;
-        $seq = $record[0]->sequence;
-        $finger = $record[0]->finger;
-        $minimum = 1.0 * $record[0]->minimum;
-        $avg = $record[0]->avg;
-        $maximum = $record[0]->maximum;
-        $median = $record[0]->median;
+        for($index = 0; $index < count($record); $index++){
+            $rep = $record[$index]->rep;
+            $seq = $record[$index]->sequence;
+            $finger = $record[$index]->finger;
+            $minimum = 1.0 * $record[$index]->minimum;
+            $avg = $record[$index]->avg;
+            $maximum = $record[$index]->maximum;
+            $median = $record[$index]->median;
 
-        $insertResultQuery = "insert into FingerSeparationExercise VALUES ('$PID','$date','$Hand','$rep','$seq','$finger','$minimum','$avg','$median','$maximum')";
-        $flag = @mysqli_query($databaseConnection, $insertResultQuery) OR trigger_error($databaseConnection->error."[ $flag ]");
+            $insertResultQuery = "insert into FingerSeparationExercise VALUES ('$PID','$date','$Hand','$rep','$seq','$finger','$minimum','$avg','$median','$maximum')";
+            $flag = @mysqli_query($databaseConnection, $insertResultQuery) OR trigger_error($databaseConnection->error . "[ $flag ]");
 
-        if(!$flag){
-            echo $flag;
+            if (!$flag) {
+                echo $flag;
+            }
         }
     }
 
