@@ -108,7 +108,7 @@ portal.controller('exerciseScheme', function exercises($scope,$http,$location,$c
 		}
 	};
 
-	$scope.selectedExerciseToAdd = function(name,parentSelector){
+	$scope.selectedExerciseToAdd = function(name, parentSelector){
 		$scope.selectedExercise =  getExerciseInformation(name);
 		let parentElem = parentSelector ? angular.element($document[0].querySelector(parentSelector)) : undefined;
 		let modalInstance = $uibModal.open({
@@ -244,7 +244,7 @@ portal.controller('reportGeneration', function reports($scope,$http,$location,$c
 
 	$scope.exportReport = function(patient){
 		$scope.page = 'exportReport';
-
+		console.log(patient);
 		let stage = document.getElementById("reportStage");
 
 		if(stage.childNodes.length > 0){
@@ -253,12 +253,14 @@ portal.controller('reportGeneration', function reports($scope,$http,$location,$c
 			let chartHeight = 80;
 
 			exportPDF.setFontSize(22);
-			exportPDF.text(20, 20, 'Progress Report 17/1/17');
+			exportPDF.text(20, 20, 'Progress Report');
 			exportPDF.setFontSize(15);
-			exportPDF.text(20, 30, 'Name: last, first');
-			exportPDF.text(20, 37, 'Id: 12328901');
+			exportPDF.text(20, 30, 'Name: '+patient.NameLast+', '+ patient.NameFirst);
+			exportPDF.text(20, 37, 'Id: '+$cookies.get('PatientID'));
+			let date = new Date();
+			exportPDF.text(20, 44, 'Date of Creation: ' + date.toDateString());
 			exportPDF.setFontSize(10);
-			let elementsOffset = 42;
+			let elementsOffset = 54;
 
 			for(let childNodeIndex = 0; childNodeIndex < stage.childNodes.length; childNodeIndex++){
 				if(stage.childNodes[childNodeIndex].nodeType == 1){
@@ -274,7 +276,7 @@ portal.controller('reportGeneration', function reports($scope,$http,$location,$c
 									elementsOffset = 30;
 								}
 
-								exportPDF.addImage(imageData, 'JPEG', 20, elementsOffset, exportPDF.internal.pageSize.width - 40, chartHeight);
+								exportPDF.addImage(imageData, 'JPEG', 15, elementsOffset, exportPDF.internal.pageSize.width - 30, chartHeight);
 								elementsOffset += chartHeight + 7;
 							}else if(stage.childNodes[childNodeIndex].childNodes[i2].id.includes("table")){
 								let table = stage.childNodes[childNodeIndex].childNodes[i2];
@@ -339,6 +341,7 @@ portal.controller('reportGeneration', function reports($scope,$http,$location,$c
 								}
 							}
 						}
+						elementsOffset += 10;
 					}
 				}
 			}
@@ -473,7 +476,7 @@ portal.controller('tableFormController', function ($uibModalInstance, $http, $ht
 
 	$tableForm.hasErrors = function(){
 		return $tableForm.errors.length > 0;
-	}
+	};
 
 	$tableForm.isHand = function(str){
 		let temp = {};
