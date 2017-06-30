@@ -1,6 +1,5 @@
 use project;
 /*Supervisor*/
-
 insert into Supervisor
 values ('1235334','12328901');
 
@@ -30,67 +29,3 @@ values ('3653654','42413485');
 
 insert into Supervisor
 values ('13454563','42413485');
-
-insert into exercises values ('Finger Separating','Hand','degrees','some text');
-insert into exercises values ('Tip to Tip','Hand','centimeters','some text');
-insert into exercises values ('1','Hand','centimeters','some text');
-insert into exercises values ('2','Hand','centimeters','some text');
-insert into exercises values ('3','Hand','centimeters','some text');
-insert into exercises values ('4','Hand','centimeters','some text');
-insert into exercises values ('5','Hand','centimeters','some text');
-insert into exercises values ('6','Hand','centimeters','some text');
-insert into exercises values ('7','Hand','centimeters','some text');
-insert into exercises values ('8','Hand','centimeters','some text');
-insert into exercises values ('Wave','Wrist','degrees','some text');
-
-insert into HandTargets values ('1232890','Finger Separating','right','thumb','9','2','3');
-insert into HandTargets values ('1232890','Finger Separating','right','index','8','2','3');
-insert into HandTargets values ('1232890','Finger Separating','right','middle','8','2','3');
-insert into HandTargets values ('1232890','Finger Separating','right','ring','8','2','3');
-
-insert into HandTargets values ('1232890','Finger Separating','left','thumb','9','2','3');
-insert into HandTargets values ('1232890','Finger Separating','left','index','8','2','3');
-insert into HandTargets values ('1232890','Finger Separating','left','middle','8','2','3');
-insert into HandTargets values ('1232890','Finger Separating','left','ring','9','2','3');
-
-insert into HandTargets values ('1232890','Tip to Tip','left','index','1','1','1');
-insert into HandTargets values ('1232890','Tip to Tip','left','middle','1','1','1');
-insert into HandTargets values ('1232890','Tip to Tip','left','ring','1','1','1');
-insert into HandTargets values ('1232890','Tip to Tip','left','pinky','1','1','1');
-
-insert into HandTargets values ('1232890','Tip to Tip','right','index','1','1','1');
-insert into HandTargets values ('1232890','Tip to Tip','right','middle','1','1','1');
-insert into HandTargets values ('1232890','Tip to Tip','right','ring','1','1','1');
-insert into HandTargets values ('1232890','Tip to Tip','right','pinky','1','1','1');
-
-insert into HandExerciseTargetLocations values ('Finger Separating','thumb');
-insert into HandExerciseTargetLocations values ('Finger Separating','index');
-insert into HandExerciseTargetLocations values ('Finger Separating','middle');
-insert into HandExerciseTargetLocations values ('Finger Separating','ring');
-
-insert into HandExerciseTargetLocations values ('Tip to Tip','index');
-insert into HandExerciseTargetLocations values ('Tip to Tip','middle');
-insert into HandExerciseTargetLocations values ('Tip to Tip','ring');
-insert into HandExerciseTargetLocations values ('Tip to Tip','pinky');
-
-insert into HandExerciseTargetLocations values ('1','a');
-insert into HandExerciseTargetLocations values ('1','f');
-insert into HandExerciseTargetLocations values ('1','e');
-insert into HandExerciseTargetLocations values ('1','d');
-insert into HandExerciseTargetLocations values ('1','c');
-insert into HandExerciseTargetLocations values ('1','b');
-insert into HandExerciseTargetLocations values ('2', 'w');
-insert into HandExerciseTargetLocations values ('3','w');
-insert into HandExerciseTargetLocations values ('4','w');
-insert into HandExerciseTargetLocations values ('5','w');
-insert into HandExerciseTargetLocations values ('6','w');
-insert into HandExerciseTargetLocations values ('7','w');
-insert into HandExerciseTargetLocations values ('8','w');
-
-
-insert into WristExerciseTargetLocations values ('Wave','extension');
-insert into WristExerciseTargetLocations values ('Wave','flexion');
-
-insert into WristTargets values ('1232890','Wave','right','extension','20','1','2');
-insert into WristTargets values ('1232890','Wave','right','flexion','20','1','2');
-

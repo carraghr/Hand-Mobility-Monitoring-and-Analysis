@@ -27,7 +27,7 @@ I was able to find a research paper  “Idea: Java vs. PHP: Security Implication
 ### Decision
 Based of the result of researching the security concerns between php and java, I have decided to go with a LAMP stack for the project. This is because out of the three options it has the best integration together with php been easier to interact with html then java.
 
-##LEAP MOTION MEDICAL APPLICATIONS
+## LEAP MOTION MEDICAL APPLICATIONS
 
 The leap motion controller is a relatively new technology with it been release just over 3  years ago. The leap controller itself has not seen any improvements since then in terms of hardware but instead software updates for better reading of hand movements.
 
@@ -35,32 +35,32 @@ While researching if the leap motion could be used for this project I found that
 
 All the papers I found however were done the year the leap came out or a year later. Updates to the software has improved tracking of the leap with this and the leap motions push for more improvements because of there market space in VR, I believe that the leap motion is best suited to this project as other sensor tech is not as pushed as much as the leap, with the exception of the xbox kinect. As well as the leap motions range of languages that the API supports.
 
-##SVG vs Canvas vs WebGL
+## SVG vs Canvas vs WebGL
 
 For the project I'm going to have a set of exercises that the user will complete using a leap motion connected to their computer. To do this I plan to create games that will get the user to move their hands in the motion needed for the exercise. To do this animation is needed and keeping track of elements and changing them based on the users hand movements each of the options SVG, Canvas and WebGL give this feature with SVG enabling event handlers easier then canvas. However SVG seems to have some performance issues with rendering a large number of objects. Since the leap takes up a lot of resources when processing users input and its input frequency is connected to the performance of the computer SVG doesn't seem to be a good choice.
 
 Between Canvas 2D and WebGL, WebGL offers more performance due to its more programmable aspects such as it shader language GLSL and that it uses a computers graphics hardware to handle graphics instead of the cpu, if a gpu is present.For this reason I have selected webgl for the graphics/animation of the exercises for the project.
 
-##Hand Exercises 
+## Hand Exercises 
 
 For the project I have researched various hand exercises and have came up with different game ideas for them.
 
-###Separation of fingers and closing of separation
+### Separation of fingers and closing of separation
 
-####Measurement
+#### Measurement
  Angle between each finger, recording the average,min and max values for the angles between each finger.
  
-####Game element
+#### Game element
 There will be a gate that the users angles will open and close. It starts of with it been closed and when the user separated their fingers they will open the gate.
  
 There will be falling items from the top of the screen these will be for the user to indicate when the gates must be open and for how long.
 
-###Thumb flexion/extension
+### Thumb flexion/extension
 
-####Measurement
+#### Measurement
 The distance between the top of the thumb and the base of a finger. Again for each finger and getting the average, smallest and largest distances.
  
-####Game element
+#### Game element
 There will be a four key/stone input having your thumb over the base of one finger will cause the key to light up.
  
 There will be colored circles dropped under from the top of the screen. These will down onto one of the four keys and the user will move their thumb to that key. At this point the recording for the user's thumbs location will be taken as the distance from the thumb's tip to the base of the fingers base for that key.
@@ -68,15 +68,15 @@ There will be colored circles dropped under from the top of the screen. These wi
 Only one key at a time for a finger and they will be be repeated from the same finger in a row. ie no index, index but index, middle, index is ok.
 
 
-###Wrist extension and flexion
+### Wrist extension and flexion
 
-####Measurement
+#### Measurement
 If I get the location of the arm and the palm of the hand of the same arm I can work out the angle of the wrist is making when it is bent up and down, left and right.
  
-####Game element
+#### Game element
 The idea for this game is based on Pong. When the user move their wrist left or right, up or down a pong will move the same direction to block incoming objects. 
 
-##login System
+## login System
 
 For the project a login system is required for both care providers and patients so that they can interact with their information only.
 
@@ -84,12 +84,12 @@ Like most login systems it takes a user name and password. The password is hashe
  
 At the moment the database scheme looks like.
 
-![alt text]( ./images/database-scheme-v1.png "Database scheme version 1")
+![alt text]( ./images/database-scheme-v1.png "Logo Title Text 1")
 
 To pervert SQL injections in the login system I use the php method  mysqli_real_escape_string to make sure there are not ' or other charachers that could alter the mysql query been executed to the database.
 
-##SHAPES AND PERSPECTIVE
-###Shapes
+## SHAPES AND PERSPECTIVE
+### Shapes
 For each of the exercises games to be implemented for the project graphics are necessary. As stated before I will be using WebGL for graphics and as a part of this I need to implement all basic shapes myself  so to start with this I decided that I would implement a right angle triangle, square, rectangle  and a circle.
 
 For each of the shapes I followed a revealing module pattern and had each shape follow the same pattern in how they are constructed. Each shape has a centre point and from there each one goes out to there main side points.
@@ -154,7 +154,7 @@ void main(){
 ```
 While testing out the idea I found a few issues the main one been that if you render out any other shape before a circle and parts are interlinked the background colour (color0 above) will be rendered above the first shape. So to deal with this  circles need to be drawn out first and if this is to be used it should only be used for simple graphics. The first method of creating a circle had a problem with losing smoothness around its edge when it became larger however the circle in triangle method does not and uses less bytes for its creation.
 
-###Shaders
+### Shaders
 The vertex shader has to deal with perspective. To deal with this I use the following
 ```javascript
 // convert positions from pixels to 0.0 to 1.0
@@ -179,10 +179,10 @@ gl_Position = vec4(((vertPosition/u_resolution) * 2.0  - 1.0) , 0, 1);
 For the shaders to be useable by the shapes I need to compile them with a gl context of a canvas to do this I used a Anonymous Object Literal return pattern to create a what is basic a class with static methods to create a program containing a link to both a vertext and fragment shader to be used by each of the shapes. Apart from the circle shape each shape uses the same polygon shaders.
 
 
-##FINGER SEPARATION EXERCISE
+## FINGER SEPARATION EXERCISE
 To start on the exercises development I decided to go with the finger separation exercise as it seems to be the simplest out of the ones I decided on so far.
 
-###Shapes
+### Shapes
 To start with the development I had to create two new shapes, bucket and drop.  These two shapes are more complex shapes then the ones mentioned in the blog post before this as they are created using the shapes mentioned in the post.
 
 The bucket shape like all shapes so far is created using the Module pattern. Bucket contains six rectangles that make up its structure. Two for the sides, one for the contents of the bucket, one for the bottom and two for lids. To create a bucket I used a set size for the height and width of each component of the bucket.
@@ -258,7 +258,7 @@ The code works by getting the distance between a circle and rectangle  verticall
 
 The drop shape is just a circle with a tick function been the main change in circle. The tick method is one that calls circles move down method with the distance to be moved by.
 
-###Flow of Control
+### Flow of Control
 The exercise follows the following flow of control.
 
 The exercise web page loads all resources.  On page load of the body calls the function init of Main. This method sets up the WebGL program, set canvas size and compiles and creates the shader programs needed for shapes to be rendered out and inits the game by calling the init function in Game and renders out the first scene.
@@ -301,7 +301,7 @@ The databasae scheme has been changed to include this exercise and results from 
 ![alt text]( ./images/database-scheme-v2.png "Database Scheme")
 
 
-##PATIENT UI
+## PATIENT UI
 
 The user interface for the patient has to be build to be usable by people with difficulty working with their hands. As a result the patient portal becomes one of the most important areas of the project for its design in its user interface.
 
@@ -321,7 +321,7 @@ Through the use of this I have created a UI based on the prototype that allows f
 
 File structures have been changed to accommodate angularjs and its common practices and to structure files to that a pattern for file names could be used to populate exercise view easily . As well as this I had to make changed to the database scheme to accommodate exercise data submission with which hand was used.
 
-##CARE PROVIDER UI
+## CARE PROVIDER UI
 
 With a simple patient UI layout done  I started focusing on the care provider portal interface. I have so far created two samples of what it could look like based on my design for the patient portal interface.
 
@@ -333,37 +333,30 @@ The above gives two other options add exercise and change exercise. These option
 
 In the second example below the portal page is been used for the generation of reports.  In the example their are three options add graph, add table and export report.  The first two options allow for the adding of information to the report based on results of the exercises the patient they are viewing has completed.
 
-![alt text]( ./images/care-provider-report.png "Care-Provider report generation UI")
+![care provider report]( ./images/care-provider-report.png )
 
 When a care provider goes to add a new graph or table a popup window is shown to them and they select what exercise, and result they want to see from it on the table or graph. Export function creates a pdf client side through the use of jsPDF. The library for the table and graphs hasn’t been chosen yet but highcharts seems like a nice choice.
 
 The third choice given in the sample is account management which gives options of changing care provider for a patient, changing name,
 
+## Update
 
-##UI Implementation
+I've implemented the patient portal to allow for the selection of exercise and creation of feedback. I've implement the care provider to allow for the creation of a new patient account for the care provider and the adding and changing of selected exercises for the patient to complete.
 
-To implement my design for both the patient UI and care provider UI I used the AngularJS and Bootstrap. I use AngularJS to create single page applications(SPA's) for both portals for care providers and patients end users. To do this I had to create set of components for the web pages. Bootstrap was used to speed up the process of create the html pages so I did not spend time creating css to get the same layout that I designed with draw io.
+The plan was to use Angular for the front end along with bootstrap however due to problems with setting up Typescript I decided to use angularjs instead a long with bootstrap.
 
-For a patients portal I had to create an exercise component and a feedback component. These components are linked to a route of a url so that when one from the main tab selection they do not reload the page when loading a new updated view of the page. The exercise tab shows all exercises that the patient has for each hand to do split by which hand it is to be done by. This is done so that if they only have to do exercises on one hand the page is not covered with unnecessary headers.
+I've started testing my implementation through unit testing with a mixture of a karma and jasmine testing environment, as a large amount of code to be tested is javascript and of that angularjs. For the testing environment to work Nodejs is needed with npm working locally. In terms of end user testing I have gotten permission from the school of computing ethics committee. This was given  19th April 2017. 
 
-The care provider has three main components these are exercise, report and account. The exercise component deals with a patients exercise scheme and the options available to the care provider for each exercises adding, removing and changing targets. For this to work I with the design done above I had to use ng-include to change between subviews, with ng-includes I had a variable template change and update every time a user selected a different sub menu option.
+I've implemented 3 exercises. There has been some noted problems with them, although all of them work, their are some problems with the leap and reading in values. In some cases the leap will incorrectly read the location of a finger or get jumpy with its location for a second. In the case of the hand wave exercise it reads the position of palm and wrist correctly but moving your arm up and down in a waving motion will have the same effect as moving your hand. Corrective measures for this is to get the angle made by the arm while doing the exercise and adjust the value for the angle made by the hand with it. However this also does not work as it two has to deal with incorrect readings. While taking this measurement into the implementation of the exercise I say it working correctly but the miss readings became more frequent this lead me to removing the measurement and keeping the original as it preformed better overall.
 
-The form popup for adding an extra exercise to a patients set was do using UI Bootstraps, which is a javascript library that has bootstrap components written in pure AngularJS, uibModal class which allowed for a uibModalInstance and controller to be created in angular to deal with displaying the form and its submission of data to the server and its response.
+For the care provider portal I've also have a working report generator and exporter. The reports are made from a third party lib called HighCharts. The exporting of the is done through jspdf. The reason for jspdf is to export the report element to a pdf as well as printing the page instead of a browsers default printer.
 
-At the moment only the exercise portion of the care provider portal is done with the options of adding and viewing exercises for a patient. The changing and removal of an exercise still has to be implemented however getting more exercises done takes priority at the moment. 
+## Last Update
 
-##Thumb to Finger Tip Exercise Implementation
+I have created and completed technical guide and user manual. I have fixed various bugs that I found through manual testing and end user testing.
 
-The second exercise I decided to implement was a thumb to finger tip exercise. In this exercise the patient moves their thumb to the tip of one of their fingers with the distance between the finger tip and thumb tip been measured. The goal of this exercise from a medical stand point is to be able to been the finger to be able to reach the thumb and for the thumb to be able to stretch to each fingers location, in a rotation move. 
+I did not get to continue with unit testing as learning how to operate the unit testing language and creating the test cases did not fit into the time I had left to complete the project. In terms of time management and the development process I undertook to complete this project I should have focused on unit testing form the start maybe using a TDD.
 
-To get the measurement I had to use the Euclidean Distance between the thumbs distal phalanges bone and a fingers distal phalanges bone. I use the leaps lerp function for the bone to get the 3 dimensional matrix of the bone to the closest joint to the tip.  The distance is measured in millimeters.
+Over all the project works in terms of implementation, I have noted some issues with the leaps ability to read a hand in some positions, however do to hardware and software limitations of the system these problems could not be fixed.
 
-![alt text]( ./images/tipToTip.png "Tip to Tip exercise image of game stage")
-
-For the game element of the exercise I've gone with a hold a note as it passes a point in a base of four points as seen above. Depending on the which finger the thumb is closest to the corresponding node will change color to indicate that it is the node been pressed on and been allowed to have the node going down pass trough it and allow it to count as a score increase if they can keep the finger and thumb together for the time it is passing through.
-
-##Wrist Flexion and Extension Exercise Implementation
-
-The third exercise I decided to implement was a wrist movement exercise. While the wrist can be seen to be apart of the hand or arm depending on your view of it, it is still a major component for the mobility of the hand. The measurement for this exercise is the measurement of angle of the bend of the wrist when you bend your hand up or down. Such as a waving motion. To calculate this angle I had to get the position of the palm and the wrist in millimeters using the lerp function again on the hand palm and the arms wrist position. I then use these two points to get a third point which can be used a the corner of a right angled triangle. Using these three points I get the distance of the Adjacent and Opposite sides of the triangle made up of the three points and then use the formula tan(θ) = Opposite / Adjacent. To make sure I'm getting the right angle I have to check with a goniometer which is typically used on a patient by a physiotherapist.
-
-The game element of this exercise is similar to the tip to tip exercise above. The game will have a port open to a block that spans from the top to the bottom of the screen. Based on the angle of the bend in the wrist the port will move within the blocked span either up or down.
+I've updated the blog posts with correct formatting.  

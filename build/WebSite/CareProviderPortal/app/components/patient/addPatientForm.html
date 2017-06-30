@@ -1,0 +1,61 @@
+<div class="modal-header">
+    <h4 class="modal-title">Add Patient Form</h4>
+</div>
+<div class="modal-body">
+    <div ng-show="$form.hasErrors()">
+        <div ng-repeat="error in $form.errors">
+            <div class="alert alert-danger">
+                <p>{{error}}</p>
+            </div>
+        </div>
+    </div>
+    <form name="addPatientForm" class="form-horizontal">
+        <fieldset>
+            <div class="col-md-12">
+                <legend>Personal Information:</legend>
+                <div class="col-md-offset-1">
+                    <div class ="form-group">
+                        <label for="firstName" class="control-label">Forename</label>
+                        <input id ="firstName" name="firstName">
+                    </div>
+                    <div class ="form-group">
+                        <label for="Surname" class="control-label">Surname</label>
+                        <input id ="Surname" name="Surname">
+                    </div>
+                    <div class ="form-group">
+                        <label for="PID" class="control-label">Patient ID</label>
+                        <input id ="PID" name="PID">
+                    </div>
+                    <div class ="form-group">
+                        <label for="DOB" class="control-label">Date of Birth</label>
+                        <input id ="DOB" name="DOB" type="date">
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+        <fieldset>
+            <div class="col-md-12">
+                <legend>Login Details:</legend>
+                <div class="col-md-offset-1">
+                    <div class ="form-group">
+                        <label for="UserName" class="control-label">UserName</label>
+                        <input id ="UserName" name="UserName">
+                    </div>
+                    <div class ="form-group">
+                        <label for="Password" class="control-label">Password</label>
+                        <input id ="Password" name="Password" type="password"></p>
+                    </div>
+                    <div class ="form-group">
+                        <label for="Passwordcheck" class="control-label">Conform Password</label>
+                        <input id="Passwordcheck" name="Passwordcheck" type="password"></p>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </form>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-danger pull-left" ng-click="$form.cancel()">Close</button>
+    <button type="button" class="btn btn-success" ng-click="$form.ok()">Add Patient</button>
+</div>

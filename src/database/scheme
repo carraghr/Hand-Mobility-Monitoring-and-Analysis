@@ -44,7 +44,7 @@ create table Patient(
 create TABLE Exercises(
   Name varchar(25) not null,
   Area VARCHAR(10) not null,
-  MeasurementUnit VARCHAR(10) not NULL,
+  MeasurementUnit VARCHAR(15) not NULL,
   Desctiption TEXT(100) NOT NULL,
 
   PRIMARY KEY(Name)
@@ -122,7 +122,7 @@ create table ThumbFingerTipExercise(
   Median DECIMAL(4,2) not NULL,
   Maximum DECIMAL(4,2) not NULL,
 
-  primary key(PID, DOE, Repetition, Sequence, FingerTip),
+  primary key(PID, DOE, Repetition, Sequence, Location),
 
   constraint `PatientThumbFingerTipFK_1`
   foreign key (PID)
@@ -178,3 +178,20 @@ create table Feedback (
   FOREIGN KEY (PID)
   REFERENCES Patient(PatientID)
 );
+
+insert into exercises values ('Finger Separating','Hand','degrees','Measure the gaps between fingers as they open.');
+insert into exercises values ('Tip to Tip','Hand','milameters','Measure the distance between the tip of the thumb and one of the fingers on the hand.');
+insert into exercises values ('Wave','Wrist','degrees','Measure the angle of extension and flexion of the wrist');
+
+insert into HandExerciseTargetLocations values ('Finger Separating','thumb');
+insert into HandExerciseTargetLocations values ('Finger Separating','index');
+insert into HandExerciseTargetLocations values ('Finger Separating','middle');
+insert into HandExerciseTargetLocations values ('Finger Separating','ring');
+
+insert into HandExerciseTargetLocations values ('Tip to Tip','index');
+insert into HandExerciseTargetLocations values ('Tip to Tip','middle');
+insert into HandExerciseTargetLocations values ('Tip to Tip','ring');
+insert into HandExerciseTargetLocations values ('Tip to Tip','pinky');
+
+insert into WristExerciseTargetLocations values ('Wave','extension');
+insert into WristExerciseTargetLocations values ('Wave','flexion');

@@ -1,0 +1,30 @@
+<div class="modal-header">
+    <h4 class="modal-title">Change Exercise Form</h4>
+</div>
+<div class="modal-body row">
+    <form name="ExerciseAdjustmentForm">
+        <div class="col-md-12">
+            <p>Name: {{$form.exercise.Name}} <input name="exerciseName" value="{{$form.exercise.Name}}" type="hidden"></p>
+            <p>Repetitions: <input name="repetitions" type="number" min="1" value="{{$form.exercise.reps}}"></p>
+            <p>Sequences: <input name="sequences" type="number" min="1" value="{{$form.exercise.seq}}"></p>
+        </div>
+        <div  class="col-md-1"><p>Targets: </p></div>
+        <fieldset name="leftHand" ng-show="$form.exercise.leftHand.length != 0" class="col-md-4">
+            <p>Left Hand</p>
+            <div ng-repeat="targets in $form.exercise.leftHand" >
+                {{targets.location}} : <input name="{{'leftHand' + targets.location}}" type="number" min="1">
+            </div>
+        </fieldset>
+        <fieldset name="rightHand" ng-show="$form.exercise.rightHand.length != 0" class="col-md-4 col-md-offset-1">
+            <p>Right Hand</p>
+            <div ng-repeat="targets in $form.exercise.rightHand">
+                {{targets.location}} : <input name="{{'rightHand' + targets.location}}" type="number" min="1">
+            </div>
+        </fieldset>
+    </form>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-danger pull-left" ng-click="$form.cancel()">Close</button>
+    <button type="button" class="btn btn-success" ng-click="$form.ok()">Change Exercise</button>
+</div>
